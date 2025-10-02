@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "topic": "React rendering",
+    "difficulty": "advanced",
+    "language": "en",
+    "numQuestions": 1
+  },
+  "items": [
+    {
+      "id": "react-rendering-advanced-001",
+      "question": "Consider the following React components:\n\nfunction Parent() {\n  const [count, setCount] = React.useState(0);\n\n  const handleClick = () => {\n    setCount(c => c + 1);\n  };\n\n  return (\n    <div>\n      <p>Parent Count: {count}</p>\n      <MemoizedChild onClick={handleClick} />\n      <button onClick={() => setCount(count + 1)}>Increment Parent Count</button>\n    </div>\n  );\n}\n\nconst MemoizedChild = React.memo(function Child({ onClick }) {\n  console.log(\"Child re-rendered\");\n  return (\n    <button onClick={onClick}>Click Me (Child)</button>\n  );\n});\n\nIf the \"Increment Parent Count\" button is clicked multiple times, what will be observed regarding MemoizedChild's re-renders?",
+      "choices": [
+        "MemoizedChild will not re-render at all because React.memo prevents unnecessary re-renders.",
+        "MemoizedChild will re-render every time the \"Increment Parent Count\" button is clicked, despite React.memo.",
+        "MemoizedChild will only re-render if the onClick prop's *functionality* changes, not its reference.",
+        "MemoizedChild will re-render initially, but subsequent clicks of \"Increment Parent Count\" will not cause it to re-render."
+      ],
+      "answerIndex": 1,
+      "explanation": "The handleClick function is defined inside Parent. Each time Parent re-renders (due to count state changes), a new function instance for handleClick is created. React.memo performs a shallow comparison of props, so the new function reference for onClick causes MemoizedChild to re-render.",
+      "tags": [
+        "rendering",
+        "performance",
+        "memoization",
+        "React.memo",
+        "hooks",
+        "useState"
+      ]
+    }
+  ],
+  "overall": {
+    "summary": "This quiz assesses a deep understanding of React's rendering mechanism, specifically how React.memo works with prop equality and the implications of reference equality for functions and objects in JavaScript.",
+    "strengths": [
+      "Understanding of component lifecycle and state updates.",
+      "Basic knowledge of React.memo's purpose."
+    ],
+    "weaknesses": [
+      "Misconceptions about how React.memo compares function and object props (shallow vs. deep comparison).",
+      "Lack of awareness regarding how function declarations inside functional components create new references on each render.",
+      "Incorrect application of memoization techniques like useCallback."
+    ],
+    "suggestedTopics": [
+      "Understanding JavaScript reference vs. value equality.",
+      "Using useCallback for memoizing functions.",
+      "Using useMemo for memoizing values and objects.",
+      "Custom comparison functions with React.memo.",
+      "Performance optimization strategies in React.",
+      "The React reconciliation process."
+    ],
+    "studyTips": [
+      "Experiment with React.memo, useCallback, and useMemo in a simple project.",
+      "Use React DevTools to inspect component re-renders.",
+      "Pay attention to the 'dependencies' array in useCallback and useMemo.",
+      "Understand that React.memo does a shallow comparison by default; deep comparison requires a custom equality function.",
+      "Profile your React application to identify re-rendering bottlenecks."
+    ],
+    "estimatedLevel": "advanced"
+  }
+}
