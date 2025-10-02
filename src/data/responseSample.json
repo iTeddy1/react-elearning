@@ -1,0 +1,573 @@
+{
+    "videos": [
+        {
+            "id": "94d9a8ea-25cf-4ab8-bca0-26a944d1c092",
+            "text": "Can you briefly introduce yourself and your education background?",
+            "video": {
+                "signedUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/94d9a8ea-25cf-4ab8-bca0-26a944d1c092.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=f7f37d5406f1eb5c10cac04b5b2b20c586acd640c6b7b7f5ecd5c82d54718a4e&X-Amz-SignedHeaders=host",
+                "captionUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/94d9a8ea-25cf-4ab8-bca0-26a944d1c092.vtt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=820466d2dba323ba44f1d0b8ad05e7ba8a272dd56946ca077d0974765d7a1be3&X-Amz-SignedHeaders=host",
+                "cacheTime": "2025-10-02T11:20:18.248Z"
+            }
+        },
+        {
+            "id": "61d9c822-e045-4e5c-acd5-b89e70aa8bfb",
+            "text": "Tell me about a school or personal project you’re proud of.",
+            "video": {
+                "signedUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/61d9c822-e045-4e5c-acd5-b89e70aa8bfb.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=45cb7ec809bd8c6eb4859e7390f8ef17e9038aca94fe84fef64d63a2ba4af18f&X-Amz-SignedHeaders=host",
+                "captionUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/61d9c822-e045-4e5c-acd5-b89e70aa8bfb.vtt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=3b9d1440fd3e9b09a9fea1d0d71cd020cffdb274a9eacb1fe50a64d49e8f8cc5&X-Amz-SignedHeaders=host",
+                "cacheTime": "2025-10-02T11:20:18.238Z"
+            }
+        },
+        {
+            "id": "3f2291c0-db42-4985-a731-713338e75b9d",
+            "text": "What do you hope to gain or learn from this internship?",
+            "video": {
+                "signedUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/3f2291c0-db42-4985-a731-713338e75b9d.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=352bc9620419cf551379b8d16ff4ba4c107e6dc058d983462530c3c9fe5729d2&X-Amz-SignedHeaders=host",
+                "captionUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/3f2291c0-db42-4985-a731-713338e75b9d.vtt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=d1471e746d0aae319ff0132d12958c80dad7bff8082822d05e2ffc717876d6d7&X-Amz-SignedHeaders=host",
+                "cacheTime": "2025-10-02T11:20:18.258Z"
+            }
+        },
+        {
+            "id": "9978fdae-b006-4828-ba69-473b63559de4",
+            "text": "When can you start and how many hours per week can you commit?",
+            "video": {
+                "signedUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/9978fdae-b006-4828-ba69-473b63559de4.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=c7e82d0ec4114ff4d8570b3b69c0c930e4e1e330d2104313630e6b8aa15f830d&X-Amz-SignedHeaders=host",
+                "captionUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/9978fdae-b006-4828-ba69-473b63559de4.vtt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=1e81dfeb51313c73b0834ea3921d8fab192d2ecc010fe26006df9b0321817a56&X-Amz-SignedHeaders=host",
+                "cacheTime": "2025-10-02T11:20:18.244Z"
+            }
+        },
+        {
+            "id": "1120a313-fc41-4e43-a841-c84c2eb73612",
+            "text": "Do you have any questions for us about the internship?",
+            "video": {
+                "signedUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/1120a313-fc41-4e43-a841-c84c2eb73612.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=4aa6552ee75a04172225f21d5bce63f66a861710e84761ebcf868e71ecf7c40a&X-Amz-SignedHeaders=host",
+                "captionUrl": "https://interviewer-ai-videos.s3-accelerate.amazonaws.com/47bd1805-487d-4544-9080-8a347289637c/8b8f5ef0-4b9a-4ae5-8792-f9662a47d54b-nguyen-6675uj/1120a313-fc41-4e43-a841-c84c2eb73612.vtt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIXAEKUJAAA3N7HDQ%2F20251002%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251002T112018Z&X-Amz-Expires=36000&X-Amz-Signature=e73e587e72e38a3979cd1303482f0251f06783c5daf578f3fa47e7eb2833a5c6&X-Amz-SignedHeaders=host",
+                "cacheTime": "2025-10-02T11:20:18.241Z"
+            }
+        }
+    ],
+    "scores": {
+        "aiScores": {
+            "caption": [
+                "Hi, my name is Nguyen, and I'm currently a final year student of the University of Information Technology, Vietnam National University, Ho Chi Minh City. My major is in e-commerce with a focus on web development. Over the past 3 years at university, I have worked on IT project primarily about around website development. This experience helped me build a strong foundation in web programming, which led to my Role as a frontnand developer internship. And after research your company, I believe, as well as the job description, I believe it aligns well with my career goals and I'm exciting about the opportunity to contribute my skill. To your team and grow professionally within your organization.",
+                "So one of the projects I especially proud of that in my first freelance project, Laing, as I mentioned in the resume. So it, uh, React e-commerce app view by React, Touch, and Sy with Tailwind see that. So, in that project, I handle the role as a front-end developer as well as uh the designer of the application. So, uh, I have to work the phone shop at the front end. Developer in the project like integrate API with the back end and uh view. The UI is of the project. Include admin and And user where I. Advance my skill to organize the structure structure of the project. And after, after done in building the project, I have to the performance. Performance. Proce like I mentioned that he reduced the window size and reduced the Loading up the view tab.",
+                "As I mentioned that I know this company from the company website. So I have a research and find this company. It is a good place for me to develop. In my career path. And I hope I can gain on experience working in a professional environment where I can apply and refine the skill I built taught. Uh, I hope to learn the real-world collaboration. And have the mentorship. From Senior leveler will help me. And I see this internship as a launch pad to grow not just a developer but as a thoughtful contributor to meaningful digital experience.",
+                "I'm available to start right away and can commit to 40 hours a week. Speak across 4 days a week and I have a. Arrange my schedule to balance both school and this internship, so and I can stay fully focused and productive during my internship.",
+                "Uh, so, uh, first, let me, I want to ask that, will I have a mentor or someone to guide me? What during the internship. And uh What the career path the company will give us as an intern when we work, when I work in the company. And the final question is. Besides My soft skill and technical skill that's listed in my resume. Uh, what, what are the skills? Do I need To have a good. Internship In your company?"
+            ],
+            "emotionScore": 87,
+            "arousalScore": 53.91883919257126,
+            "valenceScore": 50.35286802338355,
+            "communicationScore": 66.866,
+            "articulationScore": 92.874,
+            "sentimentScore": 77.402,
+            "bodyLanguageScore": 97.28,
+            "dressingScore": 31.8,
+            "hairTidinessScore": 79.8,
+            "eyeContactScore": 19.4,
+            "relevancy_score_breakdown": [
+                {
+                    "question_id": "94d9a8ea-25cf-4ab8-bca0-26a944d1c092",
+                    "question_text": "Can you briefly introduce yourself and your education background?",
+                    "answer": "Hi, my name is Nguyen, and I'm currently a final year student of the University of Information Technology, Vietnam National University, Ho Chi Minh City. My major is in e-commerce with a focus on web development. Over the past 3 years at university, I have worked on IT project primarily about around website development. This experience helped me build a strong foundation in web programming, which led to my Role as a frontnand developer internship. And after research your company, I believe, as well as the job description, I believe it aligns well with my career goals and I'm exciting about the opportunity to contribute my skill. To your team and grow professionally within your organization.",
+                    "relevancy_score": 75,
+                    "relevancy_type": "General",
+                    "reason": "The candidate provides a clear introduction including their name, education background, major, and relevant experience, which directly addresses the question. However, the answer contains some grammatical errors and awkward phrasing that slightly reduce clarity and professionalism.",
+                    "improvements": [
+                        "More concise and polished language to improve clarity and professionalism.",
+                        "Additional details about educational achievements or specific skills could enhance the introduction."
+                    ],
+                    "extracted_ideal_answer": "Hi, my name is Nguyen, and I am a final year student at the University of Information Technology, Vietnam National University, Ho Chi Minh City. I major in e-commerce with a focus on web development. Over the past three years, I have worked on IT projects primarily related to website development, which helped me build a strong foundation in web programming. This experience led to my role as a frontend developer intern. After researching your company and reviewing the job description, I believe this opportunity aligns well with my career goals, and I am excited to contribute my skills to your team and grow professionally within your organization.",
+                    "strengths": [
+                        "Provides relevant educational background and major.",
+                        "Mentions practical experience related to the field and internship role."
+                    ]
+                },
+                {
+                    "question_id": "61d9c822-e045-4e5c-acd5-b89e70aa8bfb",
+                    "question_text": "Tell me about a school or personal project you’re proud of.",
+                    "answer": "So one of the projects I especially proud of that in my first freelance project, Laing, as I mentioned in the resume. So it, uh, React e-commerce app view by React, Touch, and Sy with Tailwind see that. So, in that project, I handle the role as a front-end developer as well as uh the designer of the application. So, uh, I have to work the phone shop at the front end. Developer in the project like integrate API with the back end and uh view. The UI is of the project. Include admin and And user where I. Advance my skill to organize the structure structure of the project. And after, after done in building the project, I have to the performance. Performance. Proce like I mentioned that he reduced the window size and reduced the Loading up the view tab.",
+                    "relevancy_score": 40,
+                    "relevancy_type": "General",
+                    "reason": "The candidate attempts to describe a project they are proud of, mentioning their role and some technical details. However, the answer is unclear, poorly structured, and contains many grammatical errors, making it difficult to fully understand the scope and impact of the project. Key details about the project's significance, challenges faced, and outcomes are missing.",
+                    "improvements": [
+                        "Clear explanation of the project's purpose and impact to demonstrate why the candidate is proud of it.",
+                        "Details about specific challenges faced and how the candidate overcame them to showcase problem-solving skills."
+                    ],
+                    "extracted_ideal_answer": "NA",
+                    "strengths": [
+                        "Your response did not reveal a distinct strength for this skill. Consider providing more specifics to showcase it next time"
+                    ]
+                },
+                {
+                    "question_id": "3f2291c0-db42-4985-a731-713338e75b9d",
+                    "question_text": "What do you hope to gain or learn from this internship?",
+                    "answer": "As I mentioned that I know this company from the company website. So I have a research and find this company. It is a good place for me to develop. In my career path. And I hope I can gain on experience working in a professional environment where I can apply and refine the skill I built taught. Uh, I hope to learn the real-world collaboration. And have the mentorship. From Senior leveler will help me. And I see this internship as a launch pad to grow not just a developer but as a thoughtful contributor to meaningful digital experience.",
+                    "relevancy_score": 70,
+                    "relevancy_type": "General",
+                    "reason": "The candidate's answer addresses what they hope to gain from the internship, including gaining experience, learning real-world collaboration, and receiving mentorship, which are relevant to the question. However, the response lacks clarity and contains grammatical errors that reduce its overall effectiveness.",
+                    "improvements": [
+                        "More specific skills or knowledge the candidate hopes to acquire during the internship to demonstrate clear goals.",
+                        "Clearer articulation of how the internship aligns with the candidate's long-term career objectives."
+                    ],
+                    "extracted_ideal_answer": "I hope to gain hands-on experience working in a professional environment where I can apply and refine my technical skills. Additionally, I want to learn how to collaborate effectively within a team and receive mentorship from experienced professionals to help guide my career development.",
+                    "strengths": [
+                        "The candidate expresses a desire to gain professional experience and mentorship.",
+                        "The answer shows motivation to grow both technically and as a contributor to meaningful projects."
+                    ]
+                },
+                {
+                    "question_id": "9978fdae-b006-4828-ba69-473b63559de4",
+                    "question_text": "When can you start and how many hours per week can you commit?",
+                    "answer": "I'm available to start right away and can commit to 40 hours a week. Speak across 4 days a week and I have a. Arrange my schedule to balance both school and this internship, so and I can stay fully focused and productive during my internship.",
+                    "relevancy_score": 70,
+                    "relevancy_type": "General",
+                    "reason": "The candidate clearly states their availability to start immediately and commits to 40 hours per week, which directly answers the question. However, the response is somewhat unclear and contains grammatical errors, which affect the overall clarity and professionalism.",
+                    "improvements": [
+                        "The candidate's explanation about speaking across 4 days a week is unclear and incomplete, which reduces the clarity of their weekly commitment.",
+                        "The answer lacks a clear structure and contains grammatical mistakes, which could be improved for better communication."
+                    ],
+                    "extracted_ideal_answer": "I am available to start immediately and can commit to 40 hours per week. I have arranged my schedule to balance both school and this internship, ensuring I can stay fully focused and productive.",
+                    "strengths": [
+                        "Directly addresses the start time and weekly hours commitment.",
+                        "Mentions balancing school and internship, showing awareness of time management."
+                    ]
+                },
+                {
+                    "question_id": "1120a313-fc41-4e43-a841-c84c2eb73612",
+                    "question_text": "Do you have any questions for us about the internship?",
+                    "answer": "Uh, so, uh, first, let me, I want to ask that, will I have a mentor or someone to guide me? What during the internship. And uh What the career path the company will give us as an intern when we work, when I work in the company. And the final question is. Besides My soft skill and technical skill that's listed in my resume. Uh, what, what are the skills? Do I need To have a good. Internship In your company?",
+                    "relevancy_score": 85,
+                    "relevancy_type": "General",
+                    "reason": "The candidate's questions are relevant to the internship, focusing on mentorship, career path, and required skills, which are important aspects for an intern to understand. However, the answer could be more concise and better structured to improve clarity.",
+                    "improvements": [
+                        "The candidate could have asked about the specific projects or tasks they might work on during the internship to show interest in the role.",
+                        "The candidate did not inquire about the company culture or team dynamics, which are also important for an intern."
+                    ],
+                    "extracted_ideal_answer": "Do interns have assigned mentors or supervisors during the internship? What kind of career development opportunities does the company offer to interns? Besides the skills listed on my resume, are there any other skills or qualities you recommend I develop to succeed in this internship?",
+                    "strengths": [
+                        "The candidate shows interest in mentorship and guidance, which is crucial for an internship.",
+                        "The candidate is proactive in understanding the career path and skill requirements, indicating a desire to grow."
+                    ]
+                }
+            ],
+            "grammar_score_breakdown": [
+                {
+                    "questionid": "94d9a8ea-25cf-4ab8-bca0-26a944d1c092",
+                    "sentence_structure": 66.25,
+                    "grammar_rules": 65,
+                    "word_usage": 70,
+                    "incomplete_sentences_and_fillers": 60,
+                    "improvements": [
+                        "Correct sentence fragments such as 'And after research your company' to 'After researching your company'.",
+                        "Fix awkward phrasing like 'primarily about around website development' to 'primarily about website development'.",
+                        "Correct capitalization errors such as 'Role' to 'role' and 'frontnand' to 'frontend'.",
+                        "Replace 'I'm exciting about' with 'I'm excited about'.",
+                        "Combine incomplete sentences for better flow, e.g., 'To your team and grow professionally within your organization.' should be connected to the previous sentence.",
+                        "Use consistent verb tenses and articles, e.g., 'a frontnand developer internship' should be 'a frontend developer internship'."
+                    ],
+                    "overallQuestionGrammarScore": 65.3125
+                },
+                {
+                    "questionid": "61d9c822-e045-4e5c-acd5-b89e70aa8bfb",
+                    "sentence_structure": 36.25,
+                    "grammar_rules": 35,
+                    "word_usage": 40,
+                    "incomplete_sentences_and_fillers": 30,
+                    "improvements": [
+                        "Avoid filler words such as 'uh' and 'so' which disrupt the flow and clarity of sentences.",
+                        "Use complete sentences with proper subject-verb agreement and clear structure.",
+                        "Clarify ambiguous phrases and correct word choices, e.g., 'handle the role' should be 'handled the role', 'view by React, Touch, and Sy' is unclear and should be corrected to proper technology names.",
+                        "Correct repetitive and redundant phrases, such as 'structure structure' and 'after, after done'.",
+                        "Improve punctuation and capitalization, especially at the beginning of sentences and for proper nouns.",
+                        "Rewrite sentences to clearly express ideas, for example, 'I have to work the phone shop at the front end developer' is unclear and should be rephrased.",
+                        "Ensure consistent tense usage, preferably past tense when describing completed projects.",
+                        "Overall, the paragraph needs significant restructuring for clarity, coherence, and grammatical correctness."
+                    ],
+                    "overallQuestionGrammarScore": 35.3125
+                },
+                {
+                    "questionid": "3f2291c0-db42-4985-a731-713338e75b9d",
+                    "sentence_structure": 48.75,
+                    "grammar_rules": 45,
+                    "word_usage": 60,
+                    "incomplete_sentences_and_fillers": 40,
+                    "improvements": [
+                        "Avoid sentence fragments such as 'In my career path.' and 'And have the mentorship.' Combine these fragments with preceding or following sentences to form complete sentences.",
+                        "Remove filler words like 'Uh' to improve fluency and professionalism.",
+                        "Correct verb forms and tenses, e.g., 'I have a research' should be 'I have done research' or 'I researched'.",
+                        "Replace awkward phrases like 'gain on experience' with 'gain experience'.",
+                        "Clarify unclear phrases such as 'the skill I built taught' to 'the skills I have built and been taught'.",
+                        "Improve word choice, e.g., 'Senior leveler' should be 'senior-level mentors' or 'senior professionals'.",
+                        "Use conjunctions properly to avoid starting sentences with 'And' unnecessarily.",
+                        "Ensure subject-verb agreement and proper preposition usage throughout the paragraph."
+                    ],
+                    "overallQuestionGrammarScore": 48.4375
+                },
+                {
+                    "questionid": "9978fdae-b006-4828-ba69-473b63559de4",
+                    "sentence_structure": 51.25,
+                    "grammar_rules": 55,
+                    "word_usage": 60,
+                    "incomplete_sentences_and_fillers": 40,
+                    "improvements": [
+                        "Correct incomplete sentences such as 'Speak across 4 days a week and I have a.' which is incomplete and unclear.",
+                        "Remove unnecessary conjunctions like 'so and' in 'so and I can stay fully focused' to improve sentence clarity.",
+                        "Combine fragmented ideas into complete sentences for better flow, e.g., 'I speak across 4 days a week and have arranged my schedule to balance both school and this internship.'",
+                        "Ensure subject-verb agreement and proper tense usage throughout the paragraph.",
+                        "Avoid abrupt sentence endings and ensure each sentence conveys a complete thought."
+                    ],
+                    "overallQuestionGrammarScore": 51.5625
+                },
+                {
+                    "questionid": "1120a313-fc41-4e43-a841-c84c2eb73612",
+                    "sentence_structure": 36.25,
+                    "grammar_rules": 35,
+                    "word_usage": 50,
+                    "incomplete_sentences_and_fillers": 20,
+                    "improvements": [
+                        "Remove filler words such as 'uh' and 'um' to improve clarity and professionalism.",
+                        "Combine fragmented sentences to form complete and coherent sentences.",
+                        "Correct verb tenses and sentence constructions, e.g., 'What during the internship' should be rephrased to 'What will happen during the internship?'",
+                        "Clarify ambiguous phrases, such as 'What the career path the company will give us as an intern' to 'What career path does the company offer interns?'",
+                        "Avoid starting sentences with conjunctions like 'And' or 'But' unless stylistically intended.",
+                        "Ensure proper capitalization and punctuation throughout the paragraph.",
+                        "Rephrase questions for grammatical correctness, e.g., 'Do I need To have a good Internship In your company?' should be 'What skills do I need to have a successful internship in your company?'"
+                    ],
+                    "overallQuestionGrammarScore": 35.3125
+                }
+            ],
+            "grammarScore": 47.1875,
+            "communication_breakdown": [
+                {
+                    "name": "Clarity",
+                    "definition": "Ability to clearly express ideas so the listener easily understands",
+                    "score": 60,
+                    "reasoning": "The candidate generally conveys ideas but often uses incomplete or awkward phrasing that can confuse the listener. For example, phrases like 'worked on IT project primarily about around website development' and 'I believe it aligns well with my career goals and I'm exciting about the opportunity' reduce clarity. Some sentences are fragmented or lack smooth transitions."
+                },
+                {
+                    "name": "Articulation",
+                    "definition": "Correct pronunciation and distinct enunciation of words",
+                    "score": 55,
+                    "reasoning": "The candidate's pronunciation and enunciation are somewhat unclear, as indicated by hesitations ('uh'), filler words, and occasional mispronunciations (e.g., 'frontnand' instead of 'frontend'). This affects the distinctness of words and overall intelligibility."
+                },
+                {
+                    "name": "Grammar",
+                    "definition": "Correct use of English grammar and sentence construction",
+                    "score": 47.1875,
+                    "reasoning": "The grammar score is provided. The transcript shows frequent grammatical errors such as incorrect verb forms, missing articles, and awkward sentence structures."
+                },
+                {
+                    "name": "Vocabulary",
+                    "definition": "Variety and relevance of vocabulary for academic settings",
+                    "score": 58,
+                    "reasoning": "The candidate uses relevant vocabulary related to web development and internships (e.g., 'API', 'front-end developer', 'performance', 'mentorship'). However, the vocabulary range is limited and sometimes inaccurately used or repeated, reducing the academic tone."
+                },
+                {
+                    "name": "English Proficiency",
+                    "definition": "Overall fluency, comprehension, and idiomatic use of English",
+                    "score": 52,
+                    "reasoning": "The candidate demonstrates basic fluency and comprehension but struggles with idiomatic expressions and natural phrasing. Frequent hesitations and awkward constructions indicate intermediate proficiency rather than advanced."
+                },
+                {
+                    "name": "Coherence",
+                    "definition": "Organized structure in responses, ideas connected logically",
+                    "score": 50,
+                    "reasoning": "Responses show some logical progression but are often disorganized with repeated ideas and unclear connections. For example, in Q2, the explanation of the project role is fragmented and lacks smooth flow."
+                },
+                {
+                    "name": "Engagement",
+                    "definition": "Positive and engaging delivery, appropriate enthusiasm for subject",
+                    "score": 60,
+                    "reasoning": "The candidate shows enthusiasm about the opportunity and asks relevant questions, indicating interest. However, the delivery is somewhat monotone and hesitant, which limits engagement."
+                },
+                {
+                    "name": "Conciseness",
+                    "definition": "Staying on-topic, providing only essential, relevant details",
+                    "score": 45,
+                    "reasoning": "The candidate often provides redundant or off-topic details, uses filler words, and repeats phrases unnecessarily, which detracts from conciseness."
+                },
+                {
+                    "name": "Professionalism",
+                    "definition": "Level of formality and suitability for an academic interview",
+                    "score": 65,
+                    "reasoning": "The candidate maintains a generally formal tone appropriate for an academic interview but occasionally uses informal language and filler words. The questions asked are relevant and show professional curiosity."
+                }
+            ],
+            "overall_summary": {
+                "overall_summary": "The candidate demonstrates a solid foundation in front-end development, particularly with ReactJS and related technologies such as Tailwind CSS and TypeScript, aligning well with the internship requirements at DigiEx Group. Their academic background in e-commerce with a focus on web development, combined with practical freelance experience, indicates relevant technical skills and a proactive approach to learning and project execution. The candidate shows enthusiasm for the role and a clear understanding of the company's values and opportunities for growth, suggesting good motivation and alignment with DigiEx's innovative and collaborative culture. Communication during the interview was generally clear, though occasionally hesitant, but the candidate effectively conveyed their experience and eagerness to contribute and learn.",
+                "transcript_summary": "Throughout the interview, the candidate introduced themselves as a final-year university student with three years of web development experience, emphasizing a freelance React e-commerce project where they handled both front-end development and design. They highlighted their ability to integrate APIs, optimize performance, and manage project structure. The candidate expressed strong interest in professional growth, mentorship, and real-world collaboration, aligning their career goals with the internship. They confirmed immediate availability and commitment to the internship schedule and asked insightful questions about mentorship and skill development, reflecting a thoughtful and proactive mindset.",
+                "strengths": [
+                    "Strong technical foundation in ReactJS, JavaScript, HTML, CSS, and Tailwind CSS, demonstrated through freelance project experience involving front-end development and API integration.",
+                    "Clear motivation and alignment with the company's goals, showing eagerness to learn, grow professionally, and contribute meaningfully to the team.",
+                    "Good understanding of project structure and performance optimization, as evidenced by their efforts to reduce loading times and improve UI responsiveness.",
+                    "Proactive attitude towards balancing internship commitments with academic responsibilities, indicating good time management skills.",
+                    "Effective communication of past experiences and career aspirations, including thoughtful questions about mentorship and skill requirements."
+                ],
+                "weaknesses": [
+                    "Occasional hesitancy and minor grammatical errors in verbal communication that could be improved for clearer and more confident expression.",
+                    "Limited detail on specific tools or methodologies used for collaboration with back-end developers or version control systems like Git, which are important for the role.",
+                    "Lack of explicit examples demonstrating teamwork or handling front-end bugs and troubleshooting, which are key responsibilities in the job description.",
+                    "No mention of familiarity with accessibility standards or testing practices, which are valuable for ensuring high-quality user interfaces.",
+                    "Some answers were somewhat general and could benefit from more concrete examples or metrics to illustrate impact."
+                ],
+                "recommendation": "MAYBE - The candidate shows promising technical skills and motivation that align well with the internship role, but would benefit from further development in communication clarity and practical teamwork experience. With proper mentorship and guidance, they have the potential to grow into a valuable contributor.",
+                "key_insights": [
+                    "The candidate’s proactive approach to learning and asking about mentorship indicates a strong growth mindset and openness to feedback.",
+                    "Their experience leading small projects and handling both design and development suggests versatility and initiative, valuable traits in a fast-paced, innovative environment.",
+                    "The candidate appears culturally aligned with DigiEx’s emphasis on collaboration, continuous learning, and innovation, which bodes well for integration into the team."
+                ]
+            }
+        },
+        "resume": {
+            "overall": 90,
+            "chatgpt_generated": true
+        }
+    },
+    "professionalismScore": 69.62666666666667,
+    "sociabilityScore": 72.77361306419043,
+    "energyLevelScore": 53.91883919257126,
+    "totalCommunicationScore": 66.866,
+    "totalWorkmapScore": 0,
+    "totalVideoScore": 66,
+    "overallInterviewScore": 78,
+    "relevancy_score_breakdown": [
+        {
+            "answer": "Hi, my name is Nguyen, and I'm currently a final year student of the University of Information Technology, Vietnam National University, Ho Chi Minh City. My major is in e-commerce with a focus on web development. Over the past 3 years at university, I have worked on IT project primarily about around website development. This experience helped me build a strong foundation in web programming, which led to my Role as a frontnand developer internship. And after research your company, I believe, as well as the job description, I believe it aligns well with my career goals and I'm exciting about the opportunity to contribute my skill. To your team and grow professionally within your organization.",
+            "reason": "The candidate provides a clear introduction including their name, education background, major, and relevant experience, which directly addresses the question. However, the answer contains some grammatical errors and awkward phrasing that slightly reduce clarity and professionalism.",
+            "strengths": [
+                "Provides relevant educational background and major.",
+                "Mentions practical experience related to the field and internship role."
+            ],
+            "question_id": "94d9a8ea-25cf-4ab8-bca0-26a944d1c092",
+            "improvements": [
+                "More concise and polished language to improve clarity and professionalism.",
+                "Additional details about educational achievements or specific skills could enhance the introduction."
+            ],
+            "question_text": "Can you briefly introduce yourself and your education background?",
+            "relevancy_type": "General",
+            "relevancy_score": 75,
+            "extracted_ideal_answer": "Hi, my name is Nguyen, and I am a final year student at the University of Information Technology, Vietnam National University, Ho Chi Minh City. I major in e-commerce with a focus on web development. Over the past three years, I have worked on IT projects primarily related to website development, which helped me build a strong foundation in web programming. This experience led to my role as a frontend developer intern. After researching your company and reviewing the job description, I believe this opportunity aligns well with my career goals, and I am excited to contribute my skills to your team and grow professionally within your organization."
+        },
+        {
+            "answer": "So one of the projects I especially proud of that in my first freelance project, Laing, as I mentioned in the resume. So it, uh, React e-commerce app view by React, Touch, and Sy with Tailwind see that. So, in that project, I handle the role as a front-end developer as well as uh the designer of the application. So, uh, I have to work the phone shop at the front end. Developer in the project like integrate API with the back end and uh view. The UI is of the project. Include admin and And user where I. Advance my skill to organize the structure structure of the project. And after, after done in building the project, I have to the performance. Performance. Proce like I mentioned that he reduced the window size and reduced the Loading up the view tab.",
+            "reason": "The candidate attempts to describe a project they are proud of, mentioning their role and some technical details. However, the answer is unclear, poorly structured, and contains many grammatical errors, making it difficult to fully understand the scope and impact of the project. Key details about the project's significance, challenges faced, and outcomes are missing.",
+            "strengths": [
+                "Your response did not reveal a distinct strength for this skill. Consider providing more specifics to showcase it next time"
+            ],
+            "question_id": "61d9c822-e045-4e5c-acd5-b89e70aa8bfb",
+            "improvements": [
+                "Clear explanation of the project's purpose and impact to demonstrate why the candidate is proud of it.",
+                "Details about specific challenges faced and how the candidate overcame them to showcase problem-solving skills."
+            ],
+            "question_text": "Tell me about a school or personal project you’re proud of.",
+            "relevancy_type": "General",
+            "relevancy_score": 40,
+            "extracted_ideal_answer": "NA"
+        },
+        {
+            "answer": "As I mentioned that I know this company from the company website. So I have a research and find this company. It is a good place for me to develop. In my career path. And I hope I can gain on experience working in a professional environment where I can apply and refine the skill I built taught. Uh, I hope to learn the real-world collaboration. And have the mentorship. From Senior leveler will help me. And I see this internship as a launch pad to grow not just a developer but as a thoughtful contributor to meaningful digital experience.",
+            "reason": "The candidate's answer addresses what they hope to gain from the internship, including gaining experience, learning real-world collaboration, and receiving mentorship, which are relevant to the question. However, the response lacks clarity and contains grammatical errors that reduce its overall effectiveness.",
+            "strengths": [
+                "The candidate expresses a desire to gain professional experience and mentorship.",
+                "The answer shows motivation to grow both technically and as a contributor to meaningful projects."
+            ],
+            "question_id": "3f2291c0-db42-4985-a731-713338e75b9d",
+            "improvements": [
+                "More specific skills or knowledge the candidate hopes to acquire during the internship to demonstrate clear goals.",
+                "Clearer articulation of how the internship aligns with the candidate's long-term career objectives."
+            ],
+            "question_text": "What do you hope to gain or learn from this internship?",
+            "relevancy_type": "General",
+            "relevancy_score": 70,
+            "extracted_ideal_answer": "I hope to gain hands-on experience working in a professional environment where I can apply and refine my technical skills. Additionally, I want to learn how to collaborate effectively within a team and receive mentorship from experienced professionals to help guide my career development."
+        },
+        {
+            "answer": "I'm available to start right away and can commit to 40 hours a week. Speak across 4 days a week and I have a. Arrange my schedule to balance both school and this internship, so and I can stay fully focused and productive during my internship.",
+            "reason": "The candidate clearly states their availability to start immediately and commits to 40 hours per week, which directly answers the question. However, the response is somewhat unclear and contains grammatical errors, which affect the overall clarity and professionalism.",
+            "strengths": [
+                "Directly addresses the start time and weekly hours commitment.",
+                "Mentions balancing school and internship, showing awareness of time management."
+            ],
+            "question_id": "9978fdae-b006-4828-ba69-473b63559de4",
+            "improvements": [
+                "The candidate's explanation about speaking across 4 days a week is unclear and incomplete, which reduces the clarity of their weekly commitment.",
+                "The answer lacks a clear structure and contains grammatical mistakes, which could be improved for better communication."
+            ],
+            "question_text": "When can you start and how many hours per week can you commit?",
+            "relevancy_type": "General",
+            "relevancy_score": 70,
+            "extracted_ideal_answer": "I am available to start immediately and can commit to 40 hours per week. I have arranged my schedule to balance both school and this internship, ensuring I can stay fully focused and productive."
+        },
+        {
+            "answer": "Uh, so, uh, first, let me, I want to ask that, will I have a mentor or someone to guide me? What during the internship. And uh What the career path the company will give us as an intern when we work, when I work in the company. And the final question is. Besides My soft skill and technical skill that's listed in my resume. Uh, what, what are the skills? Do I need To have a good. Internship In your company?",
+            "reason": "The candidate's questions are relevant to the internship, focusing on mentorship, career path, and required skills, which are important aspects for an intern to understand. However, the answer could be more concise and better structured to improve clarity.",
+            "strengths": [
+                "The candidate shows interest in mentorship and guidance, which is crucial for an internship.",
+                "The candidate is proactive in understanding the career path and skill requirements, indicating a desire to grow."
+            ],
+            "question_id": "1120a313-fc41-4e43-a841-c84c2eb73612",
+            "improvements": [
+                "The candidate could have asked about the specific projects or tasks they might work on during the internship to show interest in the role.",
+                "The candidate did not inquire about the company culture or team dynamics, which are also important for an intern."
+            ],
+            "question_text": "Do you have any questions for us about the internship?",
+            "relevancy_type": "General",
+            "relevancy_score": 85,
+            "extracted_ideal_answer": "Do interns have assigned mentors or supervisors during the internship? What kind of career development opportunities does the company offer to interns? Besides the skills listed on my resume, are there any other skills or qualities you recommend I develop to succeed in this internship?"
+        }
+    ],
+    "questions": [
+        {
+            "questionId": "94d9a8ea-25cf-4ab8-bca0-26a944d1c092",
+            "question": "Can you briefly introduce yourself and your education background?",
+            "response": "",
+            "grammar": null,
+            "contentRelevancy": {
+                "score": 75,
+                "improvement": [
+                    "More concise and polished language to improve clarity and professionalism.",
+                    "Additional details about educational achievements or specific skills could enhance the introduction."
+                ],
+                "reason": "The candidate provides a clear introduction including their name, education background, major, and relevant experience, which directly addresses the question. However, the answer contains some grammatical errors and awkward phrasing that slightly reduce clarity and professionalism."
+            }
+        },
+        {
+            "questionId": "61d9c822-e045-4e5c-acd5-b89e70aa8bfb",
+            "question": "Tell me about a school or personal project you’re proud of.",
+            "response": "",
+            "grammar": null,
+            "contentRelevancy": {
+                "score": 40,
+                "improvement": [
+                    "Clear explanation of the project's purpose and impact to demonstrate why the candidate is proud of it.",
+                    "Details about specific challenges faced and how the candidate overcame them to showcase problem-solving skills."
+                ],
+                "reason": "The candidate attempts to describe a project they are proud of, mentioning their role and some technical details. However, the answer is unclear, poorly structured, and contains many grammatical errors, making it difficult to fully understand the scope and impact of the project. Key details about the project's significance, challenges faced, and outcomes are missing."
+            }
+        },
+        {
+            "questionId": "3f2291c0-db42-4985-a731-713338e75b9d",
+            "question": "What do you hope to gain or learn from this internship?",
+            "response": "",
+            "grammar": null,
+            "contentRelevancy": {
+                "score": 70,
+                "improvement": [
+                    "More specific skills or knowledge the candidate hopes to acquire during the internship to demonstrate clear goals.",
+                    "Clearer articulation of how the internship aligns with the candidate's long-term career objectives."
+                ],
+                "reason": "The candidate's answer addresses what they hope to gain from the internship, including gaining experience, learning real-world collaboration, and receiving mentorship, which are relevant to the question. However, the response lacks clarity and contains grammatical errors that reduce its overall effectiveness."
+            }
+        },
+        {
+            "questionId": "9978fdae-b006-4828-ba69-473b63559de4",
+            "question": "When can you start and how many hours per week can you commit?",
+            "response": "",
+            "grammar": null,
+            "contentRelevancy": {
+                "score": 70,
+                "improvement": [
+                    "The candidate's explanation about speaking across 4 days a week is unclear and incomplete, which reduces the clarity of their weekly commitment.",
+                    "The answer lacks a clear structure and contains grammatical mistakes, which could be improved for better communication."
+                ],
+                "reason": "The candidate clearly states their availability to start immediately and commits to 40 hours per week, which directly answers the question. However, the response is somewhat unclear and contains grammatical errors, which affect the overall clarity and professionalism."
+            }
+        },
+        {
+            "questionId": "1120a313-fc41-4e43-a841-c84c2eb73612",
+            "question": "Do you have any questions for us about the internship?",
+            "response": "",
+            "grammar": null,
+            "contentRelevancy": {
+                "score": 85,
+                "improvement": [
+                    "The candidate could have asked about the specific projects or tasks they might work on during the internship to show interest in the role.",
+                    "The candidate did not inquire about the company culture or team dynamics, which are also important for an intern."
+                ],
+                "reason": "The candidate's questions are relevant to the internship, focusing on mentorship, career path, and required skills, which are important aspects for an intern to understand. However, the answer could be more concise and better structured to improve clarity."
+            }
+        }
+    ],
+    "communication_breakdown": [
+        {
+            "name": "Clarity",
+            "score": 60,
+            "reasoning": "The candidate generally conveys ideas but often uses incomplete or awkward phrasing that can confuse the listener. For example, phrases like 'worked on IT project primarily about around website development' and 'I believe it aligns well with my career goals and I'm exciting about the opportunity' reduce clarity. Some sentences are fragmented or lack smooth transitions.",
+            "definition": "Ability to clearly express ideas so the listener easily understands"
+        },
+        {
+            "name": "Articulation",
+            "score": 55,
+            "reasoning": "The candidate's pronunciation and enunciation are somewhat unclear, as indicated by hesitations ('uh'), filler words, and occasional mispronunciations (e.g., 'frontnand' instead of 'frontend'). This affects the distinctness of words and overall intelligibility.",
+            "definition": "Correct pronunciation and distinct enunciation of words"
+        },
+        {
+            "name": "Grammar",
+            "score": 47.1875,
+            "reasoning": "The grammar score is provided. The transcript shows frequent grammatical errors such as incorrect verb forms, missing articles, and awkward sentence structures.",
+            "definition": "Correct use of English grammar and sentence construction"
+        },
+        {
+            "name": "Vocabulary",
+            "score": 58,
+            "reasoning": "The candidate uses relevant vocabulary related to web development and internships (e.g., 'API', 'front-end developer', 'performance', 'mentorship'). However, the vocabulary range is limited and sometimes inaccurately used or repeated, reducing the academic tone.",
+            "definition": "Variety and relevance of vocabulary for academic settings"
+        },
+        {
+            "name": "English Proficiency",
+            "score": 52,
+            "reasoning": "The candidate demonstrates basic fluency and comprehension but struggles with idiomatic expressions and natural phrasing. Frequent hesitations and awkward constructions indicate intermediate proficiency rather than advanced.",
+            "definition": "Overall fluency, comprehension, and idiomatic use of English"
+        },
+        {
+            "name": "Coherence",
+            "score": 50,
+            "reasoning": "Responses show some logical progression but are often disorganized with repeated ideas and unclear connections. For example, in Q2, the explanation of the project role is fragmented and lacks smooth flow.",
+            "definition": "Organized structure in responses, ideas connected logically"
+        },
+        {
+            "name": "Engagement",
+            "score": 60,
+            "reasoning": "The candidate shows enthusiasm about the opportunity and asks relevant questions, indicating interest. However, the delivery is somewhat monotone and hesitant, which limits engagement.",
+            "definition": "Positive and engaging delivery, appropriate enthusiasm for subject"
+        },
+        {
+            "name": "Conciseness",
+            "score": 45,
+            "reasoning": "The candidate often provides redundant or off-topic details, uses filler words, and repeats phrases unnecessarily, which detracts from conciseness.",
+            "definition": "Staying on-topic, providing only essential, relevant details"
+        },
+        {
+            "name": "Professionalism",
+            "score": 65,
+            "reasoning": "The candidate maintains a generally formal tone appropriate for an academic interview but occasionally uses informal language and filler words. The questions asked are relevant and show professional curiosity.",
+            "definition": "Level of formality and suitability for an academic interview"
+        }
+    ],
+    "overallSummary": {
+        "strengths": [
+            "Strong technical foundation in ReactJS, JavaScript, HTML, CSS, and Tailwind CSS, demonstrated through freelance project experience involving front-end development and API integration.",
+            "Clear motivation and alignment with the company's goals, showing eagerness to learn, grow professionally, and contribute meaningfully to the team.",
+            "Good understanding of project structure and performance optimization, as evidenced by their efforts to reduce loading times and improve UI responsiveness.",
+            "Proactive attitude towards balancing internship commitments with academic responsibilities, indicating good time management skills.",
+            "Effective communication of past experiences and career aspirations, including thoughtful questions about mentorship and skill requirements."
+        ],
+        "weaknesses": [
+            "Occasional hesitancy and minor grammatical errors in verbal communication that could be improved for clearer and more confident expression.",
+            "Limited detail on specific tools or methodologies used for collaboration with back-end developers or version control systems like Git, which are important for the role.",
+            "Lack of explicit examples demonstrating teamwork or handling front-end bugs and troubleshooting, which are key responsibilities in the job description.",
+            "No mention of familiarity with accessibility standards or testing practices, which are valuable for ensuring high-quality user interfaces.",
+            "Some answers were somewhat general and could benefit from more concrete examples or metrics to illustrate impact."
+        ],
+        "key_insights": [
+            "The candidate’s proactive approach to learning and asking about mentorship indicates a strong growth mindset and openness to feedback.",
+            "Their experience leading small projects and handling both design and development suggests versatility and initiative, valuable traits in a fast-paced, innovative environment.",
+            "The candidate appears culturally aligned with DigiEx’s emphasis on collaboration, continuous learning, and innovation, which bodes well for integration into the team."
+        ],
+        "recommendation": "MAYBE - The candidate shows promising technical skills and motivation that align well with the internship role, but would benefit from further development in communication clarity and practical teamwork experience. With proper mentorship and guidance, they have the potential to grow into a valuable contributor.",
+        "overall_summary": "The candidate demonstrates a solid foundation in front-end development, particularly with ReactJS and related technologies such as Tailwind CSS and TypeScript, aligning well with the internship requirements at DigiEx Group. Their academic background in e-commerce with a focus on web development, combined with practical freelance experience, indicates relevant technical skills and a proactive approach to learning and project execution. The candidate shows enthusiasm for the role and a clear understanding of the company's values and opportunities for growth, suggesting good motivation and alignment with DigiEx's innovative and collaborative culture. Communication during the interview was generally clear, though occasionally hesitant, but the candidate effectively conveyed their experience and eagerness to contribute and learn.",
+        "transcript_summary": "Throughout the interview, the candidate introduced themselves as a final-year university student with three years of web development experience, emphasizing a freelance React e-commerce project where they handled both front-end development and design. They highlighted their ability to integrate APIs, optimize performance, and manage project structure. The candidate expressed strong interest in professional growth, mentorship, and real-world collaboration, aligning their career goals with the internship. They confirmed immediate availability and commitment to the internship schedule and asked insightful questions about mentorship and skill development, reflecting a thoughtful and proactive mindset."
+    },
+    "totalRelevancyScore": 68
+}

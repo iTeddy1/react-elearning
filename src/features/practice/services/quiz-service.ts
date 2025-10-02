@@ -25,6 +25,7 @@ export class QuizService {
       // Start quiz generation
       await startGeneration({
         topic: input.topic,
+        technology: input.technology,
         difficulty: input.difficulty,
         questionCount: input.questionCount,
         language: input.language || 'en',

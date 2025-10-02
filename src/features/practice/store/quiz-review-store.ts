@@ -65,9 +65,14 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
 
           // Parse quiz data to verify correctness
           const quizData = JSON.parse(quizPayload) as {
+            meta: { technology: string };
             items: Array<{ answerIndex: number }>;
           };
           console.log('Parsed quiz data:', quizData);
+          
+          // Extract technology from quiz data
+          const technology = quizData.meta?.technology || 'React';
+          console.log('Technology for review:', technology);
           
           // Calculate expected score manually for verification
           const correctAnswers = userAnswers.filter((answer, index) => {
@@ -80,6 +85,7 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
           const reviewJson = await AIProvider.generateReview(
             quizPayload,
             userAnswers,
+            technology,
             language
           );
 

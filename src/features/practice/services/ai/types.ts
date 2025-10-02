@@ -1,5 +1,6 @@
 export interface GenerateInput {
   topic: string;
+  technology: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   numQuestions: number;
   language: 'vi' | 'en';

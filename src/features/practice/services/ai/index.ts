@@ -52,12 +52,14 @@ export const AIProvider = {
   async generateReview(
     payloadJSON: string,
     answers: (0 | 1 | 2 | 3 | null)[],
+    technology: string,
     language: 'vi' | 'en' = 'en'
   ) {
     const { buildReviewPrompt } = await import('./prompt');
     const prompt = buildReviewPrompt({
       payloadJSON,
       answers,
+      technology,
       language,
     });
     

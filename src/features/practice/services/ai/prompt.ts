@@ -2,13 +2,15 @@ import { GenerateInput } from './types';
 
 export const buildGeneratePrompt = ({
   topic,
+  technology,
   difficulty,
   numQuestions,
   language,
 }: GenerateInput) => `
-You are an expert React instructor and assessment designer.
-Your task: generate a high-quality multiple-choice quiz **ONLY** about the topic below.
+You are an expert frontend development instructor and assessment designer.
+Your task: generate a high-quality multiple-choice quiz about the specified technology and topic.
 
+Technology: "${technology}"
 Topic: "${topic}"
 Difficulty: "${difficulty}"
 Number of questions: ${numQuestions}
@@ -19,8 +21,8 @@ Output language: "${language}"
 - Exactly ONE correct option per question.
 - Options must be concise, mutually exclusive, and plausible (no “All of the above”).
 - Explanations must be short (1–3 sentences), technically accurate, and reference the concept.
-- Questions must be strictly about React (no unrelated JS unless essential).
-- Prefer practical, real-world scenarios (hooks, state, effects, rendering, performance, routing, forms, context, concurrency, error boundaries, suspense, server components if relevant to the topic).
+- Questions must be strictly about ${technology} and the ${topic} (no unrelated content unless essential).
+- Prefer practical, real-world scenarios relevant to ${technology} development.
 - Avoid ambiguous wording. No duplicate or near-duplicate questions.
 
 ### JSON-ONLY Output
@@ -34,6 +36,7 @@ The JSON object must conform to this exact schema:
 {
   "meta": {
     "topic": string,
+    "technology": string,
     "difficulty": "easy" | "medium" | "hard",
     "language": "vi" | "en",
     "numQuestions": number
@@ -45,7 +48,7 @@ The JSON object must conform to this exact schema:
       "choices": [string, string, string, string],
       "answerIndex": 0 | 1 | 2 | 3,
       "explanation": string,                // why the answer is correct (1–3 sentences)
-      "tags": string[]                      // e.g., ["hooks","useEffect","rendering"]
+      "tags": string[]                      // e.g., ["hooks","useEffect","rendering"] for React
     }
   ],
   "overall": {
@@ -72,15 +75,17 @@ If constraints conflict, favor correctness and clarity. Produce **JSON only**.
 export const buildReviewPrompt = ({
   payloadJSON,
   answers,
+  technology,
   language,
 }: {
   payloadJSON: string;
   answers: (0 | 1 | 2 | 3 | null)[];
+  technology: string;
   language: 'vi' | 'en';
 }) => `
-**ROLE:** You are an expert React instructor and assessment specialist with deep knowledge of learning analytics and personalized feedback generation.
+**ROLE:** You are an expert ${technology} instructor and assessment specialist with deep knowledge of learning analytics and personalized feedback generation.
 
-**TASK:** Analyze a learner's quiz performance and generate a comprehensive performance review with actionable insights and tailored recommendations.
+**TASK:** Analyze a learner's quiz performance and generate a comprehensive performance review with actionable insights and tailored recommendations specific to the technology being assessed.
 
 **CRITICAL INSTRUCTION:** You MUST calculate the score accurately by comparing user answers to correct answers. Do not make assumptions about the score.
 
@@ -88,6 +93,12 @@ export const buildReviewPrompt = ({
 - Quiz Data: ${payloadJSON}
 - User Answers: ${JSON.stringify(answers)}
 - Output Language: "${language}"
+
+**TECHNOLOGY-SPECIFIC ANALYSIS:**
+- Extract the technology from the quiz data (meta.technology field)
+- Tailor all feedback, recommendations, and tips to that specific technology
+- Use technology-appropriate terminology and concepts
+- Focus on technology-specific best practices and learning paths
 
 **STRUCTURED ANALYSIS REQUIRED:**
 
@@ -103,22 +114,25 @@ export const buildReviewPrompt = ({
    - Identify recurring error patterns by topic tags
    - Determine knowledge gaps from incorrect answers
    - Assess difficulty level vs performance correlation
+   - Focus on technology-specific concepts and patterns
 
 3) **PERSONALIZED FEEDBACK:**
    - Write constructive, specific feedback (3-6 sentences)
    - Focus on learning patterns, not just scores
-   - Highlight both strengths and improvement areas
+   - Highlight both strengths and improvement areas in the context of the specific technology
    - Maintain encouraging and growth-oriented tone
+   - Reference technology-specific concepts and terminology
 
 4) **STRATEGIC RECOMMENDATIONS:**
    - Prioritize 3-7 study topics based on mistake patterns
-   - Order recommendations by learning impact
+   - Order recommendations by learning impact for the specific technology
    - Align suggestions with identified knowledge gaps
+   - Focus on technology-specific learning paths and resources
 
 5) **ACTIONABLE STUDY TIPS:**
    - Provide 3-7 practical, specific study strategies
    - Include diverse learning methods (reading, practice, projects)
-   - Tailor tips to React development best practices
+   - Tailor tips to the specific technology's development best practices
    - Focus on techniques that address identified weaknesses
 
 **SCORE CALCULATION EXAMPLE:**

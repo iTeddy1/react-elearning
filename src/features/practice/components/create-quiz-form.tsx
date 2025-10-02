@@ -16,12 +16,24 @@ import {
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useQuizGeneratorStore } from '../store/quiz-generator-store';
-import { useGenerateAndStartQuizMutation, useQuizNotifications } from '../hooks/use-quiz-queries';
+import {
+  useGenerateAndStartQuizMutation,
+  useQuizNotifications,
+} from '../hooks/use-quiz-queries';
 import { Loader2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/components/ui/select';
 
 const formSchema = z.object({
   topic: z.string().min(2, {
     message: 'Topic must be at least 2 characters.',
+  }),
+  technology: z.string().min(1, {
+    message: 'Please select a technology.',
   }),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
   numQuestions: z.number().min(1),
@@ -33,21 +45,29 @@ export default function CreateQuizForm() {
   const { generatedQuiz, generationError } = useQuizGeneratorStore();
   const generateAndStartMutation = useGenerateAndStartQuizMutation();
   const notifications = useQuizNotifications();
-  
+
   // Show notifications based on mutation state
   React.useEffect(() => {
     if (generateAndStartMutation.isSuccess) {
       notifications.showSuccess('Quiz generated and started successfully!');
     }
     if (generateAndStartMutation.isError) {
-      notifications.showError(`Failed to generate quiz: ${generateAndStartMutation.error?.message}`);
+      notifications.showError(
+        `Failed to generate quiz: ${generateAndStartMutation.error?.message}`
+      );
     }
-  }, [generateAndStartMutation.isSuccess, generateAndStartMutation.isError, generateAndStartMutation.error, notifications]);
-  
+  }, [
+    generateAndStartMutation.isSuccess,
+    generateAndStartMutation.isError,
+    generateAndStartMutation.error,
+    notifications,
+  ]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       topic: '',
+      technology: 'React',
       difficulty: 'Beginner',
       numQuestions: 10,
     },
@@ -56,12 +76,13 @@ export default function CreateQuizForm() {
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     generateAndStartMutation.mutate({
       topic: data.topic,
+      technology: data.technology,
       difficulty: data.difficulty,
       questionCount: data.numQuestions,
       language: 'en',
     });
   };
-  
+
   const onError: SubmitErrorHandler<FormValues> = (errors) =>
     console.log(errors);
   return (
@@ -82,6 +103,39 @@ export default function CreateQuizForm() {
                 <Input placeholder="Enter quiz topic" {...field} />
               </FormControl>
               <FormDescription>This is the topic of your quiz.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="technology"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Technology</FormLabel>
+              <FormControl>
+                <Select {...field}>
+                  <SelectTrigger>
+                    <div className="flex items-center">
+                      <span className="capitalize">
+                        {field.value || 'Select technology'}
+                      </span>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="React">React</SelectItem>
+                    <SelectItem value="Next.js">Next.js</SelectItem>
+                    <SelectItem value="JavaScript">JavaScript</SelectItem>
+                    <SelectItem value="TypeScript">TypeScript</SelectItem>
+                    <SelectItem value="HTML/CSS">HTML/CSS</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormDescription>
+                Select the technology/framework for your quiz.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -158,13 +212,13 @@ export default function CreateQuizForm() {
             'Generate & Take Quiz'
           )}
         </Button>
-        
+
         {generationError && (
           <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
             Error generating quiz: {generationError}
           </div>
         )}
-        
+
         {generatedQuiz && !generationError && (
           <div className="text-sm text-green-600 bg-green-50 p-3 rounded-md">
             Quiz generated successfully! Starting quiz session...

@@ -5,6 +5,7 @@ import { AIProvider } from '../services/ai';
 
 export interface GenerateQuizInput {
   topic: string;
+  technology: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   questionCount: number;
   language?: 'en' | 'vi';
@@ -16,7 +17,7 @@ const convertAIResponseToQuiz = (aiResponse: AIGeneratedQuizResponse, input: Gen
   
   return {
     id: Date.now(), // Generate unique ID
-    title: `${capitalizeFirst(aiResponse.meta.topic)} - ${capitalizeFirst(aiResponse.meta.difficulty)} Quiz`,
+    title: `${input.technology} ${capitalizeFirst(aiResponse.meta.topic)} - ${capitalizeFirst(aiResponse.meta.difficulty)} Quiz`,
     description: aiResponse.overall.summary,
     difficulty: capitalizeFirst(aiResponse.meta.difficulty) as 'Beginner' | 'Intermediate' | 'Advanced',
     timeLimit: input.questionCount * 2, // 2 minutes per question
@@ -84,7 +85,8 @@ const initialState: QuizGeneratorState = {
   
   // Generation settings
   defaultSettings: {
-    topic: 'React',
+    topic: 'Fundamentals',
+    technology: 'React',
     difficulty: 'Beginner',
     questionCount: 10,
     language: 'en',
@@ -112,6 +114,7 @@ export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorAc
           // Convert difficulty to lowercase for AI service
           const aiInput = {
             topic: settings.topic,
+            technology: settings.technology,
             difficulty: settings.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
             numQuestions: settings.questionCount,
             language: settings.language || 'en' as 'en' | 'vi',
