@@ -33,7 +33,7 @@ const QuizReviewDisplay: React.FC<QuizReviewDisplayProps> = ({
     strongTags,
     weakTags,
   } = useQuizReviewSelectors();
-
+  console.log('Review data:', review);
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 space-y-4">
@@ -140,7 +140,7 @@ const QuizReviewDisplay: React.FC<QuizReviewDisplayProps> = ({
 
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">
-                {Math.round(accuracy)}%
+                {Math.round(accuracy*100)}%
               </div>
               <p className="text-sm text-gray-600">Accuracy Rate</p>
             </div>

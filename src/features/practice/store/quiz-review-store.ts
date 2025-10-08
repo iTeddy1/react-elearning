@@ -1,16 +1,17 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { QuizReview, Quiz, QuizAnswer } from '@/types/quiz';
-import { AIProvider } from '../services/ai';
+import { QuizReview, Quiz, QuizAnswer } from '../types';
+import { PracticeAIService } from '../services/ai/practice-ai-service';
+import { practiceConfig } from '../config';
 
 export interface QuizReviewState {
   // Review data
   currentReview: QuizReview | null;
-  
+
   // Loading states
   isGeneratingReview: boolean;
   reviewError: string | null;
-  
+
   // Review metadata
   reviewGeneratedAt: Date | null;
   quizId: number | null;
@@ -24,7 +25,7 @@ export interface QuizReviewActions {
     quizId: number,
     language?: 'vi' | 'en'
   ) => Promise<void>;
-  
+
   // State management
   clearReview: () => void;
   clearError: () => void;
@@ -38,6 +39,11 @@ const initialState: QuizReviewState = {
   reviewGeneratedAt: null,
   quizId: null,
 };
+
+const practiceAIService = new PracticeAIService({
+  apiKey: practiceConfig.GOOGLE_GENAI_API_KEY,
+  model: practiceConfig.AI_MODEL,
+});
 
 export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
   devtools(
@@ -56,60 +62,68 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
         });
 
         try {
-          console.log('Generating review with payload:', {
-            quizPayload: quizPayload.substring(0, 200) + '...',
-            userAnswers,
-            quizId,
-            language,
-          });
-
           // Parse quiz data to verify correctness
           const quizData = JSON.parse(quizPayload) as {
             meta: { technology: string };
             items: Array<{ answerIndex: number }>;
           };
           console.log('Parsed quiz data:', quizData);
-          
+
           // Extract technology from quiz data
           const technology = quizData.meta?.technology || 'React';
           console.log('Technology for review:', technology);
-          
+
           // Calculate expected score manually for verification
           const correctAnswers = userAnswers.filter((answer, index) => {
             if (answer === null) return false;
             return answer === quizData.items[index]?.answerIndex;
           });
-          
-          console.log('Expected correct answers:', correctAnswers.length, '/', quizData.items.length);
-          
-          const reviewJson = await AIProvider.generateReview(
+
+
+          const reviewJson = await practiceAIService.generateReview(
             quizPayload,
             userAnswers,
             technology,
             language
           );
 
-          console.log('Review JSON received:', reviewJson);
-
           const parsedReview = JSON.parse(reviewJson) as unknown;
-          
+
           // Type guard for review validation
           if (!isValidQuizReview(parsedReview)) {
             throw new Error('Invalid review format received from AI');
           }
 
           const review: QuizReview = parsedReview;
-          
+
           // Validate and potentially correct the AI's score calculation
           const expectedScore = correctAnswers.length;
           const expectedTotal = quizData.items.length;
-          const expectedAccuracy = expectedTotal > 0 ? expectedScore / expectedTotal : 0;
-          
-          console.log('AI calculated score:', review.score, '/', review.total, 'accuracy:', review.accuracy);
-          console.log('Expected score:', expectedScore, '/', expectedTotal, 'accuracy:', expectedAccuracy);
-          
+          const expectedAccuracy =
+            expectedTotal > 0 ? expectedScore / expectedTotal : 0;
+
+          console.log(
+            'AI calculated score:',
+            review.score,
+            '/',
+            review.total,
+            'accuracy:',
+            review.accuracy
+          );
+          console.log(
+            'Expected score:',
+            expectedScore,
+            '/',
+            expectedTotal,
+            'accuracy:',
+            expectedAccuracy
+          );
+
           // If AI calculation is wrong, correct it
-          if (review.score !== expectedScore || review.total !== expectedTotal) {
+          if (
+            review.score !== expectedScore ||
+            review.total !== expectedTotal
+          ) {
             console.warn('AI score calculation was incorrect. Correcting...');
             review.score = expectedScore;
             review.total = expectedTotal;
@@ -127,10 +141,11 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
           console.log('Review generated successfully:', review);
         } catch (error) {
           console.error('Error generating review:', error);
-          
-          const errorMessage = error instanceof Error 
-            ? error.message 
-            : 'Failed to generate review. Please try again.';
+
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : 'Failed to generate review. Please try again.';
 
           set({
             reviewError: errorMessage,
@@ -171,9 +186,9 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
 // Type guard for quiz review validation
 function isValidQuizReview(obj: unknown): obj is QuizReview {
   if (typeof obj !== 'object' || obj === null) return false;
-  
+
   const review = obj as Record<string, unknown>;
-  
+
   return (
     typeof review.score === 'number' &&
     typeof review.total === 'number' &&
@@ -181,7 +196,8 @@ function isValidQuizReview(obj: unknown): obj is QuizReview {
     typeof review.comment === 'string' &&
     Array.isArray(review.recommendedTopics) &&
     Array.isArray(review.tips) &&
-    (typeof review.perTagAccuracy === 'object' || review.perTagAccuracy === undefined)
+    (typeof review.perTagAccuracy === 'object' ||
+      review.perTagAccuracy === undefined)
   );
 }
 
@@ -194,20 +210,22 @@ export const useQuizReviewSelectors = () => {
     review: store.currentReview,
     isLoading: store.isGeneratingReview,
     error: store.reviewError,
-    
+
     // Metadata
     generatedAt: store.reviewGeneratedAt,
     forQuizId: store.quizId,
-    
+
     // Computed values
     hasReview: !!store.currentReview,
-    scorePercentage: store.currentReview 
-      ? Math.round((store.currentReview.score / store.currentReview.total) * 100)
+    scorePercentage: store.currentReview
+      ? Math.round(
+          (store.currentReview.score / store.currentReview.total) * 100
+        )
       : 0,
     accuracy: store.currentReview?.accuracy || 0,
-    
+
     // Performance insights
-    strongTags: store.currentReview?.perTagAccuracy 
+    strongTags: store.currentReview?.perTagAccuracy
       ? Object.entries(store.currentReview.perTagAccuracy)
           .filter(([, accuracy]) => accuracy >= 0.8)
           .map(([tag]) => tag)
@@ -231,7 +249,7 @@ export const convertSessionToReviewInput = (
   console.log('Converting session data:', {
     quiz: quiz.title,
     totalQuestions: quiz.questions.length,
-    sessionAnswers: sessionAnswers
+    sessionAnswers: sessionAnswers,
   });
 
   // Create quiz payload in the format expected by AI
@@ -255,17 +273,19 @@ export const convertSessionToReviewInput = (
   // Convert session answers to the format expected by AI
   // Map answers by question ID to ensure correct alignment
   const answerMap = new Map<number, number>();
-  sessionAnswers.forEach(answer => {
+  sessionAnswers.forEach((answer) => {
     answerMap.set(answer.questionId, answer.selectedOption);
   });
 
   const userAnswers: (0 | 1 | 2 | 3 | null)[] = quiz.questions.map((q) => {
     const selectedOption = answerMap.get(q.id);
-    
-    console.log(`Question ${q.id}: selected=${selectedOption}, correct=${q.correctAnswer}`);
-    
+
+    console.log(
+      `Question ${q.id}: selected=${selectedOption}, correct=${q.correctAnswer}`
+    );
+
     if (selectedOption === undefined || selectedOption === null) return null;
-    
+
     // Ensure the answer is within valid range
     if (selectedOption >= 0 && selectedOption <= 3) {
       return selectedOption as 0 | 1 | 2 | 3;
@@ -274,13 +294,15 @@ export const convertSessionToReviewInput = (
   });
 
   console.log('Final user answers array:', userAnswers);
-  
+
   // Verify the mapping is correct
   const correctCount = userAnswers.filter((answer, index) => {
     return answer !== null && answer === quiz.questions[index].correctAnswer;
   }).length;
-  
-  console.log(`Conversion verification: ${correctCount}/${quiz.questions.length} correct answers`);
+
+  console.log(
+    `Conversion verification: ${correctCount}/${quiz.questions.length} correct answers`
+  );
 
   return { quizPayload, userAnswers };
 };

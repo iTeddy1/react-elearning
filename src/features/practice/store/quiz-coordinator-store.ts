@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Quiz } from '../type';
+import { Quiz } from '../types';
 import { useQuizGeneratorStore } from './quiz-generator-store';
 import { useQuizSessionStore } from './quiz-session-store';
 import { useProgressStore } from './progress-store';
@@ -73,16 +73,20 @@ export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions
         const progressStore = useProgressStore.getState();
         if (sessionStore.currentQuiz) {
           const attempt = {
-            id: Date.now(),
+            id: Date.now().toString(),
             quizId: sessionStore.currentQuiz.id,
             score: sessionStore.currentScore,
-            completedAt: new Date().toISOString(),
+            completedAt: new Date(),
+            startedAt: sessionStore.startTime || new Date(),
             timeSpent: sessionStore.startTime && sessionStore.endTime
               ? Math.floor((sessionStore.endTime.getTime() - sessionStore.startTime.getTime()) / 1000)
               : 0,
             answers: sessionStore.answers,
             totalQuestions: sessionStore.currentQuiz.questions.length,
             percentage: sessionStore.currentScore,
+            topicId: sessionStore.currentQuiz.topicId || 1,
+            topicName: sessionStore.currentQuiz.topic || 'General',
+            difficulty: sessionStore.currentQuiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
           };
           
           progressStore.saveQuizAttempt(attempt);

@@ -28,6 +28,7 @@ export default function QuizErrorSuccessDemo() {
   const handleGenerateQuiz = () => {
     generateMutation.mutate({
       topic: 'React Hooks',
+      technology: 'React',
       difficulty: 'Intermediate',
       questionCount: 5,
       language: 'en',
@@ -37,6 +38,7 @@ export default function QuizErrorSuccessDemo() {
   const handleGenerateAndStartQuiz = () => {
     generateAndStartMutation.mutate({
       topic: 'JavaScript ES6',
+      technology: 'JavaScript',
       difficulty: 'Advanced',
       questionCount: 8,
       language: 'en',
@@ -50,10 +52,11 @@ export default function QuizErrorSuccessDemo() {
     }
 
     const mockAttempt = {
-      id: Date.now(),
+      id: Date.now().toString(),
       quizId: currentQuiz.id,
       score: 75,
-      completedAt: new Date().toISOString(),
+      completedAt: new Date(),
+      startedAt: new Date(Date.now() - 300000), // 5 minutes ago
       timeSpent: 300, // 5 minutes
       answers: currentQuiz.questions.map((q, i) => ({
         questionId: q.id,
@@ -65,7 +68,7 @@ export default function QuizErrorSuccessDemo() {
       percentage: 75,
       topicId: 1,
       topicName: 'Practice',
-      difficulty: currentQuiz.difficulty,
+      difficulty: currentQuiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
     };
 
     submitMutation.mutate(mockAttempt);

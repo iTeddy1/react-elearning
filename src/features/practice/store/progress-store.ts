@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { QuizAttempt } from '../type';
+import { QuizAttempt } from '../types';
 
 export interface UserProgress {
   totalQuizzesCompleted: number;

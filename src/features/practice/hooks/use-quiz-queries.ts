@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Quiz, QuizAttempt } from '../type';
+import { toast } from 'sonner';
+import { Quiz, QuizAttempt } from '../types';
 import {
   useQuizGeneratorStore,
   type GenerateQuizInput,
@@ -15,30 +16,6 @@ interface QuizFilters {
   topic?: string;
 }
 
-// Mock API functions (replace with real API calls)
-const mockApi = {
-  getQuizzes: async (_filters: QuizFilters = {}) => {
-    // Mock implementation - replace with real API
-    const mockQuizzes: Quiz[] = [];
-    return mockQuizzes;
-  },
-
-  getQuizById: async (_id: number): Promise<Quiz | null> => {
-    // Mock implementation - replace with real API
-    return null;
-  },
-
-  generateQuiz: async (_input: GenerateQuizInput): Promise<Quiz> => {
-    // This should use the AI service
-    throw new Error('Use useQuizGeneratorStore.startGeneration instead');
-  },
-
-  saveQuizAttempt: async (attempt: QuizAttempt): Promise<QuizAttempt> => {
-    // Mock implementation - replace with real API
-    return attempt;
-  },
-};
-
 // Query keys factory
 export const quizKeys = {
   all: ['quizzes'] as const,
@@ -49,55 +26,42 @@ export const quizKeys = {
   stats: () => [...quizKeys.all, 'stats'] as const,
 };
 
-// Hook to fetch quizzes with filters
-export const useQuizzes = (filters: QuizFilters = {}) => {
-  return useQuery({
-    queryKey: quizKeys.list(filters),
-    queryFn: () => mockApi.getQuizzes(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
-
-// Hook to fetch a single quiz by ID
-export const useQuiz = (id: number) => {
-  return useQuery({
-    queryKey: quizKeys.detail(id),
-    queryFn: () => mockApi.getQuizById(id),
-    enabled: !!id,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
-};
-
-// Enhanced React Query + Zustand hooks with proper error/success handling
-
 // Hook to generate quiz with AI using React Query + Zustand
 export const useGenerateQuizMutation = () => {
   const queryClient = useQueryClient();
   const quizService = QuizService.getInstance();
   const { resetGeneration } = useQuizGeneratorStore();
-  
+
   return useMutation({
     mutationFn: async (input: GenerateQuizInput): Promise<Quiz> => {
       // Reset any previous generation state
       resetGeneration();
-      
+
       // Use service to generate quiz
       return await quizService.generateQuiz(input);
     },
-    onSuccess: (quiz: Quiz, _input: GenerateQuizInput) => {
-      console.log('✅ Quiz generated successfully:', quiz.title);
-      
+    onSuccess: (quiz: Quiz) => {
+      toast.success(`Quiz "${quiz.title}" generated successfully!`, {
+        description: `${quiz.questions.length} questions ready for practice`,
+      });
+
       // Invalidate related queries
       void queryClient.invalidateQueries({
         queryKey: quizKeys.lists(),
       });
-      
+
       // Optional: Store in React Query cache for later use
       queryClient.setQueryData(quizKeys.detail(quiz.id), quiz);
     },
-    onError: (error: Error, _input: GenerateQuizInput) => {
+    onError: (error: Error) => {
       console.error('❌ Quiz generation failed:', error.message);
-      
+
+      toast.error('Failed to generate quiz', {
+        description: error.message.includes('parse')
+          ? 'The AI returned invalid data. Please try again.'
+          : error.message,
+      });
+
       // Error is already handled by Zustand store
       // You could add toast notifications here
     },
@@ -114,78 +78,90 @@ export const useGenerateAndStartQuizMutation = () => {
   const generateMutation = useGenerateQuizMutation();
   const { startQuiz } = useQuizSessionStore();
   const { startQuizFlow } = useQuizStore();
-  
+
   return useMutation({
     mutationFn: async (input: GenerateQuizInput): Promise<Quiz> => {
       return await generateMutation.mutateAsync(input);
     },
     onSuccess: (quiz: Quiz) => {
-      console.log('✅ Starting quiz flow for:', quiz.title);
-      
+      toast.success('Quiz started!', {
+        description: `Good luck with "${quiz.title}"`,
+      });
+
       // Start quiz session
       startQuiz(quiz);
       startQuizFlow(quiz);
-      
+
       // Navigate to quiz
       void navigate(`/practice/${quiz.id}`);
     },
-    onError: (error: Error, _input: GenerateQuizInput) => {
+    onError: (error: Error) => {
       console.error('❌ Failed to generate and start quiz:', error.message);
-      // Error handling - you could show a toast here
+
+      toast.error('Failed to start quiz', {
+        description: error.message.includes('parse')
+          ? 'The AI returned invalid data. Please try again.'
+          : error.message,
+      });
     },
   });
 };
 
-// Hook to save quiz attempts with React Query + Zustand
+// Hook to save quiz attempts locally with React Query + Zustand
 export const useSubmitQuizMutation = () => {
   const queryClient = useQueryClient();
   const quizService = QuizService.getInstance();
-  const { saveQuizAttempt: saveToStore } = useProgressStore();
 
   return useMutation({
     mutationFn: async (attempt: QuizAttempt): Promise<QuizAttempt> => {
-      // Save to API (via service)
-      const savedAttempt = await quizService.saveQuizAttempt(attempt);
-      
-      // Also save to Zustand store for local state
-      saveToStore(savedAttempt);
-      
-      return savedAttempt;
+      // Save locally only (no API call)
+      return Promise.resolve(quizService.saveQuizAttempt(attempt));
     },
     onSuccess: (savedAttempt: QuizAttempt) => {
       console.log('✅ Quiz attempt saved successfully:', savedAttempt.id);
-      
+
+      toast.success('Quiz completed!', {
+        description: `Score: ${savedAttempt.percentage}% (${savedAttempt.score}/${savedAttempt.totalQuestions})`,
+      });
+
       // Invalidate related queries
       void queryClient.invalidateQueries({
         queryKey: quizKeys.stats(),
       });
     },
-    onError: (error: Error, attempt: QuizAttempt) => {
+    onError: (error: Error) => {
       console.error('❌ Failed to save quiz attempt:', error.message);
-      
-      // Still save to local store even if API fails
-      saveToStore(attempt);
+
+      toast.error('Failed to save quiz', {
+        description: 'Please try submitting again.',
+      });
     },
     onSettled: (savedAttempt, error, attempt) => {
-      console.log('🔄 Quiz attempt processing completed for quiz:', attempt.quizId);
+      console.log(
+        '🔄 Quiz attempt processing completed for quiz:',
+        attempt.quizId
+      );
     },
   });
 };
 
-// Hook for quiz error handling with toast notifications (optional)
+// Hook for quiz notifications using sonner toast
 export const useQuizNotifications = () => {
   return {
-    showSuccess: (message: string) => {
-      console.log('✅ Success:', message);
-      // You can integrate with toast libraries like react-hot-toast here
+    showSuccess: (message: string, description?: string) => {
+      toast.success(message, { description });
     },
-    showError: (message: string) => {
-      console.error('❌ Error:', message);
-      // You can integrate with toast libraries here
+    showError: (message: string, description?: string) => {
+      toast.error(message, { description });
     },
-    showInfo: (message: string) => {
-      console.log('ℹ️ Info:', message);
-      // You can integrate with toast libraries here
+    showInfo: (message: string, description?: string) => {
+      toast.info(message, { description });
+    },
+    showWarning: (message: string, description?: string) => {
+      toast.warning(message, { description });
+    },
+    showLoading: (message: string, description?: string) => {
+      return toast.loading(message, { description });
     },
   };
 };
@@ -214,10 +190,11 @@ export const useEndQuizSession = () => {
       if (sessionStore.currentQuiz) {
         // Create quiz attempt from session data
         const attempt: QuizAttempt = {
-          id: Date.now(), // Generate unique ID
+          id: Date.now().toString(), // Generate unique ID as string
           quizId: sessionStore.currentQuiz.id,
           score: sessionStore.currentScore,
-          completedAt: new Date().toISOString(),
+          completedAt: new Date(),
+          startedAt: sessionStore.startTime || new Date(),
           timeSpent:
             sessionStore.startTime && sessionStore.endTime
               ? (sessionStore.endTime.getTime() -
@@ -229,7 +206,10 @@ export const useEndQuizSession = () => {
           percentage: sessionStore.currentScore,
           topicId: sessionStore.currentQuiz.topicId,
           topicName: 'Practice', // You might want to get this from somewhere else
-          difficulty: sessionStore.currentQuiz.difficulty,
+          difficulty: sessionStore.currentQuiz.difficulty.toLowerCase() as
+            | 'beginner'
+            | 'intermediate'
+            | 'advanced',
         };
 
         // Save attempt to progress store

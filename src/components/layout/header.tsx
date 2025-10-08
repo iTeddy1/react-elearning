@@ -3,9 +3,10 @@ import { Link, NavLink } from 'react-router-dom';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Learning', href: '/learning' },
+  // { name: 'Learning', href: '/learning' },
   { name: 'Practice', href: '/practice' },
-  { name: 'Articles', href: '/articles' },
+  { name: 'Interview', href: '/interview/setup' },
+  // { name: 'Articles', href: '/articles' },
 ];
 
 const Header = () => {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Quiz, QuizAnswer } from '../type';
+import { Quiz, QuizAnswer } from '../types';
 
 export interface QuizSessionState {
   // Current quiz session
@@ -11,11 +11,11 @@ export interface QuizSessionState {
   endTime: Date | null;
   isQuizActive: boolean;
   isPaused: boolean;
-  
+
   // Timer management
   timeRemaining: number;
   questionStartTime: Date | null;
-  
+
   // Quiz results
   currentScore: number;
   showResults: boolean;
@@ -29,27 +29,27 @@ export interface QuizSessionActions {
   resumeQuiz: () => void;
   endQuiz: () => void;
   resetQuiz: () => void;
-  
+
   // Question navigation
   nextQuestion: () => void;
   previousQuestion: () => void;
   goToQuestion: (index: number) => void;
-  
+
   // Answer management
   submitAnswer: (questionId: number, selectedOption: number) => void;
   updateAnswer: (questionId: number, selectedOption: number) => void;
   clearAnswer: (questionId: number) => void;
-  
+
   // Results and scoring
   calculateScore: () => void;
   showQuizResults: () => void;
   hideQuizResults: () => void;
-  
+
   // Timer management
   updateTimeRemaining: (time: number) => void;
   resetTimer: () => void;
   startQuestionTimer: () => void;
-  
+
   // UI state management
   toggleExplanation: () => void;
   setShowExplanation: (show: boolean) => void;
@@ -64,18 +64,20 @@ const initialState: QuizSessionState = {
   endTime: null,
   isQuizActive: false,
   isPaused: false,
-  
+
   // Timer management
   timeRemaining: 0,
   questionStartTime: null,
-  
+
   // Quiz results
   currentScore: 0,
   showResults: false,
   showExplanation: false,
 };
 
-export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>()(
+export const useQuizSessionStore = create<
+  QuizSessionState & QuizSessionActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,
@@ -90,7 +92,7 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
           endTime: null,
           isQuizActive: true,
           isPaused: false,
-          timeRemaining: quiz.timeLimit * 60, // Convert minutes to seconds
+          timeRemaining: (quiz.timeLimit || 1) * 60, // Convert minutes to seconds
           currentScore: 0,
           showResults: false,
           questionStartTime: new Date(),
@@ -124,12 +126,18 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
       // Question navigation
       nextQuestion: () => {
         const state = get();
-        if (state.currentQuiz && state.currentQuestionIndex < state.currentQuiz.questions.length - 1) {
+        if (
+          state.currentQuiz &&
+          state.currentQuestionIndex < state.currentQuiz.questions.length - 1
+        ) {
           set({
             currentQuestionIndex: state.currentQuestionIndex + 1,
             questionStartTime: new Date(),
           });
-        } else if (state.currentQuiz && state.currentQuestionIndex === state.currentQuiz.questions.length - 1) {
+        } else if (
+          state.currentQuiz &&
+          state.currentQuestionIndex === state.currentQuiz.questions.length - 1
+        ) {
           // Last question, end quiz
           state.endQuiz();
         }
@@ -147,7 +155,11 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
 
       goToQuestion: (index: number) => {
         const state = get();
-        if (state.currentQuiz && index >= 0 && index < state.currentQuiz.questions.length) {
+        if (
+          state.currentQuiz &&
+          index >= 0 &&
+          index < state.currentQuiz.questions.length
+        ) {
           set({
             currentQuestionIndex: index,
             questionStartTime: new Date(),
@@ -158,12 +170,16 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
       // Answer management
       submitAnswer: (questionId: number, selectedOption: number) => {
         const state = get();
-        const question = state.currentQuiz?.questions.find(q => q.id === questionId);
-        
+        const question = state.currentQuiz?.questions.find(
+          (q) => q.id === questionId
+        );
+
         if (question && state.questionStartTime) {
           const isCorrect = selectedOption === question.correctAnswer;
-          const timeSpent = Math.floor((new Date().getTime() - state.questionStartTime.getTime()) / 1000);
-          
+          const timeSpent = Math.floor(
+            (new Date().getTime() - state.questionStartTime.getTime()) / 1000
+          );
+
           const newAnswer: QuizAnswer = {
             questionId,
             selectedOption,
@@ -171,11 +187,13 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
             timeSpent,
           };
 
-          const updatedAnswers = state.answers.filter(a => a.questionId !== questionId);
+          const updatedAnswers = state.answers.filter(
+            (a) => a.questionId !== questionId
+          );
           updatedAnswers.push(newAnswer);
 
           set({ answers: updatedAnswers });
-          
+
           // Auto-calculate score after each answer
           state.calculateScore();
         }
@@ -188,7 +206,9 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
 
       clearAnswer: (questionId: number) => {
         const state = get();
-        const updatedAnswers = state.answers.filter(a => a.questionId !== questionId);
+        const updatedAnswers = state.answers.filter(
+          (a) => a.questionId !== questionId
+        );
         set({ answers: updatedAnswers });
         state.calculateScore();
       },
@@ -196,9 +216,14 @@ export const useQuizSessionStore = create<QuizSessionState & QuizSessionActions>
       // Results and scoring
       calculateScore: () => {
         const state = get();
-        const correctAnswers = state.answers.filter(answer => answer.isCorrect).length;
+        const correctAnswers = state.answers.filter(
+          (answer) => answer.isCorrect
+        ).length;
         const totalQuestions = state.currentQuiz?.questions.length || 0;
-        const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+        const score =
+          totalQuestions > 0
+            ? Math.round((correctAnswers / totalQuestions) * 100)
+            : 0;
 
         set({ currentScore: score });
       },
@@ -254,28 +279,38 @@ export const useQuizSessionSelectors = () => {
   return {
     // Current quiz info
     currentQuiz: store.currentQuiz,
-    currentQuestion: store.currentQuiz?.questions[store.currentQuestionIndex] || null,
+    currentQuestion:
+      store.currentQuiz?.questions[store.currentQuestionIndex] || null,
     isLastQuestion: store.currentQuiz
       ? store.currentQuestionIndex === store.currentQuiz.questions.length - 1
       : false,
     isFirstQuestion: store.currentQuestionIndex === 0,
-    
+
     // Progress info
     progress: store.currentQuiz
-      ? Math.round(((store.currentQuestionIndex + 1) / store.currentQuiz.questions.length) * 100)
+      ? Math.round(
+          ((store.currentQuestionIndex + 1) /
+            store.currentQuiz.questions.length) *
+            100
+        )
       : 0,
     answeredQuestions: store.answers.length,
     totalQuestions: store.currentQuiz?.questions.length || 0,
-    
+
     // Quiz state
     canNavigate: store.isQuizActive && !store.isPaused,
-    hasAnswered: (questionId: number) => store.answers.some(a => a.questionId === questionId),
-    getAnswer: (questionId: number) => store.answers.find(a => a.questionId === questionId),
-    
+    hasAnswered: (questionId: number) =>
+      store.answers.some((a) => a.questionId === questionId),
+    getAnswer: (questionId: number) =>
+      store.answers.find((a) => a.questionId === questionId),
+
     // Session info
-    sessionDuration: store.startTime && store.endTime
-      ? Math.floor((store.endTime.getTime() - store.startTime.getTime()) / 1000)
-      : 0,
+    sessionDuration:
+      store.startTime && store.endTime
+        ? Math.floor(
+            (store.endTime.getTime() - store.startTime.getTime()) / 1000
+          )
+        : 0,
     isSessionActive: store.isQuizActive,
   };
 };
