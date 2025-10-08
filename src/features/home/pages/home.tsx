@@ -15,6 +15,7 @@ import {
   Users,
   Award,
   Clock,
+  Mic,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -44,6 +45,12 @@ export default function HomePage() {
             <Link to="/practice">
               <Button variant="outline" size="lg" className="px-8 py-3">
                 Practice Skills
+              </Button>
+            </Link>
+            <Link to="/interview/setup">
+              <Button variant="outline" size="lg" className="px-8 py-3 flex items-center gap-2">
+                <Mic className="w-4 h-4" />
+                AI Interview
               </Button>
             </Link>
           </div>

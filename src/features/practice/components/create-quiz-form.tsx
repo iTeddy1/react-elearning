@@ -68,7 +68,7 @@ export default function CreateQuizForm() {
     defaultValues: {
       topic: '',
       technology: 'React',
-      difficulty: 'Beginner',
+      difficulty: 'Advanced',
       numQuestions: 10,
     },
   });
@@ -115,7 +115,10 @@ export default function CreateQuizForm() {
             <FormItem>
               <FormLabel>Technology</FormLabel>
               <FormControl>
-                <Select {...field}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <SelectTrigger>
                     <div className="flex items-center">
                       <span className="capitalize">
@@ -125,6 +128,7 @@ export default function CreateQuizForm() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="React">React</SelectItem>
+                    <SelectItem value="Frontend">Frontend</SelectItem>
                     <SelectItem value="Next.js">Next.js</SelectItem>
                     <SelectItem value="JavaScript">JavaScript</SelectItem>
                     <SelectItem value="TypeScript">TypeScript</SelectItem>

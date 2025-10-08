@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle,
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/layout/layout';
-import { getQuizById } from '@/data/practice-data';
 import { useQuizSessionStore } from '../store/quiz-session-store';
 import { useQuizGeneratorStore } from '../store/quiz-generator-store';
 import {
@@ -21,8 +20,6 @@ import {
 import QuizReviewDisplay from '../components/quiz-review-display';
 
 const QuizTaking = () => {
-  const { quizId } = useParams<{ quizId: string }>();
-
   // Try to get quiz from session store first (for AI-generated quizzes)
   const {
     currentQuiz,
@@ -47,10 +44,9 @@ const QuizTaking = () => {
   const { generateReview, clearReview } = useQuizReviewStore();
 
   // Fallback to mock data for existing quizzes
-  const mockQuiz = getQuizById(Number(quizId));
 
   // Determine which quiz to use
-  const quiz = currentQuiz || generatedQuiz || mockQuiz;
+  const quiz = currentQuiz || generatedQuiz;
 
   const [quizStarted, setQuizStarted] = useState(isQuizActive);
   const [selectedAnswers, setSelectedAnswers] = useState<
@@ -69,8 +65,8 @@ const QuizTaking = () => {
   // Sync answers with session store
   useEffect(() => {
     const sessionAnswers: Record<number, number> = {};
-    answers.forEach((answer) => {
-      sessionAnswers[answer.questionId - 1] = answer.selectedOption; // Convert to 0-based index
+    answers.forEach((answer, index) => {
+      sessionAnswers[index] = answer.selectedOption; // Convert to 0-based index
     });
     setSelectedAnswers(sessionAnswers);
   }, [answers]);
@@ -132,23 +128,18 @@ const QuizTaking = () => {
       setShowReview(true);
       clearReview(); // Clear any previous review
 
-      // Debug logging to check the data being sent
-      console.log('Quiz data:', quiz);
-      console.log('Session answers:', answers);
-      console.log('Selected answers (local state):', selectedAnswers);
-
       const { quizPayload, userAnswers } = convertSessionToReviewInput(
         quiz,
         answers
       );
-      
+
       console.log('Quiz payload:', JSON.parse(quizPayload));
       console.log('User answers for AI:', userAnswers);
-      
+
       // Calculate expected score locally for verification
-      const correctCount = answers.filter(a => a.isCorrect).length;
+      const correctCount = answers.filter((a) => a.isCorrect).length;
       console.log('Expected score:', correctCount, '/', quiz.questions.length);
-      
+
       await generateReview(quizPayload, userAnswers, quiz.id || 0, 'en');
     } catch (error) {
       console.error('Failed to generate review:', error);
@@ -316,7 +307,9 @@ const QuizTaking = () => {
           <Card className="p-8">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl mb-4">{quiz.title}</CardTitle>
-              <p className="text-gray-600 mb-6">{quiz.description}</p>
+              <p className="text-gray-600 mb-6">
+                {quiz.technology} - {quiz.topic}
+              </p>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -379,7 +372,7 @@ const QuizTaking = () => {
 
   const currentQ = quiz.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
-
+  // console.log(selectedAnswers, currentQ, answers)
   return (
     <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
@@ -396,10 +389,6 @@ const QuizTaking = () => {
               />
             </div>
           </div>
-          {/* <div className="flex items-center space-x-2 text-orange-600">
-            <Clock className="w-4 h-4" />
-            <span className="font-mono text-lg">{formatTime(timeLeft)}</span>
-          </div> */}
         </div>
 
         {/* Question Card */}
@@ -411,7 +400,7 @@ const QuizTaking = () => {
             <div className="space-y-3">
               {currentQ.options.map((option, index) => (
                 <button
-                  key={index}
+                  key={option}
                   onClick={() => handleAnswerSelect(index)}
                   className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${
                     selectedAnswers[currentQuestionIndex] === index

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Quiz } from '../type';
+import { Quiz } from '../types';
+
 
 // Re-export from other stores for convenience
 export { useQuizGeneratorStore, type GenerateQuizInput } from './quiz-generator-store';

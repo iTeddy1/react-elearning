@@ -1,9 +1,9 @@
 export interface GenerateInput {
   topic: string;
   technology: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   numQuestions: number;
-  language: 'vi' | 'en';
+  language: 'Vietnamese' | 'English';
 }
 
 export interface AIProvider {

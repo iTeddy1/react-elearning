@@ -1,7 +1,7 @@
-import { ToastContainer } from 'react-toastify';
 import Router from './routes';
 import { AppProvider } from './provider';
 import Header from '@/components/layout/header';
+import { Toaster } from '@/components/ui/sonner';
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Header />
         <Router />
       </div>
-      <ToastContainer />
+      <Toaster />
     </AppProvider>
   );
 }

@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { Quiz, AIGeneratedQuizResponse } from '../type';
-import { AIProvider } from '../services/ai';
+import {
+  PracticeAIService,
+  QuizGenerationOptions,
+} from '../services/ai/practice-ai-service';
+import { Quiz, QuizQuestion } from '../types';
+import { practiceConfig } from '../config';
 
 export interface GenerateQuizInput {
   topic: string;
@@ -11,28 +15,21 @@ export interface GenerateQuizInput {
   language?: 'en' | 'vi';
 }
 
-// Helper function to convert AI response to Quiz format
-const convertAIResponseToQuiz = (aiResponse: AIGeneratedQuizResponse, input: GenerateQuizInput): Quiz => {
-  const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-  
+// Helper function to convert AI questions to Quiz format
+const convertQuestionsToQuiz = (
+  questions: QuizQuestion[],
+  input: GenerateQuizInput
+): Quiz => {
   return {
     id: Date.now(), // Generate unique ID
-    title: `${input.technology} ${capitalizeFirst(aiResponse.meta.topic)} - ${capitalizeFirst(aiResponse.meta.difficulty)} Quiz`,
-    description: aiResponse.overall.summary,
-    difficulty: capitalizeFirst(aiResponse.meta.difficulty) as 'Beginner' | 'Intermediate' | 'Advanced',
+    title: `${input.technology} ${input.topic} - ${input.difficulty} Quiz`,
+    topic: input.topic,
+    topicId: 1, // You may want to generate this or get it from input
+    technology: input.technology,
+    difficulty: input.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
     timeLimit: input.questionCount * 2, // 2 minutes per question
-    questions: aiResponse.items.map((item, index) => ({
-      id: index + 1,
-      question: item.question,
-      options: item.choices,
-      correctAnswer: item.answerIndex,
-      explanation: item.explanation,
-      difficulty: capitalizeFirst(aiResponse.meta.difficulty) as 'Beginner' | 'Intermediate' | 'Advanced',
-      tags: item.tags,
-    })),
-    aiGenerated: true,
-    aiMeta: aiResponse.meta,
-    aiOverall: aiResponse.overall,
+    questions: questions,
+    createdAt: new Date(),
   };
 };
 
@@ -41,37 +38,35 @@ export interface QuizGeneratorState {
   isGenerating: boolean;
   generatedQuiz: Quiz | null;
   generationError: string | null;
-  
-  // Raw AI response for debugging
-  lastAIResponse: AIGeneratedQuizResponse | null;
-  
+
   // Generation settings
   defaultSettings: GenerateQuizInput;
   lastGeneratedSettings: GenerateQuizInput | null;
-  
+
   // Generation history
   generationHistory: Array<{
     settings: GenerateQuizInput;
     quiz: Quiz;
     generatedAt: Date;
-    aiResponse: AIGeneratedQuizResponse;
   }>;
 }
 
 export interface QuizGeneratorActions {
   // Generation actions
   startGeneration: (settings: GenerateQuizInput) => Promise<void>;
-  setGenerationResult: (aiResponse: AIGeneratedQuizResponse, settings: GenerateQuizInput) => void;
+  setGenerationResult: (quiz: Quiz) => void;
   setGenerationError: (error: string | null) => void;
   resetGeneration: () => void;
-  
+
   // Settings management
   updateDefaultSettings: (settings: Partial<GenerateQuizInput>) => void;
-  
+
   // History management
-  saveToHistory: (settings: GenerateQuizInput, quiz: Quiz, aiResponse: AIGeneratedQuizResponse) => void;
+  saveToHistory: (settings: GenerateQuizInput, quiz: Quiz) => void;
   clearHistory: () => void;
-  getHistoryByTopic: (topic: string) => Array<{ settings: GenerateQuizInput; quiz: Quiz; generatedAt: Date }>;
+  getHistoryByTopic: (
+    topic: string
+  ) => Array<{ settings: GenerateQuizInput; quiz: Quiz; generatedAt: Date }>;
 }
 
 const initialState: QuizGeneratorState = {
@@ -79,10 +74,7 @@ const initialState: QuizGeneratorState = {
   isGenerating: false,
   generatedQuiz: null,
   generationError: null,
-  
-  // Raw AI response for debugging
-  lastAIResponse: null,
-  
+
   // Generation settings
   defaultSettings: {
     topic: 'Fundamentals',
@@ -92,12 +84,20 @@ const initialState: QuizGeneratorState = {
     language: 'en',
   },
   lastGeneratedSettings: null,
-  
+
   // Generation history
   generationHistory: [],
 };
 
-export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorActions>()(
+// Create AI service instance
+const practiceAIService = new PracticeAIService({
+  apiKey: practiceConfig.GOOGLE_GENAI_API_KEY,
+  model: practiceConfig.AI_MODEL,
+});
+
+export const useQuizGeneratorStore = create<
+  QuizGeneratorState & QuizGeneratorActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,
@@ -111,47 +111,42 @@ export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorAc
         });
 
         try {
-          // Convert difficulty to lowercase for AI service
-          const aiInput = {
-            topic: settings.topic,
+          // Convert to AI service options
+          const aiOptions: QuizGenerationOptions = {
             technology: settings.technology,
-            difficulty: settings.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
+            topic: `${settings.technology} ${settings.topic}`,
+            difficulty: settings.difficulty,
             numQuestions: settings.questionCount,
-            language: settings.language || 'en' as 'en' | 'vi',
+            language: settings.language === 'vi' ? 'Vietnamese' : 'English',
           };
-
+          console.log('Starting quiz generation with options:', aiOptions);
           // Call AI service
-          const aiResponseText = await AIProvider.generateQuiz(aiInput);
-          
-          if (!aiResponseText) {
-            throw new Error('Empty response from AI service');
-          }
-          
-          const aiResponse = JSON.parse(aiResponseText) as AIGeneratedQuizResponse;
-          
-          // Convert AI response to Quiz format
-          const quiz = convertAIResponseToQuiz(aiResponse, settings);
-          
-          // Update store with results
-          get().setGenerationResult(aiResponse, settings);
-          get().saveToHistory(settings, quiz, aiResponse);
+          const questions = await practiceAIService.generateQuiz(aiOptions);
 
+          if (!questions || questions.length === 0) {
+            throw new Error('No questions generated');
+          }
+
+          // Convert questions to Quiz format
+          const quiz = convertQuestionsToQuiz(questions, settings);
+
+          // Update store with results
+          get().setGenerationResult(quiz);
+          get().saveToHistory(settings, quiz);
         } catch (error) {
           console.error('Quiz generation failed:', error);
           set({
             isGenerating: false,
-            generationError: error instanceof Error ? error.message : 'Quiz generation failed',
+            generationError:
+              error instanceof Error ? error.message : 'Quiz generation failed',
           });
         }
       },
 
-      setGenerationResult: (aiResponse: AIGeneratedQuizResponse, settings: GenerateQuizInput) => {
-        const quiz = convertAIResponseToQuiz(aiResponse, settings);
-        
+      setGenerationResult: (quiz: Quiz) => {
         set({
           isGenerating: false,
           generatedQuiz: quiz,
-          lastAIResponse: aiResponse,
           generationError: null,
         });
       },
@@ -168,7 +163,6 @@ export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorAc
           isGenerating: false,
           generatedQuiz: null,
           generationError: null,
-          lastAIResponse: null,
         });
       },
 
@@ -181,15 +175,14 @@ export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorAc
       },
 
       // History management
-      saveToHistory: (settings: GenerateQuizInput, quiz: Quiz, aiResponse: AIGeneratedQuizResponse) => {
+      saveToHistory: (settings: GenerateQuizInput, quiz: Quiz) => {
         const currentHistory = get().generationHistory;
         const newHistoryItem = {
           settings,
           quiz,
-          aiResponse,
           generatedAt: new Date(),
         };
-        
+
         set({
           generationHistory: [newHistoryItem, ...currentHistory].slice(0, 50), // Keep last 50
         });
@@ -203,9 +196,9 @@ export const useQuizGeneratorStore = create<QuizGeneratorState & QuizGeneratorAc
 
       getHistoryByTopic: (topic: string) => {
         const history = get().generationHistory;
-        return history
-          .filter(item => item.settings.topic.toLowerCase().includes(topic.toLowerCase()))
-          .map(({ settings, quiz, generatedAt }) => ({ settings, quiz, generatedAt }));
+        return history.filter((item) =>
+          item.settings.topic.toLowerCase().includes(topic.toLowerCase())
+        );
       },
     }),
     {
