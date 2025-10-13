@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QuestionEvaluation } from '../../types';
 import { Badge } from '@/components/ui/badge';
 import { getReviewScoreColor } from '../../utils/get-review-score-color';
+import { cn } from '@/lib/utils';
 
 export default function QuestionAnalysis({
   relevancyScoreBreakdown,
@@ -22,7 +23,12 @@ export default function QuestionAnalysis({
             >
               <div className="flex items-start justify-between">
                 <h4 className="font-medium text-sm">{item.question}</h4>
-                <Badge className={getReviewScoreColor(item.relevancy_score)}>
+                <Badge
+                  className={cn(
+                    'bg-neutral-100',
+                    getReviewScoreColor(item.relevancy_score)
+                  )}
+                >
                   {item.relevancy_score}%
                 </Badge>
               </div>

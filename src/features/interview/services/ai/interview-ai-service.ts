@@ -1,5 +1,3 @@
-import { BaseAIService } from '../../../../shared/services/ai/base-ai-service';
-import { Language } from '../../../../shared/types/ai';
 import { Difficulty } from '../../../../types/common';
 import { generateQuestionsPrompt } from './prompts/generate-questions';
 import { reviewInterviewPrompt } from './prompts/review-interview';
@@ -10,6 +8,8 @@ import {
   INTERVIEW_MOCK_CONFIG,
   simulateDelay,
 } from '../../mocks/interview-mock-data';
+import { Language } from '@/shared/types/ai';
+import { BaseAIService } from '@/shared/services/ai/base-ai-service';
 
 export interface InterviewQuestion {
   id: string;

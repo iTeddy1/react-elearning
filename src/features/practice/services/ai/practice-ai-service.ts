@@ -1,8 +1,8 @@
-import { BaseAIService } from '../../../../shared/services/ai/base-ai-service';
-import { Difficulty } from '../../../../types/common';
+import { BaseAIService } from '@/shared/services/ai/base-ai-service';
 import { buildGeneratePrompt } from './prompts/generate-quiz';
 import { buildReviewPrompt } from './prompts/build-review';
 import { QuizQuestion } from '../../types';
+import { Difficulty } from '@/types/common';
 
 export interface QuizGenerationOptions {
   topic: string;
@@ -24,11 +24,13 @@ export class PracticeAIService extends BaseAIService {
     } catch (error) {
       console.error('Error generating quiz:', error);
       console.error('Quiz generation options:', options);
-      
+
       if (error instanceof Error && error.message.includes('parse')) {
-        throw new Error('Failed to process AI response. The AI returned invalid data format.');
+        throw new Error(
+          'Failed to process AI response. The AI returned invalid data format.'
+        );
       }
-      
+
       throw new Error('Failed to generate quiz. Please try again.');
     }
   }
@@ -49,19 +51,25 @@ export class PracticeAIService extends BaseAIService {
     try {
       const response = await this.generateContent(prompt);
       const jsonString = this.extractJSONFromResponse(response);
-      
+
       // Validate that we got valid JSON
       JSON.parse(jsonString);
-      
+
       return jsonString;
     } catch (error) {
       console.error('Error generating review:', error);
-      console.error('Review generation params:', { technology, language, answersCount: answers.length });
-      
+      console.error('Review generation params:', {
+        technology,
+        language,
+        answersCount: answers.length,
+      });
+
       if (error instanceof Error && error.message.includes('parse')) {
-        throw new Error('Failed to process AI review response. The AI returned invalid data format.');
+        throw new Error(
+          'Failed to process AI review response. The AI returned invalid data format.'
+        );
       }
-      
+
       throw new Error('Failed to generate review. Please try again.');
     }
   }
@@ -80,7 +88,9 @@ export class PracticeAIService extends BaseAIService {
       correctAnswer:
         q.correctAnswer !== undefined ? q.correctAnswer : q.answerIndex || 0,
       explanation: q.explanation || '',
-      difficulty: ((q.difficulty as Difficulty) || 'Intermediate').toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
+      difficulty: (
+        (q.difficulty as Difficulty) || 'Intermediate'
+      ).toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
       tags: q.tags || [],
     }));
   }

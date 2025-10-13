@@ -430,7 +430,7 @@ const QuizTaking = () => {
 
           <div className="flex space-x-2">
             {currentQuestionIndex === quiz.questions.length - 1 ? (
-              <Button onClick={handleSubmitQuiz} size="lg">
+              <Button disabled={selectedAnswers[currentQuestionIndex] === undefined} onClick={handleSubmitQuiz} size="lg">
                 Submit Quiz
               </Button>
             ) : (

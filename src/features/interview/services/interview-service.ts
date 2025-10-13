@@ -16,7 +16,7 @@ export class InterviewService {
   constructor() {
     // Get API key from environment
     const apiKey = import.meta.env.VITE_GOOGLE_GENAI_API_KEY || '';
-    const model = 'gemini-2.5-flash';
+    const model = 'gemini-2.5-pro';
 
     this.aiService = new InterviewAIService({
       apiKey,
@@ -73,11 +73,6 @@ export class InterviewService {
         expectedTopics: q.expectedTopics,
         followUpQuestions: q.followUpQuestions,
       }));
-
-      console.log(
-        '✅ Interview questions generated successfully:',
-        questions.length
-      );
       return questions;
     } catch (error) {
       console.error('❌ Interview question generation failed:', error);

@@ -41,6 +41,7 @@ export const useGenerateQuizMutation = () => {
       return await quizService.generateQuiz(input);
     },
     onSuccess: (quiz: Quiz) => {
+      console.log('✅ Quiz generated successfully:', quiz.title);
       toast.success(`Quiz "${quiz.title}" generated successfully!`, {
         description: `${quiz.questions.length} questions ready for practice`,
       });
@@ -61,13 +62,6 @@ export const useGenerateQuizMutation = () => {
           ? 'The AI returned invalid data. Please try again.'
           : error.message,
       });
-
-      // Error is already handled by Zustand store
-      // You could add toast notifications here
-    },
-    onSettled: (quiz, error, input) => {
-      // Always runs regardless of success/error
-      console.log('🔄 Quiz generation completed for:', input.topic);
     },
   });
 };

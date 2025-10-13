@@ -4,10 +4,6 @@ import { useQuizGeneratorStore } from '../store/quiz-generator-store';
 import { useQuizSessionStore } from '../store/quiz-session-store';
 import { useProgressStore } from '../store/progress-store';
 
-/**
- * Local Quiz Service for AI-only quiz generation
- * Handles quiz generation using local AI and manages state via Zustand stores
- */
 export class QuizService {
   private static instance: QuizService;
 
@@ -59,7 +55,10 @@ export class QuizService {
         }
 
         if (currentState.generatedQuiz && !currentState.isGenerating) {
-          console.log('✅ Quiz generated locally:', currentState.generatedQuiz.title);
+          console.log(
+            '✅ Quiz generated locally:',
+            currentState.generatedQuiz.title
+          );
           resolve(currentState.generatedQuiz);
           return;
         }
@@ -82,15 +81,15 @@ export class QuizService {
     try {
       // Save to local Zustand store
       const { saveQuizAttempt } = useProgressStore.getState();
-      
+
       const localAttempt: QuizAttempt = {
         ...attempt,
         id: attempt.id || Date.now().toString(),
       };
-      
+
       // Save to store
       saveQuizAttempt(localAttempt);
-      
+
       console.log('✅ Quiz attempt saved locally:', localAttempt.id);
       return localAttempt;
     } catch (error) {
@@ -121,7 +120,7 @@ export class QuizService {
         console.log('✅ Quiz found in local store:', generatedQuiz.title);
         return generatedQuiz;
       }
-      
+
       console.warn('⚠️ Quiz not found in local store:', id);
       return null;
     } catch (error) {
@@ -155,10 +154,10 @@ export class QuizService {
     try {
       const { resetGeneration } = useQuizGeneratorStore.getState();
       const { resetQuiz } = useQuizSessionStore.getState();
-      
+
       resetGeneration();
       resetQuiz();
-      
+
       console.log('✅ Local quiz data cleared');
     } catch (error) {
       console.error('❌ Failed to clear local data:', error);
@@ -168,4 +167,3 @@ export class QuizService {
 
 // Export singleton instance
 export const quizService = QuizService.getInstance();
-
