@@ -77,7 +77,6 @@ export const useInterviewStore = create<InterviewCoordinatorState & InterviewCoo
         // We'll import and use the stores' reset methods
         set(initialState);
         get().logAction('Reset all interview stores');
-        console.log('🔄 All interview stores reset');
       },
 
       // Action logging
