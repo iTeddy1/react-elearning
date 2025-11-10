@@ -7,265 +7,307 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 import Layout from '@/components/layout/layout';
 import {
-  BookOpen,
-  Target,
-  TrendingUp,
-  Users,
-  Award,
-  Clock,
+  Brain,
   Mic,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  Play,
+  Zap,
 } from 'lucide-react';
 
 export default function HomePage() {
   return (
     <Layout>
-      <div className="space-y-16">
-        {/* Hero Section */}
-        <div className="text-center space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-5xl font-bold text-gray-900 sm:text-6xl">
-              Master React.js
-              <span className="text-blue-600"> Step by Step</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Learn React.js through interactive lessons and practice with
-              AI-powered quizzes. Build your skills from fundamentals to
-              advanced concepts.
-            </p>
+      <div className="space-y-12 max-w-6xl mx-auto">
+        {/* Hero Section - Simplified */}
+        <div className="text-center space-y-6 py-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+            <Sparkles className="w-4 h-4" />
+            AI-Powered Learning Platform
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/learning">
-              <Button size="lg" className="px-8 py-3">
-                Start Learning
-              </Button>
-            </Link>
-            <Link to="/practice">
-              <Button variant="outline" size="lg" className="px-8 py-3">
-                Practice Skills
-              </Button>
-            </Link>
-            <Link to="/interview/setup">
-              <Button
-                variant="outline"
-                size="lg"
-                className="px-8 py-3 flex items-center gap-2"
-              >
-                <Mic className="w-4 h-4" />
-                AI Interview
-              </Button>
-            </Link>
-          </div>
-
-          {/* Quick Stats Placeholder */}
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 pt-8">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">10,000+</div>
-              <div className="text-sm text-gray-500">Active Learners</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">50+</div>
-              <div className="text-sm text-gray-500">Practice Quizzes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">25+</div>
-              <div className="text-sm text-gray-500">Learning Topics</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">95%</div>
-              <div className="text-sm text-gray-500">Success Rate</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Features Section */}
-        <div className="space-y-12">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Why Choose ReactLearn?
-            </h2>
-            <p className="text-lg text-gray-600 mt-4">
-              Everything you need to become a React developer
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg">Interactive Learning</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Learn React concepts with hands-on examples and interactive
-                  tutorials.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Target className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg">Practice Quizzes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Test your knowledge with AI-powered quizzes and get instant
-                  feedback.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg">Progress Tracking</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Monitor your learning journey and track your improvement over
-                  time.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg">Community Support</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Join thousands of developers learning React together.
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Learning Path Preview */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Your Learning Journey
-            </h2>
-            <p className="text-lg text-gray-600">
-              Follow our structured path from beginner to advanced React
-              developer
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="bg-white">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <BookOpen className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Learn</CardTitle>
-                    <CardDescription>Interactive Lessons</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Start with fundamentals and work your way up through hands-on
-                  tutorials and real-world examples.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Target className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Practice</CardTitle>
-                    <CardDescription>AI-Powered Quizzes</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Test your knowledge with intelligent quizzes that adapt to
-                  your learning progress.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-purple-100 p-2 rounded-lg">
-                    <Award className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Master</CardTitle>
-                    <CardDescription>Build Projects</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">
-                  Apply your knowledge by building real projects and earn
-                  certificates of completion.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center">
-            <Link to="/learning">
-              <Button size="lg">
-                <Clock className="w-4 h-4 mr-2" />
-                Start Your Journey
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="text-center bg-gray-900 text-white rounded-2xl p-12">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to become a React Expert?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of developers who have mastered React through our
-            platform. Start your journey today!
+          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+            Master Skills with
+            <span className="text-blue-600"> AI Practice</span>
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Three powerful features to accelerate your learning journey. Choose
+            your path below.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/learning">
-              <Button
-                size="lg"
-                className="bg-white text-gray-900 hover:bg-gray-100"
-              >
-                Get Started Free
-              </Button>
-            </Link>
-            <Link to="/practice">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white hover:text-gray-900"
-              >
-                Try Practice Quiz
-              </Button>
-            </Link>
-          </div>
         </div>
+
+        {/* Main Features */}
+        <Tabs defaultValue="practice" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="practice" className="gap-2">
+              <Brain className="w-4 h-4" />
+              Practice
+            </TabsTrigger>
+            <TabsTrigger value="interview" className="gap-2">
+              <Mic className="w-4 h-4" />
+              Interview
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Practice Tab */}
+          <TabsContent value="practice" className="space-y-6 mt-6">
+            <Card className="border-2 border-purple-100">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <Brain className="w-6 h-6 text-purple-600" />
+                      AI-Powered Practice
+                    </CardTitle>
+                    <CardDescription className="text-base">
+                      Test your knowledge with intelligent quizzes generated by
+                      AI
+                    </CardDescription>
+                  </div>
+                  <Link to="/practice">
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-purple-600 hover:bg-purple-700"
+                    >
+                      Start Practice
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Separator />
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Play className="w-4 h-4 text-purple-600" />
+                      What You&apos;ll Get
+                    </h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>
+                          AI-generated quizzes on any topic you choose
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>
+                          Customizable difficulty
+                          (Beginner/Intermediate/Advanced)
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>
+                          Instant AI feedback with detailed explanations
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Performance tracking and recommendations</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-yellow-600" />
+                      How It Works
+                    </h4>
+                    <ol className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex-shrink-0">
+                          1
+                        </span>
+                        <span>Choose topic, technology, and difficulty</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex-shrink-0">
+                          2
+                        </span>
+                        <span>AI generates custom quiz (5-20 questions)</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex-shrink-0">
+                          3
+                        </span>
+                        <span>Answer questions at your own pace</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex-shrink-0">
+                          4
+                        </span>
+                        <span>Get instant results with AI review & tips</span>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+
+                <Alert className="bg-purple-50 border-purple-200">
+                  <Brain className="h-4 w-4 text-purple-600" />
+                  <AlertTitle className="text-purple-900">
+                    Powered by AI
+                  </AlertTitle>
+                  <AlertDescription className="text-purple-700">
+                    Each quiz is unique and adapts to your chosen topic. Perfect
+                    for testing specific knowledge areas.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Interview Tab */}
+          <TabsContent value="interview" className="space-y-6 mt-6">
+            <Card className="border-2 border-green-100">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <Mic className="w-6 h-6 text-green-600" />
+                      AI Interview Practice
+                    </CardTitle>
+                    <CardDescription className="text-base">
+                      Realistic voice-based interview simulation with AI
+                      feedback
+                    </CardDescription>
+                  </div>
+                  <Link to="/interview/setup">
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-green-600 hover:bg-green-700"
+                    >
+                      Start Interview
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Separator />
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Play className="w-4 h-4 text-green-600" />
+                      What You&apos;ll Get
+                    </h4>
+                    <ul className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Voice-based interview questions</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Audio recording and transcription</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>AI analysis of your communication skills</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Detailed feedback report with scores</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-yellow-600" />
+                      How It Works
+                    </h4>
+                    <ol className="space-y-2 text-sm text-gray-600">
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-xs font-bold flex-shrink-0">
+                          1
+                        </span>
+                        <span>Set job role, experience level & skills</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-xs font-bold flex-shrink-0">
+                          2
+                        </span>
+                        <span>AI generates relevant interview questions</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-xs font-bold flex-shrink-0">
+                          3
+                        </span>
+                        <span>Record audio responses using microphone</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-xs font-bold flex-shrink-0">
+                          4
+                        </span>
+                        <span>Receive comprehensive AI evaluation</span>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+
+                <Alert className="bg-amber-50 border-amber-200">
+                  <Mic className="h-4 w-4 text-amber-600" />
+                  <AlertTitle className="text-amber-900">
+                    Microphone Required
+                  </AlertTitle>
+                  <AlertDescription className="text-amber-700">
+                    You&apos;ll need to allow microphone access for this
+                    feature. Practice as many times as you want!
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Quick Start Guide */}
+        <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-xl">🚀 Quick Start Guide</CardTitle>
+            <CardDescription>
+              First time here? Follow this recommended learning path
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex flex-col items-center text-center space-y-2 p-4 bg-white rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  1
+                </div>
+                <h4 className="font-semibold">Learn Concepts</h4>
+                <p className="text-sm text-gray-600">
+                  Start with Learning to understand fundamentals
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2 p-4 bg-white rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                  2
+                </div>
+                <h4 className="font-semibold">Test Knowledge</h4>
+                <p className="text-sm text-gray-600">
+                  Move to Practice to verify your understanding
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2 p-4 bg-white rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold">
+                  3
+                </div>
+                <h4 className="font-semibold">Prepare for Jobs</h4>
+                <p className="text-sm text-gray-600">
+                  Use Interview mode to practice real scenarios
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </Layout>
   );
