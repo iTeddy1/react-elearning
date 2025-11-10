@@ -119,7 +119,7 @@ export class AudioRecordingService {
     }
 
     if (this.audioStream) {
-      this.audioStream.getTracks().forEach(track => track.stop());
+      this.audioStream.getTracks().forEach((track) => track.stop());
       this.audioStream = null;
     }
 

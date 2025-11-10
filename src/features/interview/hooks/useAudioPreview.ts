@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  createAudioPreview, 
-  cleanupAudioPreview
+import {
+  createAudioPreview,
+  cleanupAudioPreview,
 } from '../utils/interview-helpers';
 
 interface AudioPreviewState {
@@ -24,16 +24,19 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
     if (currentRecording && !state.audioPreview) {
       const audioPreview = createAudioPreview(
         currentRecording,
-        (duration) => setState(prev => ({ ...prev, previewDuration: duration })),
-        (currentTime) => setState(prev => ({ ...prev, previewCurrentTime: currentTime })),
-        () => setState(prev => ({
-          ...prev,
-          isPlayingPreview: false,
-          previewCurrentTime: 0,
-        }))
+        (duration) =>
+          setState((prev) => ({ ...prev, previewDuration: duration })),
+        (currentTime) =>
+          setState((prev) => ({ ...prev, previewCurrentTime: currentTime })),
+        () =>
+          setState((prev) => ({
+            ...prev,
+            isPlayingPreview: false,
+            previewCurrentTime: 0,
+          }))
       );
-      
-      setState(prev => ({ ...prev, audioPreview }));
+
+      setState((prev) => ({ ...prev, audioPreview }));
     }
   }, [currentRecording, state.audioPreview]);
 
@@ -46,13 +49,13 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
 
   const handlePlayPreview = useCallback(() => {
     if (!state.audioPreview) return;
-    
+
     if (state.isPlayingPreview) {
       state.audioPreview.audio.pause();
-      setState(prev => ({ ...prev, isPlayingPreview: false }));
+      setState((prev) => ({ ...prev, isPlayingPreview: false }));
     } else {
       void state.audioPreview.audio.play();
-      setState(prev => ({ ...prev, isPlayingPreview: true }));
+      setState((prev) => ({ ...prev, isPlayingPreview: true }));
     }
   }, [state.audioPreview, state.isPlayingPreview]);
 

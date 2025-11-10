@@ -48,7 +48,11 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link to="/interview/setup">
-              <Button variant="outline" size="lg" className="px-8 py-3 flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8 py-3 flex items-center gap-2"
+              >
                 <Mic className="w-4 h-4" />
                 AI Interview
               </Button>

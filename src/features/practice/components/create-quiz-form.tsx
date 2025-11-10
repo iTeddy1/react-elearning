@@ -16,10 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useQuizGeneratorStore } from '../store/quiz-generator-store';
-import {
-  useGenerateAndStartQuizMutation,
-  useQuizNotifications,
-} from '../hooks/use-quiz-queries';
+import { useGenerateAndStartQuizMutation } from '../hooks/use-quiz-queries';
 import { Loader2 } from 'lucide-react';
 import {
   Select,
@@ -44,24 +41,6 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateQuizForm() {
   const { generatedQuiz, generationError } = useQuizGeneratorStore();
   const generateAndStartMutation = useGenerateAndStartQuizMutation();
-  const notifications = useQuizNotifications();
-
-  // Show notifications based on mutation state
-  React.useEffect(() => {
-    if (generateAndStartMutation.isSuccess) {
-      notifications.showSuccess('Quiz generated and started successfully!');
-    }
-    if (generateAndStartMutation.isError) {
-      notifications.showError(
-        `Failed to generate quiz: ${generateAndStartMutation.error?.message}`
-      );
-    }
-  }, [
-    generateAndStartMutation.isSuccess,
-    generateAndStartMutation.isError,
-    generateAndStartMutation.error,
-    notifications,
-  ]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

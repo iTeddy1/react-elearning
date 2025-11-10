@@ -26,7 +26,7 @@ export const hasQuestionRecording = (
   questionId: string,
   recordings: Array<{ questionId: string }>
 ): boolean => {
-  return recordings.some(r => r.questionId === questionId);
+  return recordings.some((r) => r.questionId === questionId);
 };
 
 /**
@@ -36,7 +36,7 @@ export const areAllQuestionsAnswered = (
   questions: Array<{ id: string }>,
   recordings: Array<{ questionId: string }>
 ): boolean => {
-  return questions.every(q => hasQuestionRecording(q.id, recordings));
+  return questions.every((q) => hasQuestionRecording(q.id, recordings));
 };
 
 /**
@@ -50,17 +50,17 @@ export const createAudioPreview = (
 ): { url: string; audio: HTMLAudioElement } => {
   const url = URL.createObjectURL(blob);
   const audio = new Audio(url);
-  
+
   audio.addEventListener('loadedmetadata', () => {
     onLoadedMetadata(audio.duration);
   });
-  
+
   audio.addEventListener('timeupdate', () => {
     onTimeUpdate(audio.currentTime);
   });
-  
+
   audio.addEventListener('ended', onEnded);
-  
+
   return { url, audio };
 };
 
@@ -108,7 +108,9 @@ export const getQuestionStatus = (
 /**
  * Get status color class for question indicators
  */
-export const getStatusColorClass = (status: 'completed' | 'current' | 'pending'): string => {
+export const getStatusColorClass = (
+  status: 'completed' | 'current' | 'pending'
+): string => {
   switch (status) {
     case 'completed':
       return 'bg-green-500';

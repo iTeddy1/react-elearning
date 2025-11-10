@@ -2,9 +2,11 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { Quiz } from '../types';
 
-
 // Re-export from other stores for convenience
-export { useQuizGeneratorStore, type GenerateQuizInput } from './quiz-generator-store';
+export {
+  useQuizGeneratorStore,
+  type GenerateQuizInput,
+} from './quiz-generator-store';
 export { useQuizSessionStore } from './quiz-session-store';
 export { useProgressStore, useProgressSelectors } from './progress-store';
 
@@ -13,7 +15,7 @@ export interface QuizCoordinatorState {
   // Current active quiz flow
   isQuizFlowActive: boolean;
   currentQuizId: number | null;
-  
+
   // Cross-store communication
   lastAction: string | null;
   lastActionTimestamp: Date | null;
@@ -23,11 +25,11 @@ export interface QuizCoordinatorActions {
   // Quiz flow coordination
   startQuizFlow: (quiz: Quiz) => void;
   endQuizFlow: () => void;
-  
+
   // Cross-store actions
   completeQuizSession: () => void;
   resetAllStores: () => void;
-  
+
   // Action logging
   logAction: (action: string) => void;
 }
@@ -39,7 +41,9 @@ const initialState: QuizCoordinatorState = {
   lastActionTimestamp: null,
 };
 
-export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions>()(
+export const useQuizStore = create<
+  QuizCoordinatorState & QuizCoordinatorActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,

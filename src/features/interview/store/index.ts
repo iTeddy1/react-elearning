@@ -7,7 +7,7 @@ export interface InterviewCoordinatorState {
   // Current active interview flow
   isInterviewFlowActive: boolean;
   currentInterviewId: string | null;
-  
+
   // Cross-store communication
   lastAction: string | null;
   lastActionTimestamp: Date | null;
@@ -15,13 +15,16 @@ export interface InterviewCoordinatorState {
 
 export interface InterviewCoordinatorActions {
   // Interview flow coordination
-  startInterviewFlow: (jobRole: string, difficulty: 'beginner' | 'intermediate' | 'advanced') => void;
+  startInterviewFlow: (
+    jobRole: string,
+    difficulty: 'beginner' | 'intermediate' | 'advanced'
+  ) => void;
   endInterviewFlow: () => void;
-  
+
   // Cross-store actions
   completeInterviewSession: (attempt: InterviewAttempt) => void;
   resetAllStores: () => void;
-  
+
   // Action logging
   logAction: (action: string) => void;
 }
@@ -33,20 +36,27 @@ const initialState: InterviewCoordinatorState = {
   lastActionTimestamp: null,
 };
 
-export const useInterviewStore = create<InterviewCoordinatorState & InterviewCoordinatorActions>()(
+export const useInterviewStore = create<
+  InterviewCoordinatorState & InterviewCoordinatorActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,
 
       // Interview flow coordination
-      startInterviewFlow: (jobRole: string, difficulty: 'beginner' | 'intermediate' | 'advanced') => {
+      startInterviewFlow: (
+        jobRole: string,
+        difficulty: 'beginner' | 'intermediate' | 'advanced'
+      ) => {
         const interviewId = `interview-${Date.now()}`;
         set({
           isInterviewFlowActive: true,
           currentInterviewId: interviewId,
         });
-        
-        get().logAction(`Started interview flow for ${jobRole} (${difficulty})`);
+
+        get().logAction(
+          `Started interview flow for ${jobRole} (${difficulty})`
+        );
         console.log('🚀 Interview flow started:', interviewId);
       },
 
@@ -56,7 +66,7 @@ export const useInterviewStore = create<InterviewCoordinatorState & InterviewCoo
           isInterviewFlowActive: false,
           currentInterviewId: null,
         });
-        
+
         get().logAction('Ended interview flow');
         console.log('🏁 Interview flow ended:', currentInterviewId);
       },
@@ -67,7 +77,7 @@ export const useInterviewStore = create<InterviewCoordinatorState & InterviewCoo
         // For now, we'll just log the completion
         get().logAction(`Completed interview session: ${attempt.id}`);
         console.log('✅ Interview session completed:', attempt.id);
-        
+
         // End the flow
         get().endInterviewFlow();
       },

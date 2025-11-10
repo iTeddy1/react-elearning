@@ -19,10 +19,10 @@ export const useInterviewRecording = (
   // Update recording duration
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
-    
+
     if (isRecording) {
       interval = setInterval(() => {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           recordingDuration: audioService.getRecordingDuration(),
         }));
@@ -39,11 +39,11 @@ export const useInterviewRecording = (
   }, []);
 
   const setCurrentRecording = useCallback((blob: Blob | null) => {
-    setState(prev => ({ ...prev, currentRecording: blob }));
+    setState((prev) => ({ ...prev, currentRecording: blob }));
   }, []);
 
   const setRecordingDuration = useCallback((duration: number) => {
-    setState(prev => ({ ...prev, recordingDuration: duration }));
+    setState((prev) => ({ ...prev, recordingDuration: duration }));
   }, []);
 
   return {

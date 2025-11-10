@@ -79,7 +79,6 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
             return answer === quizData.items[index]?.answerIndex;
           });
 
-
           const reviewJson = await practiceAIService.generateReview(
             quizPayload,
             userAnswers,

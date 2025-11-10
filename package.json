@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
+    "format": "prettier --write \"src/**/(*.tsx|*.ts|*.css)\"",
     "test": "jest",
     "release": "standard-version",
     "commit": "git-cz",

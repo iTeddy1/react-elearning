@@ -6,27 +6,33 @@ interface InstructionsSectionProps {
   className?: string;
 }
 
-export const InstructionsSection: React.FC<InstructionsSectionProps> = ({ className }) => {
+export const InstructionsSection: React.FC<InstructionsSectionProps> = ({
+  className,
+}) => {
   const instructions = [
     {
       step: 1,
       title: 'Question Presentation',
-      description: 'Each question will be displayed clearly with recording controls.',
+      description:
+        'Each question will be displayed clearly with recording controls.',
     },
     {
       step: 2,
       title: 'Voice Recording',
-      description: 'Click the microphone button to start recording your answer.',
+      description:
+        'Click the microphone button to start recording your answer.',
     },
     {
       step: 3,
       title: 'AI Analysis',
-      description: 'Your responses will be transcribed and analyzed for feedback.',
+      description:
+        'Your responses will be transcribed and analyzed for feedback.',
     },
     {
       step: 4,
       title: 'Detailed Report',
-      description: 'Receive comprehensive feedback with scores and improvement suggestions.',
+      description:
+        'Receive comprehensive feedback with scores and improvement suggestions.',
     },
   ];
 

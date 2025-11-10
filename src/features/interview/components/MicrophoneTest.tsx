@@ -1,35 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Mic, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Mic,
+  CheckCircle,
+  AlertCircle,
   Loader2,
   Volume2,
   Play,
   Pause,
-  Settings
+  Settings,
 } from 'lucide-react';
-import { MicrophoneTestService, MicrophoneTestResult, AudioDevice } from '../utils/microphone-test';
+import {
+  MicrophoneTestService,
+  MicrophoneTestResult,
+  AudioDevice,
+} from '../utils/microphone-test';
 
 interface MicrophoneTestProps {
   onTestComplete: (result: MicrophoneTestResult) => void;
   className?: string;
 }
 
-export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({ 
-  onTestComplete, 
-  className 
+export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
+  onTestComplete,
+  className,
 }) => {
   const [isTesting, setIsTesting] = useState(false);
-  const [testResult, setTestResult] = useState<MicrophoneTestResult | null>(null);
+  const [testResult, setTestResult] = useState<MicrophoneTestResult | null>(
+    null
+  );
   const [audioLevel, setAudioLevel] = useState(0);
   const [isRecordingTest, setIsRecordingTest] = useState(false);
-  const [recordingTestResult, setRecordingTestResult] = useState<{ success: boolean; blob?: Blob; error?: string } | null>(null);
+  const [recordingTestResult, setRecordingTestResult] = useState<{
+    success: boolean;
+    blob?: Blob;
+    error?: string;
+  } | null>(null);
   const [isPlayingTest, setIsPlayingTest] = useState(false);
   const [micService] = useState(() => new MicrophoneTestService());
   const [availableDevices, setAvailableDevices] = useState<AudioDevice[]>([]);
@@ -50,7 +72,7 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
       try {
         const devices = await micService.getAudioInputDevices();
         setAvailableDevices(devices);
-        
+
         // Select the first device by default
         if (devices.length > 0 && !selectedDevice) {
           setSelectedDevice(devices[0].deviceId);
@@ -69,7 +91,7 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
   const handleDeviceChange = (deviceId: string) => {
     setSelectedDevice(deviceId);
     micService.setSelectedDevice(deviceId);
-    
+
     // Reset test results when device changes
     if (testResult) {
       resetTest();
@@ -99,7 +121,7 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
         hasPermission: false,
         isWorking: false,
         audioLevel: 0,
-        error: 'Test failed unexpectedly'
+        error: 'Test failed unexpectedly',
       };
       setTestResult(errorResult);
       onTestComplete(errorResult);
@@ -122,12 +144,12 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
 
     const audio = new Audio(URL.createObjectURL(recordingTestResult.blob));
     setIsPlayingTest(true);
-    
+
     audio.onended = () => {
       setIsPlayingTest(false);
       URL.revokeObjectURL(audio.src);
     };
-    
+
     void audio.play();
   };
 
@@ -271,7 +293,9 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-green-600">
                       <CheckCircle className="h-4 w-4" />
-                      <span className="text-sm font-medium">Recording successful!</span>
+                      <span className="text-sm font-medium">
+                        Recording successful!
+                      </span>
                     </div>
                     <Button
                       onClick={playTestRecording}
@@ -296,7 +320,9 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
                 ) : (
                   <div className="flex items-center gap-2 text-red-600">
                     <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">Recording failed: {recordingTestResult.error}</span>
+                    <span className="text-sm">
+                      Recording failed: {recordingTestResult.error}
+                    </span>
                   </div>
                 )}
               </div>
@@ -323,7 +349,7 @@ export const MicrophoneTest: React.FC<MicrophoneTestProps> = ({
               </>
             )}
           </Button>
-          
+
           {testResult && (
             <Button onClick={resetTest} variant="outline">
               Reset

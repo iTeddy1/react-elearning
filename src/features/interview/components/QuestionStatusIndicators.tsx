@@ -1,5 +1,8 @@
 import React from 'react';
-import { getQuestionStatus, getStatusColorClass } from '../utils/interview-helpers';
+import {
+  getQuestionStatus,
+  getStatusColorClass,
+} from '../utils/interview-helpers';
 
 interface QuestionStatusIndicatorsProps {
   questions: Array<{ id: string }>;
@@ -7,17 +10,20 @@ interface QuestionStatusIndicatorsProps {
   currentQuestionIndex: number;
 }
 
-export const QuestionStatusIndicators: React.FC<QuestionStatusIndicatorsProps> = ({
-  questions,
-  recordings,
-  currentQuestionIndex,
-}) => {
+export const QuestionStatusIndicators: React.FC<
+  QuestionStatusIndicatorsProps
+> = ({ questions, recordings, currentQuestionIndex }) => {
   return (
     <div className="flex gap-1">
       {questions.map((question, index) => {
-        const status = getQuestionStatus(question.id, index, currentQuestionIndex, recordings);
+        const status = getQuestionStatus(
+          question.id,
+          index,
+          currentQuestionIndex,
+          recordings
+        );
         const colorClass = getStatusColorClass(status);
-        
+
         return (
           <div
             key={question.id}

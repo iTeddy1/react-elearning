@@ -140,7 +140,7 @@ const QuizReviewDisplay: React.FC<QuizReviewDisplayProps> = ({
 
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">
-                {Math.round(accuracy*100)}%
+                {Math.round(accuracy * 100)}%
               </div>
               <p className="text-sm text-gray-600">Accuracy Rate</p>
             </div>

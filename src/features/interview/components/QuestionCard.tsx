@@ -1,6 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mic, Play, Square, Clock, CheckCircle } from 'lucide-react';
 
@@ -39,10 +45,14 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   const getDifficultyColor = (diff?: string) => {
     switch (diff) {
-      case 'easy': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'hard': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'easy':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'hard':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -92,7 +102,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                 onClick={onStartRecording}
                 size="lg"
                 className="flex items-center gap-2"
-                variant={hasRecording ? "outline" : "default"}
+                variant={hasRecording ? 'outline' : 'default'}
               >
                 <Mic className="h-5 w-5" />
                 {hasRecording ? 'Re-record Answer' : 'Start Recording'}

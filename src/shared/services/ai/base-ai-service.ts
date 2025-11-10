@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 
 export interface AIConfig {
+  client: GoogleGenAI;
   apiKey: string;
   model?: string;
   temperature?: number;
@@ -19,10 +20,8 @@ export class BaseAIService {
   protected maxTokens: number;
 
   constructor(config: AIConfig) {
-    this.client = new GoogleGenAI({
-      apiKey: config.apiKey,
-    });
-    this.model = config.model as string;
+    this.client = config.client;
+    this.model = config.model || 'gemini-2.5-flash';
     this.temperature = config.temperature || 0.7;
     this.maxTokens = config.maxTokens || 2048;
   }

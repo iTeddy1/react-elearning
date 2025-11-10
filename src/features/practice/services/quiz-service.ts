@@ -1,171 +1,128 @@
-import { Quiz, QuizAttempt } from '../types';
-import { GenerateQuizInput } from '../store/quiz-generator-store';
-import { useQuizGeneratorStore } from '../store/quiz-generator-store';
-import { useQuizSessionStore } from '../store/quiz-session-store';
-import { useProgressStore } from '../store/progress-store';
+import type { Quiz } from '../types';
+import {
+  PracticeAIService,
+  type QuizGenerationOptions,
+} from './ai/practice-ai-service';
 
-/**
- * Local Quiz Service for AI-only quiz generation
- * Handles quiz generation using local AI and manages state via Zustand stores
- */
-export class QuizService {
-  private static instance: QuizService;
-
-  static getInstance(): QuizService {
-    if (!QuizService.instance) {
-      QuizService.instance = new QuizService();
-    }
-    return QuizService.instance;
-  }
-
-  /**
-   * Generate quiz using local AI only
-   */
-  async generateQuiz(input: GenerateQuizInput): Promise<Quiz> {
-    try {
-      console.log('🤖 Generating quiz with local AI:', input.topic);
-      return await this.generateQuizLocally(input);
-    } catch (error) {
-      console.error('❌ Quiz generation failed:', error);
-      throw error instanceof Error
-        ? error
-        : new Error('Quiz generation failed');
-    }
-  }
-
-  /**
-   * Quiz generation using Zustand store and local AI
-   */
-  private async generateQuizLocally(input: GenerateQuizInput): Promise<Quiz> {
-    const { startGeneration } = useQuizGeneratorStore.getState();
-
-    // Start generation using local AI
-    await startGeneration({
-      topic: input.topic,
-      technology: input.technology,
-      difficulty: input.difficulty,
-      questionCount: input.questionCount,
-      language: input.language || 'en',
-    });
-
-    // Poll for result
-    return new Promise((resolve, reject) => {
-      const checkResult = () => {
-        const currentState = useQuizGeneratorStore.getState();
-
-        if (currentState.generationError) {
-          reject(new Error(currentState.generationError));
-          return;
-        }
-
-        if (currentState.generatedQuiz && !currentState.isGenerating) {
-          console.log('✅ Quiz generated locally:', currentState.generatedQuiz.title);
-          resolve(currentState.generatedQuiz);
-          return;
-        }
-
-        if (currentState.isGenerating) {
-          setTimeout(checkResult, 100);
-        } else {
-          reject(new Error('Quiz generation failed without error message'));
-        }
-      };
-
-      setTimeout(checkResult, 100);
-    });
-  }
-
-  /**
-   * Save quiz attempt locally only
-   */
-  saveQuizAttempt(attempt: QuizAttempt): QuizAttempt {
-    try {
-      // Save to local Zustand store
-      const { saveQuizAttempt } = useProgressStore.getState();
-      
-      const localAttempt: QuizAttempt = {
-        ...attempt,
-        id: attempt.id || Date.now().toString(),
-      };
-      
-      // Save to store
-      saveQuizAttempt(localAttempt);
-      
-      console.log('✅ Quiz attempt saved locally:', localAttempt.id);
-      return localAttempt;
-    } catch (error) {
-      console.error('❌ Failed to save quiz attempt:', error);
-      throw error instanceof Error
-        ? error
-        : new Error('Failed to save quiz attempt');
-    }
-  }
-
-  /**
-   * Start quiz session in local store
-   */
-  startQuizSession(quiz: Quiz): void {
-    const { startQuiz } = useQuizSessionStore.getState();
-    startQuiz(quiz);
-    console.log('🎯 Quiz session started:', quiz.title);
-  }
-
-  /**
-   * Get quiz by ID from local store only
-   */
-  getQuizById(id: number): Quiz | null {
-    try {
-      // Check local Zustand store
-      const { generatedQuiz } = useQuizGeneratorStore.getState();
-      if (generatedQuiz && generatedQuiz.id === id) {
-        console.log('✅ Quiz found in local store:', generatedQuiz.title);
-        return generatedQuiz;
-      }
-      
-      console.warn('⚠️ Quiz not found in local store:', id);
-      return null;
-    } catch (error) {
-      console.error('❌ Failed to get quiz:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Combined generate and start flow
-   */
-  async generateAndStartQuiz(
-    input: GenerateQuizInput,
-    navigate: (path: string) => void
-  ): Promise<Quiz> {
-    try {
-      const quiz = await this.generateQuiz(input);
-      this.startQuizSession(quiz);
-      navigate(`/practice/${quiz.id}`);
-      return quiz;
-    } catch (error) {
-      console.error('❌ Failed to generate and start quiz:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Clear all local quiz data
-   */
-  clearLocalData(): void {
-    try {
-      const { resetGeneration } = useQuizGeneratorStore.getState();
-      const { resetQuiz } = useQuizSessionStore.getState();
-      
-      resetGeneration();
-      resetQuiz();
-      
-      console.log('✅ Local quiz data cleared');
-    } catch (error) {
-      console.error('❌ Failed to clear local data:', error);
-    }
-  }
+export interface GenerateQuizInput {
+  topic: string;
+  technology: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  questionCount: number;
+  language?: 'en' | 'vi';
 }
 
-// Export singleton instance
-export const quizService = QuizService.getInstance();
+export interface GenerateReviewRequest {
+  payloadJSON: string;
+  answers: (0 | 1 | 2 | 3 | null)[];
+  technology: string;
+  language?: 'vi' | 'en';
+}
 
+/**
+ * Pure Feature Service - No UI state management
+ * Only handles data transformation and AI service calls
+ * Service instances are provided via AIServiceProvider
+ */
+export class QuizService {
+  private practiceAI: PracticeAIService;
+
+  constructor(practiceAI: PracticeAIService) {
+    this.practiceAI = practiceAI;
+  }
+
+  /**
+   * Generate quiz using AI service
+   * Pure function - no side effects
+   */
+  async generateQuiz(request: GenerateQuizInput): Promise<Quiz> {
+    // Transform request to AI format
+    const aiOptions: QuizGenerationOptions = {
+      topic: request.topic,
+      technology: request.technology,
+      difficulty: request.difficulty,
+      numQuestions: request.questionCount,
+      language: request.language === 'vi' ? 'Vietnamese' : 'English',
+    };
+
+    // Call AI service
+    const questions = await this.practiceAI.generateQuiz(aiOptions);
+
+    // Transform AI response to Quiz format
+    const quiz: Quiz = {
+      id: Date.now(),
+      title: `${request.technology} ${request.topic} - ${request.difficulty} Quiz`,
+      topic: request.topic,
+      topicId: Date.now(),
+      technology: request.technology,
+      difficulty: request.difficulty.toLowerCase() as
+        | 'beginner'
+        | 'intermediate'
+        | 'advanced',
+      questions,
+      timeLimit: request.questionCount * 120, // 2 minutes per question
+      createdAt: new Date(),
+    };
+
+    return quiz;
+  }
+
+  /**
+   * Generate quiz review using AI service
+   * Pure function - no side effects
+   */
+  async generateReview(request: GenerateReviewRequest): Promise<string> {
+    return await this.practiceAI.generateReview(
+      request.payloadJSON,
+      request.answers,
+      request.technology,
+      request.language || 'en'
+    );
+  }
+
+  /**
+   * Helper to convert quiz and answers to review format
+   */
+  prepareReviewPayload(
+    quiz: Quiz,
+    userAnswers: Record<number, number>
+  ): {
+    payloadJSON: string;
+    answers: (0 | 1 | 2 | 3 | null)[];
+  } {
+    // Create quiz payload for AI
+    const quizPayload = {
+      meta: {
+        topic: quiz.title,
+        difficulty: quiz.difficulty,
+        language: 'en',
+        numQuestions: quiz.questions.length,
+        technology: quiz.technology,
+      },
+      items: quiz.questions.map((q) => ({
+        id: q.id.toString(),
+        question: q.question,
+        choices: q.options,
+        answerIndex: q.correctAnswer,
+        explanation: q.explanation,
+        tags: q.tags || [quiz.technology.toLowerCase()],
+      })),
+    };
+
+    // Convert user answers to AI format
+    const answers: (0 | 1 | 2 | 3 | null)[] = quiz.questions.map((question) => {
+      const userAnswer = userAnswers[question.id];
+      if (userAnswer === undefined || userAnswer === null) return null;
+      if (userAnswer === 0) return 0;
+      if (userAnswer === 1) return 1;
+      if (userAnswer === 2) return 2;
+      if (userAnswer === 3) return 3;
+      return null; // Fallback for invalid values
+    });
+
+    return {
+      payloadJSON: JSON.stringify(quizPayload),
+      answers,
+    };
+  }
+}

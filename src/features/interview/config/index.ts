@@ -1,6 +1,8 @@
 // Environment configuration for interview feature
 export const interviewConfig = {
-  AI_INTERVIEW_API_BASE: (import.meta.env.VITE_GOOGLE_GENAI_API_KEY as string) || 'https://api.example.com',
+  AI_INTERVIEW_API_BASE:
+    (import.meta.env.VITE_GOOGLE_GENAI_API_KEY as string) ||
+    'https://api.example.com',
   ASSEMBLYAI_API_KEY: (import.meta.env.VITE_ASSEMBLYAI_API_KEY as string) || '',
   MAX_RECORDING_DURATION: 300, // 5 minutes
   TRANSCRIPTION_TIMEOUT: 300000, // 5 minutes

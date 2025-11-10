@@ -29,9 +29,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             <Button onClick={onTryAgain} variant="outline">
               Try Again
             </Button>
-            <Button onClick={onBackToHome}>
-              Back to Home
-            </Button>
+            <Button onClick={onBackToHome}>Back to Home</Button>
           </div>
         </CardContent>
       </Card>

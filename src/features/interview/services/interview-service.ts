@@ -6,154 +6,118 @@ import {
 import { InterviewAIService } from './ai/interview-ai-service';
 
 /**
- * Interview Service for AI-only interview generation and management
- * Handles interview generation using local AI and manages state via Zustand stores
+ * Pure Interview Feature Service - No UI state management
+ * Only handles data transformation and AI service calls
+ * Service instances are provided via AIServiceProvider
  */
 export class InterviewService {
-  private static instance: InterviewService;
   private aiService: InterviewAIService;
 
-  constructor() {
-    // Get API key from environment
-    const apiKey = import.meta.env.VITE_GOOGLE_GENAI_API_KEY || '';
-    const model = 'gemini-2.5-flash';
-
-    this.aiService = new InterviewAIService({
-      apiKey,
-      model,
-    });
-  }
-
-  static getInstance(): InterviewService {
-    if (!InterviewService.instance) {
-      InterviewService.instance = new InterviewService();
-    }
-    return InterviewService.instance;
+  constructor(aiService: InterviewAIService) {
+    this.aiService = aiService;
   }
 
   /**
-   * Generate interview questions using local AI
+   * Generate interview questions using AI service
+   * Pure function - no side effects
    */
   async generateQuestions(
     request: GenerateQuestionsRequest
   ): Promise<InterviewQuestion[]> {
-    try {
-      console.log(
-        '🤖 Generating interview questions with local AI:',
-        request.jobRole
-      );
+    console.log('🤖 Generating interview questions:', request.jobRole);
 
-      const options = {
-        role: request.jobRole,
-        experience: request.difficulty, // Map difficulty to experience
-        roundType: request.roundType,
-        skills: [], // Could be derived from jobRole in the future
-        numberOfQuestions: request.questionCount,
-        difficulty: (request.difficulty.charAt(0).toUpperCase() +
-          request.difficulty.slice(1)) as
-          | 'Beginner'
-          | 'Intermediate'
-          | 'Advanced',
-        language: request.language,
-      };
+    const options = {
+      role: request.jobRole,
+      experience: request.difficulty,
+      roundType: request.roundType,
+      skills: [], // Could be derived from jobRole in the future
+      numberOfQuestions: request.questionCount,
+      difficulty: (request.difficulty.charAt(0).toUpperCase() +
+        request.difficulty.slice(1)) as
+        | 'Beginner'
+        | 'Intermediate'
+        | 'Advanced',
+      language: request.language,
+    };
 
-      const aiQuestions =
-        await this.aiService.generateInterviewQuestions(options);
+    const aiQuestions =
+      await this.aiService.generateInterviewQuestions(options);
 
-      // Map AI service questions to interview questions
-      const questions = aiQuestions.map((q) => ({
-        id: q.id,
-        text: q.question,
-        question: q.question,
-        category: q.category,
-        difficulty: q.difficulty.toLowerCase() as
-          | 'beginner'
-          | 'intermediate'
-          | 'advanced',
-        expectedTopics: q.expectedTopics,
-        followUpQuestions: q.followUpQuestions,
-      }));
+    // Map AI service questions to interview questions
+    const questions = aiQuestions.map((q) => ({
+      id: q.id,
+      text: q.question,
+      question: q.question,
+      category: q.category,
+      difficulty: q.difficulty.toLowerCase() as
+        | 'beginner'
+        | 'intermediate'
+        | 'advanced',
+      expectedTopics: q.expectedTopics,
+      followUpQuestions: q.followUpQuestions,
+    }));
 
-      console.log(
-        '✅ Interview questions generated successfully:',
-        questions.length
-      );
-      return questions;
-    } catch (error) {
-      console.error('❌ Interview question generation failed:', error);
-      throw error instanceof Error
-        ? error
-        : new Error('Failed to generate interview questions');
-    }
+    console.log('✅ Interview questions generated:', questions.length);
+    return questions;
   }
 
   /**
-   * Generate interview review
+   * Generate interview review using AI service
+   * Pure function - no side effects
    */
-  reviewInterview(
+  async reviewInterview(
     questions: InterviewQuestion[],
     answers: Array<{
+      questionId: string;
+      questionIndex: number;
       question: string;
-      audioData: Blob;
-      feedback: string;
-      score: number;
-    }>
+      expectedTopics: string[];
+      audioBlob: Blob;
+      duration?: number;
+      recordedAt: string;
+    }>,
+    role: string,
+    language?: 'en' | 'vi'
   ): Promise<InterviewReview> {
-    return new Promise((resolve, reject) => {
-      try {
-        console.log(
-          '📋 Generating interview review for',
-          questions.length,
-          'questions'
-        );
+    console.log(
+      '📋 Generating interview review for',
+      questions.length,
+      'questions'
+    );
 
-        const averageScore =
-          answers.reduce((sum, answer) => sum + answer.score, 0) /
-          answers.length;
-
-        // Mock review data - you can implement actual AI review later
-        const review: InterviewReview = {
-          sessionId: Date.now().toString(),
-          overallScore: Math.round(averageScore),
-          strengths: [
-            'Good communication skills',
-            'Technical knowledge',
-            'Problem-solving approach',
-          ],
-          weaknesses: [
-            'Could provide more specific examples',
-            'Consider edge cases',
-          ],
-          recommendations: [
-            'Practice explaining complex concepts simply',
-            'Prepare more STAR method examples',
-          ],
-          detailedFeedback: `Overall performance was good with an average score of ${Math.round(averageScore)}%.`,
-          questionFeedback: answers.map((answer, index) => ({
-            questionId: questions[index].id,
-            score: answer.score,
-            feedback: answer.feedback,
-          })),
-          suggestedImprovements: [
-            'Provide more specific examples',
-            'Practice STAR method',
-          ],
-          nextSteps: [
-            'Schedule mock interviews',
-            'Review technical concepts',
-            'Practice behavioral questions',
-          ],
-        };
-
-        console.log('✅ Interview review generated successfully');
-        resolve(review);
-      } catch (error) {
-        console.error('❌ Interview review generation failed:', error);
-        reject(new Error('Failed to generate interview review'));
-      }
+    const feedback = await this.aiService.reviewInterview({
+      questions: questions.map((q) => ({
+        id: q.id,
+        category: q.category,
+        question: q.question,
+        difficulty: (q.difficulty.charAt(0).toUpperCase() +
+          q.difficulty.slice(1)) as 'Beginner' | 'Intermediate' | 'Advanced',
+        expectedTopics: q.expectedTopics,
+        followUpQuestions: q.followUpQuestions,
+      })),
+      answers,
+      role,
+      language,
     });
+
+    // Transform AI feedback to InterviewReview format
+    const review: InterviewReview = {
+      sessionId: Date.now().toString(),
+      overallScore: feedback.overallScore,
+      strengths: feedback.overallFeedback.strengths,
+      weaknesses: feedback.overallFeedback.weaknesses,
+      recommendations: feedback.overallFeedback.recommendations,
+      detailedFeedback: feedback.overallFeedback.summary,
+      questionFeedback: feedback.questionAnalysis.map((qa) => ({
+        questionId: questions[qa.questionIndex]?.id || '',
+        score: qa.score,
+        feedback: qa.feedback,
+      })),
+      suggestedImprovements: feedback.overallFeedback.recommendations,
+      nextSteps: feedback.overallFeedback.recommendations,
+    };
+
+    console.log('✅ Interview review generated successfully');
+    return review;
   }
 }
-
-// Export singleton instance
-export const interviewService = InterviewService.getInstance();

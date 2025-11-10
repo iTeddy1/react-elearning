@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { InterviewQuestion, InterviewAnswer, AudioRecording, InterviewResult } from '../types';
+import {
+  InterviewQuestion,
+  InterviewAnswer,
+  AudioRecording,
+  InterviewResult,
+} from '../types';
 import { InterviewAIService } from '../services/ai/interview-ai-service';
 
 // Interview Session Types
@@ -18,16 +23,16 @@ export interface InterviewSessionState {
     currentQuestionIndex: number;
     status: 'active' | 'completed' | 'paused' | 'reviewing';
   } | null;
-  
+
   // Audio state
   isRecording: boolean;
   recordingDuration: number;
   audioPermission: boolean;
-  
+
   // Review state
   reviewResult: InterviewResult | null;
   isGeneratingReview: boolean;
-  
+
   // UI state
   isProcessing: boolean;
   error: string | null;
@@ -44,28 +49,28 @@ export interface InterviewSessionActions {
   pauseSession: () => void;
   resumeSession: () => void;
   resetSession: () => void;
-  
+
   // Question navigation
   nextQuestion: () => void;
   previousQuestion: () => void;
   goToQuestion: (index: number) => void;
-  
+
   // Answer management
   submitAnswer: (questionId: string, answer: string) => void;
   updateAnswer: (questionId: string, answer: string) => void;
-  
+
   // Recording management
   startRecording: () => void;
   stopRecording: () => void;
   addRecording: (recording: AudioRecording) => void;
-  
+
   // Review management
   completeInterviewAndGenerateReview: () => Promise<void>;
   clearReview: () => void;
-  
+
   // Audio permission
   setAudioPermission: (permission: boolean) => void;
-  
+
   // UI state management
   setProcessing: (isProcessing: boolean) => void;
   setError: (error: string | null) => void;
@@ -88,7 +93,9 @@ const aiService = new InterviewAIService({
   model: 'gemini-2.0-flash-exp',
 });
 
-export const useInterviewSessionStore = create<InterviewSessionState & InterviewSessionActions>()(
+export const useInterviewSessionStore = create<
+  InterviewSessionState & InterviewSessionActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,
@@ -109,7 +116,6 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
             status: 'active',
           },
           error: null,
-          
         });
         console.log('🎯 Interview session started:', sessionId);
       },
@@ -160,7 +166,11 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
       // Question navigation
       nextQuestion: () => {
         const { currentSession } = get();
-        if (currentSession && currentSession.currentQuestionIndex < currentSession.questions.length - 1) {
+        if (
+          currentSession &&
+          currentSession.currentQuestionIndex <
+            currentSession.questions.length - 1
+        ) {
           set({
             currentSession: {
               ...currentSession,
@@ -184,7 +194,11 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
 
       goToQuestion: (index) => {
         const { currentSession } = get();
-        if (currentSession && index >= 0 && index < currentSession.questions.length) {
+        if (
+          currentSession &&
+          index >= 0 &&
+          index < currentSession.questions.length
+        ) {
           set({
             currentSession: {
               ...currentSession,
@@ -300,7 +314,9 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
 
           // Prepare answers for AI service
           const answers = currentSession.recordings.map((recording, index) => {
-            const question = currentSession.questions.find(q => q.id === recording.questionId);
+            const question = currentSession.questions.find(
+              (q) => q.id === recording.questionId
+            );
             return {
               questionId: recording.questionId,
               questionIndex: index,
@@ -318,11 +334,15 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
 
           // Generate review using AI service
           const aiReview = await aiService.reviewInterview({
-            questions: currentSession.questions.map(q => ({
+            questions: currentSession.questions.map((q) => ({
               id: q.id,
               category: q.category,
               question: q.question,
-              difficulty: (q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)) as 'Beginner' | 'Intermediate' | 'Advanced',
+              difficulty: (q.difficulty.charAt(0).toUpperCase() +
+                q.difficulty.slice(1)) as
+                | 'Beginner'
+                | 'Intermediate'
+                | 'Advanced',
               expectedTopics: q.expectedTopics,
               followUpQuestions: q.followUpQuestions,
             })),
@@ -332,7 +352,10 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
             interviewMetadata: {
               interviewId: currentSession.id,
               interviewDate: currentSession.startTime.toISOString(),
-              totalDuration: Math.floor((new Date().getTime() - currentSession.startTime.getTime()) / 1000),
+              totalDuration: Math.floor(
+                (new Date().getTime() - currentSession.startTime.getTime()) /
+                  1000
+              ),
               environment: 'web',
             },
           });
@@ -342,8 +365,12 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
           // Transform AI review to InterviewResult format
           const result: InterviewResult = {
             questions: currentSession.questions.map((q, index) => {
-              const analysis = aiReview.questionAnalysis.find(qa => qa.questionIndex === index);
-              const recording = currentSession.recordings.find(r => r.questionId === q.id);
+              const analysis = aiReview.questionAnalysis.find(
+                (qa) => qa.questionIndex === index
+              );
+              const recording = currentSession.recordings.find(
+                (r) => r.questionId === q.id
+              );
               return {
                 questionId: q.id,
                 question: q.question,
@@ -352,7 +379,8 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
                 contentRelevancy: {
                   score: analysis?.score || 0,
                   improvement: analysis?.weaknesses || [],
-                  reason: analysis?.feedback || 'No detailed feedback available',
+                  reason:
+                    analysis?.feedback || 'No detailed feedback available',
                 },
               };
             }),
@@ -363,52 +391,69 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
               overallInterviewScore: aiReview.overallScore,
               professionalismScore: aiReview.scores.professionalism,
               sociabilityScore: aiReview.scores.overallFit,
-              energyLevelScore: Math.round((aiReview.scores.communicationSkills + aiReview.scores.professionalism) / 2),
+              energyLevelScore: Math.round(
+                (aiReview.scores.communicationSkills +
+                  aiReview.scores.professionalism) /
+                  2
+              ),
             },
             communication_breakdown: [
               {
                 name: 'Technical Knowledge',
-                definition: 'Assessment of technical understanding and accuracy',
+                definition:
+                  'Assessment of technical understanding and accuracy',
                 score: aiReview.scores.technicalKnowledge,
-                reasoning: 'Evaluation based on depth and correctness of technical responses',
+                reasoning:
+                  'Evaluation based on depth and correctness of technical responses',
               },
               {
                 name: 'Communication Skills',
                 definition: 'Clarity, structure, and articulation of responses',
                 score: aiReview.scores.communicationSkills,
-                reasoning: 'Assessment of how effectively ideas were communicated',
+                reasoning:
+                  'Assessment of how effectively ideas were communicated',
               },
               {
                 name: 'Problem Solving',
                 definition: 'Analytical thinking and approach to challenges',
                 score: aiReview.scores.problemSolving,
-                reasoning: 'Evaluation of logical reasoning and solution approach',
+                reasoning:
+                  'Evaluation of logical reasoning and solution approach',
               },
             ],
-            relevancy_score_breakdown: currentSession.questions.map((q, index) => {
-              const analysis = aiReview.questionAnalysis.find(qa => qa.questionIndex === index);
-              return {
-                questionId: q.id,
-                question: q.question,
-                answer: 'Audio response',
-                relevancy_score: analysis?.score || 0,
-                relevancy_type: q.category,
-                reason: analysis?.feedback || 'No detailed feedback available',
-                improvements: analysis?.weaknesses || [],
-                extracted_ideal_answer: q.expectedTopics.join(', '),
-                strengths: analysis?.strengths || [],
-              };
-            }),
+            relevancy_score_breakdown: currentSession.questions.map(
+              (q, index) => {
+                const analysis = aiReview.questionAnalysis.find(
+                  (qa) => qa.questionIndex === index
+                );
+                return {
+                  questionId: q.id,
+                  question: q.question,
+                  answer: 'Audio response',
+                  relevancy_score: analysis?.score || 0,
+                  relevancy_type: q.category,
+                  reason:
+                    analysis?.feedback || 'No detailed feedback available',
+                  improvements: analysis?.weaknesses || [],
+                  extracted_ideal_answer: q.expectedTopics.join(', '),
+                  strengths: analysis?.strengths || [],
+                };
+              }
+            ),
             grammar_score_breakdown: [], // AI service doesn't provide specific grammar breakdown
             overallSummary: {
               overall_summary: aiReview.overallFeedback.summary,
-              transcript_summary: 'Interview completed with audio responses analyzed by AI',
+              transcript_summary:
+                'Interview completed with audio responses analyzed by AI',
               strengths: aiReview.overallFeedback.strengths,
               weaknesses: aiReview.overallFeedback.weaknesses,
               key_insights: aiReview.overallFeedback.recommendations,
-              recommendation: aiReview.overallFeedback.decision === 'RECOMMEND' ? 'YES - Strong candidate' :
-                            aiReview.overallFeedback.decision === 'MAYBE' ? 'MAYBE - Conditional recommendation' :
-                            'NO - Additional development needed',
+              recommendation:
+                aiReview.overallFeedback.decision === 'RECOMMEND'
+                  ? 'YES - Strong candidate'
+                  : aiReview.overallFeedback.decision === 'MAYBE'
+                    ? 'MAYBE - Conditional recommendation'
+                    : 'NO - Additional development needed',
             },
           };
 
@@ -423,16 +468,20 @@ export const useInterviewSessionStore = create<InterviewSessionState & Interview
           });
 
           console.log('🎉 Interview review completed successfully');
-
         } catch (error) {
           console.error('❌ Failed to generate interview review:', error);
           set({
-            error: error instanceof Error ? error.message : 'Failed to generate interview review',
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Failed to generate interview review',
             isGeneratingReview: false,
-            currentSession: currentSession ? {
-              ...currentSession,
-              status: 'completed',
-            } : null,
+            currentSession: currentSession
+              ? {
+                  ...currentSession,
+                  status: 'completed',
+                }
+              : null,
           });
         }
       },

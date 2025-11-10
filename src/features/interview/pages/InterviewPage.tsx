@@ -56,7 +56,9 @@ export const InterviewPage: React.FC = () => {
       console.log('Recording started successfully');
     } catch (error) {
       console.error('Failed to start recording:', error);
-      setError('Failed to start recording. Please check microphone permissions.');
+      setError(
+        'Failed to start recording. Please check microphone permissions.'
+      );
       stopRecording(); // Reset recording state if start failed
     }
   };
@@ -73,7 +75,7 @@ export const InterviewPage: React.FC = () => {
         console.log('Recording captured:', {
           size: audioBlob.blob.size,
           duration: audioBlob.duration,
-          type: audioBlob.blob.type
+          type: audioBlob.blob.type,
         });
       } else {
         console.error('Failed to capture recording:', audioBlob);
@@ -112,7 +114,10 @@ export const InterviewPage: React.FC = () => {
       addRecording(audioRecording);
 
       // Also submit a text answer reference for compatibility
-      submitAnswer(currentQuestion.id, `Audio recording (${recordingState.recordingDuration}s)`);
+      submitAnswer(
+        currentQuestion.id,
+        `Audio recording (${recordingState.recordingDuration}s)`
+      );
 
       // Clean up states
       audioPreviewState.resetPreview();
@@ -197,7 +202,12 @@ export const InterviewPage: React.FC = () => {
   }
 
   // Show results if all questions are answered (fallback)
-  if (currentSession && allQuestionsAnswered && currentSession.status === 'completed' && !isGeneratingReview) {
+  if (
+    currentSession &&
+    allQuestionsAnswered &&
+    currentSession.status === 'completed' &&
+    !isGeneratingReview
+  ) {
     return (
       <div className="container mx-auto py-8 px-4">
         <InterviewResults
@@ -230,7 +240,7 @@ export const InterviewPage: React.FC = () => {
       </div>
     );
   }
-  console.log(audioPreviewState)
+  console.log(audioPreviewState);
 
   // Show error state
   if (error) {
@@ -248,8 +258,8 @@ export const InterviewPage: React.FC = () => {
     const message = isGeneratingReview
       ? 'Analyzing your interview responses with AI... This may take a few moments.'
       : currentSession?.status === 'completed'
-      ? 'Analyzing your responses...'
-      : 'Processing...';
+        ? 'Analyzing your responses...'
+        : 'Processing...';
 
     return <LoadingState message={message} />;
   }

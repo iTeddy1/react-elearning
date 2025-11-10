@@ -9,7 +9,6 @@ import Layout from '@/components/layout/layout';
 import { Zap } from 'lucide-react';
 
 import CreateQuizForm from '@/features/practice/components/create-quiz-form';
-import QuizErrorSuccessDemo from '@/features/practice/components/quiz-error-success-demo';
 
 const Practice = () => {
   return (
@@ -59,9 +58,6 @@ const Practice = () => {
             and detailed explanations for each question.
           </p>
         </div>
-
-        {/* React Query + Zustand Error/Success Demo */}
-        <QuizErrorSuccessDemo />
       </div>
     </Layout>
   );

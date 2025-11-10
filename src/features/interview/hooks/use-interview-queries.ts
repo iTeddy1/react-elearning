@@ -1,29 +1,174 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { interviewService } from '../services/interview-service';
-import {
-  GenerateQuestionsRequest,
+import type {
   InterviewQuestion,
   InterviewReview,
+  GenerateQuestionsRequest,
 } from '../types';
+import { useInterviewAI } from '@/providers/AIServiceProvider';
 import { useInterviewSessionStore } from '../store/interview-session-store';
 import { useInterviewProgressStore } from '../store/interview-progress-store';
 
+export const interviewQueryKeys = {
+  all: ['interview'] as const,
+  sessions: () => [...interviewQueryKeys.all, 'sessions'] as const,
+  session: (id: string) => [...interviewQueryKeys.sessions(), id] as const,
+  generated: () => [...interviewQueryKeys.all, 'generated'] as const,
+  reviews: () => [...interviewQueryKeys.all, 'reviews'] as const,
+  review: (sessionId: string) =>
+    [...interviewQueryKeys.reviews(), sessionId] as const,
+  progress: () => [...interviewQueryKeys.all, 'progress'] as const,
+} as const;
+
+// ================================
+// QUERY HOOKS - With Caching
+// ================================
+
 /**
- * React Query hook for generating interview questions with local AI
+ * Get cached generated InterviewQuestions
+ * Persists in React Query cache with 30min stale time
  */
-export const useGenerateInterviewQuestionsMutation = () => {
-  const navigate = useNavigate();
-  const { startSession } = useInterviewSessionStore();
+export const useGeneratedInterviewQuestions = () => {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: interviewQueryKeys.generated(),
+    queryFn: () => {
+      // Return cached data or null
+      const cached = queryClient.getQueryData<InterviewQuestion>(
+        interviewQueryKeys.generated()
+      );
+      return cached || null;
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+    enabled: false, // Only manual fetch
+  });
+};
+
+// ================================
+// MUTATION HOOKS - Server Operations
+// ================================
+
+/**
+ * Generate interview questions using AI service
+ * Flow: UI → React Query → AI Service
+ * Caches result for reuse
+ */
+export const useGenerateInterviewQuestionsMutation = (callbacks?: {
+  onStart?: () => void;
+  onSuccess?: (
+    questions: InterviewQuestion[],
+    config: GenerateQuestionsRequest
+  ) => void;
+  onError?: (error: Error) => void;
+  onSettled?: () => void;
+}) => {
+  const queryClient = useQueryClient();
+  const interviewAI = useInterviewAI();
 
   return useMutation({
     mutationFn: async (
-      config: GenerateQuestionsRequest
+      request: GenerateQuestionsRequest
     ): Promise<InterviewQuestion[]> => {
-      // Generate questions using the service
-      const questions = await interviewService.generateQuestions(config);
+      // Check cache first
+      const cached = queryClient.getQueryData<InterviewQuestion[]>(
+        interviewQueryKeys.generated()
+      );
 
+      if (cached && cached.length > 0) {
+        console.log('📦 Using cached interview questions');
+        return cached;
+      }
+
+      // Generate new questions via AI
+      console.log('🤖 Generating new interview questions via AI');
+      const aiQuestions = await interviewAI.generateInterviewQuestions({
+        role: request.jobRole,
+        experience: request.difficulty,
+        roundType: request.roundType,
+        skills: [],
+        numberOfQuestions: request.questionCount,
+        difficulty: (request.difficulty.charAt(0).toUpperCase() +
+          request.difficulty.slice(1)) as
+          | 'Beginner'
+          | 'Intermediate'
+          | 'Advanced',
+        language: request.language,
+      });
+
+      // Transform to InterviewQuestion format
+      const questions: InterviewQuestion[] = aiQuestions.map((q) => ({
+        id: q.id,
+        text: q.question,
+        question: q.question,
+        category: q.category,
+        difficulty: q.difficulty.toLowerCase() as
+          | 'beginner'
+          | 'intermediate'
+          | 'advanced',
+        expectedTopics: q.expectedTopics,
+        followUpQuestions: q.followUpQuestions,
+      }));
+
+      return questions;
+    },
+
+    onMutate: () => {
+      callbacks?.onStart?.();
+    },
+
+    onSuccess: (
+      questions: InterviewQuestion[],
+      config: GenerateQuestionsRequest
+    ) => {
+      // Cache the generated questions with persistence
+      queryClient.setQueryData(interviewQueryKeys.generated(), questions);
+
+      // Show success toast
+      toast.success('Interview questions generated!', {
+        description: `${questions.length} questions ready for ${config.jobRole} interview`,
+        duration: 3000,
+      });
+
+      console.log('✅ Interview questions cached:', questions.length);
+
+      // Callback for UI updates
+      callbacks?.onSuccess?.(questions, config);
+    },
+
+    onError: (error: Error) => {
+      console.error('❌ InterviewQuestions generation failed:', error.message);
+
+      // Show error toast
+      toast.error('Failed to generate InterviewQuestions', {
+        description: error.message.includes('parse')
+          ? 'The AI returned invalid data. Please try again.'
+          : error.message,
+        duration: 5000,
+      });
+
+      // Callback for UI updates
+      callbacks?.onError?.(error);
+    },
+
+    onSettled: () => {
+      callbacks?.onSettled?.();
+    },
+  });
+};
+
+/**
+ * Generate interview questions and automatically start session
+ * Combines generation + session start for convenience
+ */
+export const useGenerateAndStartInterviewMutation = () => {
+  const navigate = useNavigate();
+  const { startSession } = useInterviewSessionStore();
+
+  return useGenerateInterviewQuestionsMutation({
+    onSuccess: (questions, config) => {
       // Start session in store
       startSession({
         jobRole: config.jobRole,
@@ -31,116 +176,202 @@ export const useGenerateInterviewQuestionsMutation = () => {
         questions,
       });
 
-      // Navigate to session page (use void to ignore promise)
+      // Navigate to session page
       void navigate('/interview/session');
-
-      return questions;
-    },
-    onMutate: () => {
-      console.log('🚀 Starting interview question generation...');
-      toast.loading('Generating interview questions...', {
-        id: 'generate-interview',
-        description: 'AI is creating personalized questions for your interview',
-      });
-    },
-    onSuccess: (questions, config) => {
-      console.log(
-        '✅ Interview questions generated successfully:',
-        questions.length
-      );
-      toast.success('Interview questions generated!', {
-        id: 'generate-interview',
-        description: `${questions.length} questions ready for ${config.jobRole} interview`,
-        action: {
-          label: 'Start Interview',
-          onClick: () => void navigate('/interview/session'),
-        },
-      });
-    },
-    onError: (error: Error) => {
-      console.error('❌ Interview question generation failed:', error);
-      toast.error('Failed to generate questions', {
-        id: 'generate-interview',
-        description: error.message || 'Please try again',
-        action: {
-          label: 'Retry',
-          onClick: () => window.location.reload(),
-        },
-      });
     },
   });
 };
 
 /**
- * React Query hook for generating interview review
+ * Generate interview review using AI service
+ * Flow: UI → React Query → AI Service
+ * Caches review by session ID
  */
-export const useGenerateInterviewReviewMutation = () => {
+export const useGenerateInterviewReviewMutation = (callbacks?: {
+  onStart?: () => void;
+  onSuccess?: (review: InterviewReview, sessionId?: string) => void;
+  onError?: (error: Error) => void;
+  onSettled?: () => void;
+}) => {
+  const queryClient = useQueryClient();
+  const interviewAI = useInterviewAI();
   const { saveAttempt } = useInterviewProgressStore();
 
   return useMutation({
-    mutationFn: async ({
-      questions,
-      answers,
-    }: {
+    mutationFn: async (request: {
       questions: InterviewQuestion[];
       answers: Array<{
+        questionId: string;
+        questionIndex: number;
         question: string;
-        audioData: Blob;
-        feedback: string;
-        score: number;
+        expectedTopics: string[];
+        audioBlob: Blob;
+        duration?: number;
+        recordedAt: string;
       }>;
-    }): Promise<InterviewReview> => {
-      const review = await interviewService.reviewInterview(questions, answers);
+      role: string;
+      language?: 'en' | 'vi';
+      sessionId?: string;
+    }): Promise<{
+      review: InterviewReview;
+      sessionId?: string;
+    }> => {
+      // Check cache if sessionId provided
+      if (request.sessionId) {
+        const cached = queryClient.getQueryData<InterviewReview>(
+          interviewQueryKeys.review(request.sessionId)
+        );
+        if (cached) {
+          console.log('📦 Using cached review');
+          return { review: cached, sessionId: request.sessionId };
+        }
+      }
+
+      // Generate new review via AI
+      console.log('📋 Generating new interview review via AI');
+      const feedback = await interviewAI.reviewInterview({
+        questions: request.questions.map((q) => ({
+          id: q.id,
+          category: q.category,
+          question: q.question,
+          difficulty: (q.difficulty.charAt(0).toUpperCase() +
+            q.difficulty.slice(1)) as 'Beginner' | 'Intermediate' | 'Advanced',
+          expectedTopics: q.expectedTopics,
+          followUpQuestions: q.followUpQuestions,
+        })),
+        answers: request.answers,
+        role: request.role,
+        language: request.language,
+      });
+
+      // Transform AI feedback to InterviewReview format
+      const review: InterviewReview = {
+        sessionId: request.sessionId || Date.now().toString(),
+        overallScore: feedback.overallScore,
+        strengths: feedback.overallFeedback.strengths,
+        weaknesses: feedback.overallFeedback.weaknesses,
+        recommendations: feedback.overallFeedback.recommendations,
+        detailedFeedback: feedback.overallFeedback.summary,
+        questionFeedback: feedback.questionAnalysis.map((qa) => ({
+          questionId: request.questions[qa.questionIndex]?.id || '',
+          score: qa.score,
+          feedback: qa.feedback,
+        })),
+        suggestedImprovements: feedback.overallFeedback.recommendations,
+        nextSteps: feedback.overallFeedback.recommendations,
+      };
 
       // Save attempt to progress store
       saveAttempt({
         id: review.sessionId,
-        jobRole: 'General', // You might want to pass this from the session
-        difficulty: 'intermediate', // You might want to pass this from the session
-        questionsCount: questions.length,
+        jobRole: request.role,
+        difficulty: 'intermediate',
+        questionsCount: request.questions.length,
         completedAt: new Date(),
-        duration: 0, // You might want to track this
+        duration: 0,
         overallScore: review.overallScore,
         feedback: {
           overallScore: review.overallScore,
           strengths: review.strengths,
           weaknesses: review.weaknesses,
-          improvements: [], // You might want to derive this from weaknesses
+          improvements: review.suggestedImprovements,
           recommendations: review.recommendations,
         },
       });
 
-      return review;
+      return { review, sessionId: request.sessionId };
     },
+
     onMutate: () => {
-      console.log('📋 Generating interview review...');
-      toast.loading('Generating interview review...', {
-        id: 'interview-review',
-        description: 'AI is preparing your performance analysis',
-      });
+      callbacks?.onStart?.();
     },
-    onSuccess: (review) => {
-      console.log('✅ Interview review generated:', review);
-      toast.success('Interview review ready!', {
-        id: 'interview-review',
+
+    onSuccess: ({ review, sessionId }) => {
+      // Cache the review if sessionId provided
+      if (sessionId) {
+        queryClient.setQueryData(interviewQueryKeys.review(sessionId), review);
+        console.log('✅ Review cached for session:', sessionId);
+      }
+
+      // Show success toast
+      toast.success('Interview review generated successfully!', {
         description: `Overall score: ${review.overallScore}%`,
-        action: {
-          label: 'View Review',
-          onClick: () => {
-            // Navigate to review page or scroll to review section
-          },
-        },
+        duration: 3000,
       });
+
+      // Callback for UI updates
+      callbacks?.onSuccess?.(review, sessionId);
     },
+
     onError: (error: Error) => {
-      console.error('❌ Interview review generation failed:', error);
+      console.error('❌ Review generation failed:', error.message);
+
+      // Show error toast
       toast.error('Failed to generate review', {
-        id: 'interview-review',
-        description: error.message || 'Please try again',
+        description: error.message.includes('parse')
+          ? 'The AI returned invalid data. Please try again.'
+          : error.message,
+        duration: 5000,
       });
+
+      // Callback for UI updates
+      callbacks?.onError?.(error);
+    },
+
+    onSettled: () => {
+      callbacks?.onSettled?.();
     },
   });
 };
+
+// ================================
+// CACHE UTILITIES
+// ================================
+
+/**
+ * Utility hook for manual cache management
+ */
+export const useInterviewCacheUtils = () => {
+  const queryClient = useQueryClient();
+
+  return {
+    // Get cached generated questions
+    getCachedQuestions: (): InterviewQuestion[] | undefined => {
+      return queryClient.getQueryData(interviewQueryKeys.generated());
+    },
+
+    // Get cached review
+    getCachedReview: (sessionId: string): InterviewReview | undefined => {
+      return queryClient.getQueryData(interviewQueryKeys.review(sessionId));
+    },
+
+    // Set questions in cache
+    setCachedQuestions: (questions: InterviewQuestion[]) => {
+      queryClient.setQueryData(interviewQueryKeys.generated(), questions);
+    },
+
+    // Clear generated questions cache
+    clearGeneratedQuestions: () => {
+      queryClient.removeQueries({ queryKey: interviewQueryKeys.generated() });
+    },
+
+    // Clear review cache
+    clearReview: (sessionId: string) => {
+      queryClient.removeQueries({
+        queryKey: interviewQueryKeys.review(sessionId),
+      });
+    },
+
+    // Clear all interview cache
+    clearAllCache: () => {
+      void queryClient.invalidateQueries({ queryKey: interviewQueryKeys.all });
+    },
+  };
+};
+
+// ================================
+// QUERY HOOKS
+// ================================
 
 /**
  * React Query hook for getting interview session data
@@ -164,7 +395,7 @@ export const useInterviewProgress = () => {
     useInterviewProgressStore();
 
   return useQuery({
-    queryKey: ['interview-progress'],
+    queryKey: interviewQueryKeys.progress(),
     queryFn: () => ({
       attempts,
       stats: {
@@ -178,37 +409,22 @@ export const useInterviewProgress = () => {
 };
 
 /**
- * React Query hook for getting interview by ID
- */
-export const useInterviewById = (id: string | undefined) => {
-  const { currentSession } = useInterviewSessionStore();
-
-  return useQuery({
-    queryKey: ['interview', id],
-    queryFn: () => {
-      // Simple implementation: check if current session matches the ID
-      if (id && currentSession && currentSession.id === id) {
-        return currentSession;
-      }
-      return null;
-    },
-    enabled: !!id,
-    staleTime: 1000 * 60 * 10, // 10 minutes
-  });
-};
-
-/**
  * Mutation for clearing all interview data
  */
 export const useClearInterviewDataMutation = () => {
   const { resetSession } = useInterviewSessionStore();
   const { clearHistory } = useInterviewProgressStore();
+  const cacheUtils = useInterviewCacheUtils();
 
   return useMutation({
     mutationFn: () => {
       // Clear data from stores
       resetSession();
       clearHistory();
+
+      // Clear cache
+      cacheUtils.clearAllCache();
+
       return Promise.resolve();
     },
     onSuccess: () => {
@@ -224,21 +440,4 @@ export const useClearInterviewDataMutation = () => {
       });
     },
   });
-};
-
-/**
- * Combined hook for interview operations
- */
-export const useInterviewOperations = () => {
-  const generateQuestions = useGenerateInterviewQuestionsMutation();
-  const generateReview = useGenerateInterviewReviewMutation();
-  const clearData = useClearInterviewDataMutation();
-
-  return {
-    generateQuestions,
-    generateReview,
-    clearData,
-    isLoading: generateQuestions.isPending || generateReview.isPending,
-    isError: generateQuestions.isError || generateReview.isError,
-  };
 };

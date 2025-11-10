@@ -16,7 +16,7 @@ export const SessionInfo: React.FC<SessionInfoProps> = ({
   totalQuestions,
   audioPermission,
 }) => {
-  if(!startTime) {
+  if (!startTime) {
     return null;
   }
   return (
@@ -25,18 +25,14 @@ export const SessionInfo: React.FC<SessionInfoProps> = ({
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            <span>
-              Started: {startTime.toLocaleTimeString()}
-            </span>
+            <span>Started: {startTime.toLocaleTimeString()}</span>
           </div>
           <div className="flex items-center gap-4">
             <span>
               Answered: {answeredCount} / {totalQuestions}
             </span>
             {!audioPermission && (
-              <Badge variant="destructive">
-                Microphone Access Required
-              </Badge>
+              <Badge variant="destructive">Microphone Access Required</Badge>
             )}
           </div>
         </div>

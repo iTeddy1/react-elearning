@@ -26,7 +26,10 @@ const convertQuestionsToQuiz = (
     topic: input.topic,
     topicId: 1, // You may want to generate this or get it from input
     technology: input.technology,
-    difficulty: input.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
+    difficulty: input.difficulty.toLowerCase() as
+      | 'beginner'
+      | 'intermediate'
+      | 'advanced',
     timeLimit: input.questionCount * 2, // 2 minutes per question
     questions: questions,
     createdAt: new Date(),

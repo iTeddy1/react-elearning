@@ -6,8 +6,14 @@ import { useQuizSessionStore } from './quiz-session-store';
 import { useProgressStore } from './progress-store';
 
 // Re-export from other stores for convenience
-export { useQuizGeneratorStore, type GenerateQuizInput } from './quiz-generator-store';
-export { useQuizSessionStore, useQuizSessionSelectors } from './quiz-session-store';
+export {
+  useQuizGeneratorStore,
+  type GenerateQuizInput,
+} from './quiz-generator-store';
+export {
+  useQuizSessionStore,
+  useQuizSessionSelectors,
+} from './quiz-session-store';
 export { useProgressStore, useProgressSelectors } from './progress-store';
 
 // Main coordinator store - handles communication between stores
@@ -15,7 +21,7 @@ export interface QuizCoordinatorState {
   // Current active quiz flow
   isQuizFlowActive: boolean;
   currentQuizId: number | null;
-  
+
   // Cross-store communication
   lastAction: string | null;
   lastActionTimestamp: Date | null;
@@ -25,11 +31,11 @@ export interface QuizCoordinatorActions {
   // Quiz flow coordination
   startQuizFlow: (quiz: Quiz) => void;
   endQuizFlow: () => void;
-  
+
   // Cross-store actions
   completeQuizSession: () => void;
   resetAllStores: () => void;
-  
+
   // Action logging
   logAction: (action: string) => void;
 }
@@ -41,7 +47,9 @@ const initialState: QuizCoordinatorState = {
   lastActionTimestamp: null,
 };
 
-export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions>()(
+export const useQuizStore = create<
+  QuizCoordinatorState & QuizCoordinatorActions
+>()(
   devtools(
     (set, get) => ({
       ...initialState,
@@ -58,7 +66,7 @@ export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions
         // Start the quiz session
         const sessionStore = useQuizSessionStore.getState();
         sessionStore.startQuiz(quiz);
-        
+
         get().logAction(`Quiz started: ${quiz.title}`);
       },
 
@@ -78,17 +86,25 @@ export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions
             score: sessionStore.currentScore,
             completedAt: new Date(),
             startedAt: sessionStore.startTime || new Date(),
-            timeSpent: sessionStore.startTime && sessionStore.endTime
-              ? Math.floor((sessionStore.endTime.getTime() - sessionStore.startTime.getTime()) / 1000)
-              : 0,
+            timeSpent:
+              sessionStore.startTime && sessionStore.endTime
+                ? Math.floor(
+                    (sessionStore.endTime.getTime() -
+                      sessionStore.startTime.getTime()) /
+                      1000
+                  )
+                : 0,
             answers: sessionStore.answers,
             totalQuestions: sessionStore.currentQuiz.questions.length,
             percentage: sessionStore.currentScore,
             topicId: sessionStore.currentQuiz.topicId || 1,
             topicName: sessionStore.currentQuiz.topic || 'General',
-            difficulty: sessionStore.currentQuiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced',
+            difficulty: sessionStore.currentQuiz.difficulty.toLowerCase() as
+              | 'beginner'
+              | 'intermediate'
+              | 'advanced',
           };
-          
+
           progressStore.saveQuizAttempt(attempt);
         }
 
@@ -98,19 +114,19 @@ export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions
           lastAction: 'quiz_completed',
           lastActionTimestamp: new Date(),
         });
-        
+
         get().logAction('Quiz flow completed');
       },
 
       // Cross-store actions
       completeQuizSession: () => {
         const sessionStore = useQuizSessionStore.getState();
-        
+
         if (sessionStore.isQuizActive) {
           // Calculate final results
           sessionStore.calculateScore();
           sessionStore.showQuizResults();
-          
+
           // End the quiz flow
           get().endQuizFlow();
         }
@@ -120,21 +136,23 @@ export const useQuizStore = create<QuizCoordinatorState & QuizCoordinatorActions
         // Reset all stores to initial state
         useQuizGeneratorStore.getState().resetGeneration();
         useQuizSessionStore.getState().resetQuiz();
-        
+
         set({
           isQuizFlowActive: false,
           currentQuizId: null,
           lastAction: 'stores_reset',
           lastActionTimestamp: new Date(),
         });
-        
+
         get().logAction('All stores reset');
       },
 
       // Action logging
       logAction: (action: string) => {
-        console.log(`[Quiz Coordinator] ${new Date().toISOString()}: ${action}`);
-        
+        console.log(
+          `[Quiz Coordinator] ${new Date().toISOString()}: ${action}`
+        );
+
         set({
           lastAction: action,
           lastActionTimestamp: new Date(),
