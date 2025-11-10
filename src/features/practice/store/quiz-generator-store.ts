@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import {
-  PracticeAIService,
-  QuizGenerationOptions,
-} from '../services/ai/practice-ai-service';
-import { Quiz, QuizQuestion } from '../types';
-import { practiceConfig } from '../config';
+import type { Quiz, QuizQuestion } from '../types';
 
 export interface GenerateQuizInput {
   topic: string;
@@ -16,7 +11,8 @@ export interface GenerateQuizInput {
 }
 
 // Helper function to convert AI questions to Quiz format
-const convertQuestionsToQuiz = (
+// Exported for use in React Query mutations
+export const convertQuestionsToQuiz = (
   questions: QuizQuestion[],
   input: GenerateQuizInput
 ): Quiz => {
@@ -55,8 +51,8 @@ export interface QuizGeneratorState {
 }
 
 export interface QuizGeneratorActions {
-  // Generation actions
-  startGeneration: (settings: GenerateQuizInput) => Promise<void>;
+  // UI state management only - no AI calls
+  setGenerating: (isGenerating: boolean) => void;
   setGenerationResult: (quiz: Quiz) => void;
   setGenerationError: (error: string | null) => void;
   resetGeneration: () => void;
@@ -92,12 +88,6 @@ const initialState: QuizGeneratorState = {
   generationHistory: [],
 };
 
-// Create AI service instance
-const practiceAIService = new PracticeAIService({
-  apiKey: practiceConfig.GOOGLE_GENAI_API_KEY,
-  model: practiceConfig.AI_MODEL,
-});
-
 export const useQuizGeneratorStore = create<
   QuizGeneratorState & QuizGeneratorActions
 >()(
@@ -105,45 +95,9 @@ export const useQuizGeneratorStore = create<
     (set, get) => ({
       ...initialState,
 
-      // Generation actions
-      startGeneration: async (settings: GenerateQuizInput) => {
-        set({
-          isGenerating: true,
-          generationError: null,
-          lastGeneratedSettings: settings,
-        });
-
-        try {
-          // Convert to AI service options
-          const aiOptions: QuizGenerationOptions = {
-            technology: settings.technology,
-            topic: `${settings.technology} ${settings.topic}`,
-            difficulty: settings.difficulty,
-            numQuestions: settings.questionCount,
-            language: settings.language === 'vi' ? 'Vietnamese' : 'English',
-          };
-          console.log('Starting quiz generation with options:', aiOptions);
-          // Call AI service
-          const questions = await practiceAIService.generateQuiz(aiOptions);
-
-          if (!questions || questions.length === 0) {
-            throw new Error('No questions generated');
-          }
-
-          // Convert questions to Quiz format
-          const quiz = convertQuestionsToQuiz(questions, settings);
-
-          // Update store with results
-          get().setGenerationResult(quiz);
-          get().saveToHistory(settings, quiz);
-        } catch (error) {
-          console.error('Quiz generation failed:', error);
-          set({
-            isGenerating: false,
-            generationError:
-              error instanceof Error ? error.message : 'Quiz generation failed',
-          });
-        }
+      // UI state management only - no AI calls
+      setGenerating: (isGenerating: boolean) => {
+        set({ isGenerating });
       },
 
       setGenerationResult: (quiz: Quiz) => {

@@ -103,8 +103,3 @@ export const useInterviewStore = create<
     }
   )
 );
-
-// Re-export all stores for convenience
-export { useInterviewSessionStore } from './interview-session-store';
-export { useInterviewGeneratorStore } from './interview-generator-store';
-export { useInterviewProgressStore } from './interview-progress-store';

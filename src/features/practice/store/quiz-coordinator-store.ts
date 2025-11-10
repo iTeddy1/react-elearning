@@ -5,7 +5,6 @@ import { useQuizGeneratorStore } from './quiz-generator-store';
 import { useQuizSessionStore } from './quiz-session-store';
 import { useProgressStore } from './progress-store';
 
-// Re-export from other stores for convenience
 export {
   useQuizGeneratorStore,
   type GenerateQuizInput,

@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { QuizReview, Quiz, QuizAnswer } from '../types';
-import { PracticeAIService } from '../services/ai/practice-ai-service';
-import { practiceConfig } from '../config';
 
 export interface QuizReviewState {
   // Review data
@@ -18,18 +16,12 @@ export interface QuizReviewState {
 }
 
 export interface QuizReviewActions {
-  // Review generation
-  generateReview: (
-    quizPayload: string,
-    userAnswers: (0 | 1 | 2 | 3 | null)[],
-    quizId: number,
-    language?: 'vi' | 'en'
-  ) => Promise<void>;
-
-  // State management
+  // State management - UI only
+  setReview: (review: QuizReview, quizId: number) => void;
+  setGeneratingReview: (isGenerating: boolean) => void;
+  setReviewError: (error: string | null) => void;
   clearReview: () => void;
   clearError: () => void;
-  setReview: (review: QuizReview, quizId: number) => void;
 }
 
 const initialState: QuizReviewState = {
@@ -40,118 +32,31 @@ const initialState: QuizReviewState = {
   quizId: null,
 };
 
-const practiceAIService = new PracticeAIService({
-  apiKey: practiceConfig.GOOGLE_GENAI_API_KEY,
-  model: practiceConfig.AI_MODEL,
-});
-
 export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
   devtools(
     (set) => ({
       ...initialState,
 
-      generateReview: async (
-        quizPayload: string,
-        userAnswers: (0 | 1 | 2 | 3 | null)[],
-        quizId: number,
-        language = 'en'
-      ) => {
+      // UI state management only - no AI calls
+      setReview: (review: QuizReview, quizId: number) => {
         set({
-          isGeneratingReview: true,
+          currentReview: review,
+          quizId,
+          reviewGeneratedAt: new Date(),
           reviewError: null,
+          isGeneratingReview: false,
         });
+      },
 
-        try {
-          // Parse quiz data to verify correctness
-          const quizData = JSON.parse(quizPayload) as {
-            meta: { technology: string };
-            items: Array<{ answerIndex: number }>;
-          };
-          console.log('Parsed quiz data:', quizData);
+      setGeneratingReview: (isGenerating: boolean) => {
+        set({ isGeneratingReview: isGenerating });
+      },
 
-          // Extract technology from quiz data
-          const technology = quizData.meta?.technology || 'React';
-          console.log('Technology for review:', technology);
-
-          // Calculate expected score manually for verification
-          const correctAnswers = userAnswers.filter((answer, index) => {
-            if (answer === null) return false;
-            return answer === quizData.items[index]?.answerIndex;
-          });
-
-          const reviewJson = await practiceAIService.generateReview(
-            quizPayload,
-            userAnswers,
-            technology,
-            language
-          );
-
-          const parsedReview = JSON.parse(reviewJson) as unknown;
-
-          // Type guard for review validation
-          if (!isValidQuizReview(parsedReview)) {
-            throw new Error('Invalid review format received from AI');
-          }
-
-          const review: QuizReview = parsedReview;
-
-          // Validate and potentially correct the AI's score calculation
-          const expectedScore = correctAnswers.length;
-          const expectedTotal = quizData.items.length;
-          const expectedAccuracy =
-            expectedTotal > 0 ? expectedScore / expectedTotal : 0;
-
-          console.log(
-            'AI calculated score:',
-            review.score,
-            '/',
-            review.total,
-            'accuracy:',
-            review.accuracy
-          );
-          console.log(
-            'Expected score:',
-            expectedScore,
-            '/',
-            expectedTotal,
-            'accuracy:',
-            expectedAccuracy
-          );
-
-          // If AI calculation is wrong, correct it
-          if (
-            review.score !== expectedScore ||
-            review.total !== expectedTotal
-          ) {
-            console.warn('AI score calculation was incorrect. Correcting...');
-            review.score = expectedScore;
-            review.total = expectedTotal;
-            review.accuracy = expectedAccuracy;
-          }
-
-          set({
-            currentReview: review,
-            isGeneratingReview: false,
-            reviewGeneratedAt: new Date(),
-            quizId,
-            reviewError: null,
-          });
-
-          console.log('Review generated successfully:', review);
-        } catch (error) {
-          console.error('Error generating review:', error);
-
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : 'Failed to generate review. Please try again.';
-
-          set({
-            reviewError: errorMessage,
-            isGeneratingReview: false,
-            currentReview: null,
-          });
-        }
+      setReviewError: (error: string | null) => {
+        set({
+          reviewError: error,
+          isGeneratingReview: false,
+        });
       },
 
       clearReview: () => {
@@ -166,39 +71,12 @@ export const useQuizReviewStore = create<QuizReviewState & QuizReviewActions>()(
       clearError: () => {
         set({ reviewError: null });
       },
-
-      setReview: (review: QuizReview, quizId: number) => {
-        set({
-          currentReview: review,
-          quizId,
-          reviewGeneratedAt: new Date(),
-          reviewError: null,
-        });
-      },
     }),
     {
       name: 'quiz-review-store',
     }
   )
 );
-
-// Type guard for quiz review validation
-function isValidQuizReview(obj: unknown): obj is QuizReview {
-  if (typeof obj !== 'object' || obj === null) return false;
-
-  const review = obj as Record<string, unknown>;
-
-  return (
-    typeof review.score === 'number' &&
-    typeof review.total === 'number' &&
-    typeof review.accuracy === 'number' &&
-    typeof review.comment === 'string' &&
-    Array.isArray(review.recommendedTopics) &&
-    Array.isArray(review.tips) &&
-    (typeof review.perTagAccuracy === 'object' ||
-      review.perTagAccuracy === undefined)
-  );
-}
 
 // Selectors for quiz review
 export const useQuizReviewSelectors = () => {

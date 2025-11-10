@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useInterviewSessionStore } from '../store/interview-session-store';
+import { useGenerateInterviewReviewMutation } from '../hooks/use-interview-queries';
 import { QuestionCard } from '../components/QuestionCard';
 import { InterviewResults } from '../components/InterviewResults';
 import { InterviewHeader } from '../components/InterviewHeader';
@@ -36,10 +38,85 @@ export const InterviewPage: React.FC = () => {
     stopRecording,
     submitAnswer,
     addRecording,
-    completeInterviewAndGenerateReview,
+    completeInterview,
+    setReviewResult,
+    setGeneratingReview,
     resetSession,
     setError,
   } = useInterviewSessionStore();
+
+  // React Query mutation for generating review
+  const generateReviewMutation = useGenerateInterviewReviewMutation({
+    onSuccess: (review) => {
+      if (currentSession) {
+        // Transform review to legacy InterviewResult format for the UI
+        const result = {
+          questions: currentSession.questions.map((q) => {
+            const feedback = review.questionFeedback.find(
+              (qf: { questionId: string }) => qf.questionId === q.id
+            );
+            const recording = currentSession.recordings.find(
+              (r) => r.questionId === q.id
+            );
+            return {
+              questionId: q.id,
+              question: q.question,
+              response: recording ? 'Audio response recorded' : 'No response',
+              grammar: null,
+              contentRelevancy: {
+                score: feedback?.score || 0,
+                improvement: review.weaknesses,
+                reason: feedback?.feedback || 'No feedback available',
+              },
+            };
+          }),
+          scores: {
+            grammarScore: review.overallScore,
+            communicationScore: review.overallScore,
+            totalRelevancyScore: review.overallScore,
+            overallInterviewScore: review.overallScore,
+            professionalismScore: review.overallScore,
+            sociabilityScore: review.overallScore,
+            energyLevelScore: review.overallScore,
+          },
+          communication_breakdown: [],
+          relevancy_score_breakdown: currentSession.questions.map((q) => {
+            const feedback = review.questionFeedback.find(
+              (qf: { questionId: string }) => qf.questionId === q.id
+            );
+            return {
+              questionId: q.id,
+              question: q.question,
+              answer: 'Audio response',
+              relevancy_score: feedback?.score || 0,
+              relevancy_type: q.category,
+              reason: feedback?.feedback || 'No feedback available',
+              improvements: review.weaknesses,
+              extracted_ideal_answer: q.expectedTopics.join(', '),
+              strengths: review.strengths,
+            };
+          }),
+          grammar_score_breakdown: [],
+          overallSummary: {
+            overall_summary: review.detailedFeedback,
+            transcript_summary: 'Interview completed with audio responses',
+            strengths: review.strengths,
+            weaknesses: review.weaknesses,
+            key_insights: review.recommendations,
+            recommendation: `Score: ${review.overallScore}%`,
+          },
+        };
+
+        setReviewResult(result);
+        toast.success('Interview review generated successfully!');
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to generate interview review:', error);
+      setError('Failed to generate interview review. Please try again.');
+      toast.error('Failed to generate interview review');
+    },
+  });
 
   // Use custom hooks for state management
   const recordingState = useInterviewRecording(isRecording, audioService);
@@ -175,16 +252,45 @@ export const InterviewPage: React.FC = () => {
 
   // Handle complete interview
   const handleCompleteInterview = async () => {
-    if (!allQuestionsAnswered) {
+    if (!currentSession || !allQuestionsAnswered) {
       setError('Please answer all questions before completing the interview');
       return;
     }
 
     try {
-      await completeInterviewAndGenerateReview();
+      // Mark interview as complete (UI state only)
+      completeInterview();
+      setGeneratingReview(true);
+
+      // Prepare data for AI review - format answers for the mutation
+      const answers = currentSession.recordings.map((recording, index) => {
+        const question = currentSession.questions.find(
+          (q) => q.id === recording.questionId
+        );
+        return {
+          questionId: recording.questionId,
+          questionIndex: index,
+          question: question?.question || '',
+          expectedTopics: question?.expectedTopics || [],
+          audioBlob: recording.audioBlob,
+          duration: recording.duration,
+          recordedAt: recording.timestamp.toISOString(),
+        };
+      });
+
+      // Call React Query mutation to generate review via AI service
+      await generateReviewMutation.mutateAsync({
+        questions: currentSession.questions, // Already in correct format
+        answers,
+        role: currentSession.jobRole,
+        language: 'en',
+        sessionId: currentSession.id,
+      });
     } catch (error) {
       console.error('Failed to complete interview:', error);
       setError('Failed to complete interview. Please try again.');
+    } finally {
+      setGeneratingReview(false);
     }
   };
 

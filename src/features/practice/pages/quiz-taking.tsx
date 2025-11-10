@@ -7,6 +7,7 @@ import {
   RotateCcw,
   BookOpen,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +18,27 @@ import {
   useQuizReviewStore,
   convertSessionToReviewInput,
 } from '../store/quiz-review-store';
+import { useGenerateReviewMutation } from '../hooks/use-quiz-queries';
+import type { QuizReview } from '../types';
 import QuizReviewDisplay from '../components/quiz-review-display';
+
+// Type guard for quiz review validation
+function isValidQuizReview(obj: unknown): obj is QuizReview {
+  if (typeof obj !== 'object' || obj === null) return false;
+
+  const review = obj as Record<string, unknown>;
+
+  return (
+    typeof review.score === 'number' &&
+    typeof review.total === 'number' &&
+    typeof review.accuracy === 'number' &&
+    typeof review.comment === 'string' &&
+    Array.isArray(review.recommendedTopics) &&
+    Array.isArray(review.tips) &&
+    (typeof review.perTagAccuracy === 'object' ||
+      review.perTagAccuracy === undefined)
+  );
+}
 
 const QuizTaking = () => {
   // Try to get quiz from session store first (for AI-generated quizzes)
@@ -41,7 +62,66 @@ const QuizTaking = () => {
   const { generatedQuiz } = useQuizGeneratorStore();
 
   // Quiz review state and actions
-  const { generateReview, clearReview } = useQuizReviewStore();
+  const { setReview, setGeneratingReview, setReviewError, clearReview } =
+    useQuizReviewStore();
+
+  // React Query mutation for generating review
+  const generateReviewMutation = useGenerateReviewMutation({
+    onSuccess: (reviewJSON) => {
+      if (!quiz) return;
+
+      try {
+        // Parse and validate review
+        const parsedReview = JSON.parse(reviewJSON) as unknown;
+
+        // Type guard for review validation
+        if (!isValidQuizReview(parsedReview)) {
+          throw new Error('Invalid review format received from AI');
+        }
+
+        const review: QuizReview = parsedReview;
+
+        // Calculate expected score for validation
+        const quizData = JSON.parse(
+          convertSessionToReviewInput(quiz, answers).quizPayload
+        ) as {
+          items: Array<{ answerIndex: number }>;
+        };
+
+        const correctAnswers = answers.filter(
+          (answer, index) =>
+            answer.isCorrect &&
+            answer.selectedOption === quizData.items[index]?.answerIndex
+        );
+
+        const expectedScore = correctAnswers.length;
+        const expectedTotal = quizData.items.length;
+        const expectedAccuracy =
+          expectedTotal > 0 ? expectedScore / expectedTotal : 0;
+
+        // Validate and correct AI's score if needed
+        if (review.score !== expectedScore || review.total !== expectedTotal) {
+          console.warn('AI score calculation was incorrect. Correcting...');
+          review.score = expectedScore;
+          review.total = expectedTotal;
+          review.accuracy = expectedAccuracy;
+        }
+
+        // Update store with review
+        setReview(review, quiz.id || 0);
+        toast.success('Quiz review generated successfully!');
+      } catch (error) {
+        console.error('Failed to parse review:', error);
+        setReviewError('Failed to parse review data');
+        toast.error('Failed to generate review');
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to generate review:', error);
+      setReviewError(error.message);
+      toast.error('Failed to generate review');
+    },
+  });
 
   // Fallback to mock data for existing quizzes
 
@@ -127,6 +207,7 @@ const QuizTaking = () => {
     try {
       setShowReview(true);
       clearReview(); // Clear any previous review
+      setGeneratingReview(true);
 
       const { quizPayload, userAnswers } = convertSessionToReviewInput(
         quiz,
@@ -140,9 +221,19 @@ const QuizTaking = () => {
       const correctCount = answers.filter((a) => a.isCorrect).length;
       console.log('Expected score:', correctCount, '/', quiz.questions.length);
 
-      await generateReview(quizPayload, userAnswers, quiz.id || 0, 'en');
+      // Call React Query mutation
+      await generateReviewMutation.mutateAsync({
+        payloadJSON: quizPayload,
+        answers: userAnswers,
+        technology: quiz.technology,
+        language: 'en',
+        quizId: quiz.id || 0,
+      });
     } catch (error) {
       console.error('Failed to generate review:', error);
+      setReviewError('Failed to generate review');
+    } finally {
+      setGeneratingReview(false);
     }
   };
 

@@ -10,10 +10,6 @@ import { usePracticeAI } from '@/providers/AIServiceProvider';
 import { useQuizSessionStore } from '../store/quiz-session-store';
 import { useQuizGeneratorStore } from '../store/quiz-generator-store';
 
-// ================================
-// QUERY KEYS FACTORY
-// ================================
-
 export const practiceQueryKeys = {
   all: ['practice'] as const,
   quizzes: () => [...practiceQueryKeys.all, 'quizzes'] as const,
@@ -22,10 +18,6 @@ export const practiceQueryKeys = {
   reviews: () => [...practiceQueryKeys.all, 'reviews'] as const,
   review: (quizId: number) => [...practiceQueryKeys.reviews(), quizId] as const,
 } as const;
-
-// ================================
-// QUERY HOOKS - With Caching
-// ================================
 
 /**
  * Get cached generated quiz
