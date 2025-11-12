@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 
 interface HighlightableContentProps {
   children: React.ReactNode;
@@ -17,63 +17,97 @@ export const HighlightableContent: React.FC<HighlightableContentProps> = ({
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const applyHighlights = useCallback(() => {
     if (!contentRef.current) return;
 
-    // Apply highlights to the content
-    const applyHighlights = () => {
-      if (!contentRef.current) return;
+    // Remove all existing highlights
+    const existingMarks = contentRef.current.querySelectorAll('mark[data-highlight-id]');
+    existingMarks.forEach((mark) => {
+      const parent = mark.parentNode;
+      if (parent) {
+        // Replace mark with its text content
+        const textNode = document.createTextNode(mark.textContent || '');
+        parent.replaceChild(textNode, mark);
+        parent.normalize(); // Merge adjacent text nodes
+      }
+    });
 
-      // Get all text nodes
+    // Apply new highlights
+    highlights.forEach((highlight) => {
       const walker = document.createTreeWalker(
-        contentRef.current,
+        contentRef.current!,
         NodeFilter.SHOW_TEXT,
-        null
+        {
+          acceptNode: (node) => {
+            // Skip if parent is already a highlight
+            if (node.parentElement?.hasAttribute('data-highlight-id')) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            // Skip if parent is a script or style tag
+            if (
+              node.parentElement?.tagName === 'SCRIPT' ||
+              node.parentElement?.tagName === 'STYLE'
+            ) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        }
       );
 
       const textNodes: Text[] = [];
-      let node;
+      let node: Node | null;
       while ((node = walker.nextNode())) {
         textNodes.push(node as Text);
       }
 
-      // Apply each highlight
-      highlights.forEach((highlight) => {
-        textNodes.forEach((textNode) => {
-          const text = textNode.textContent || '';
-          const index = text.indexOf(highlight.text);
+      textNodes.forEach((textNode) => {
+        const text = textNode.textContent || '';
+        const index = text.indexOf(highlight.text);
 
-          if (index !== -1 && textNode.parentElement) {
-            const before = text.substring(0, index);
-            const highlighted = highlight.text;
-            const after = text.substring(index + highlighted.length);
+        if (index !== -1 && textNode.parentElement) {
+          const parent = textNode.parentElement;
+          
+          // Split the text node into three parts
+          const before = text.substring(0, index);
+          const match = highlight.text;
+          const after = text.substring(index + match.length);
 
-            const span = document.createElement('mark');
-            span.style.backgroundColor = highlight.color;
-            span.style.padding = '2px 0';
-            span.style.borderRadius = '2px';
-            span.className = 'highlight-mark';
-            span.setAttribute('data-highlight-id', highlight.id);
-            span.textContent = highlighted;
+          // Create the highlight mark element
+          const mark = document.createElement('mark');
+          mark.setAttribute('data-highlight-id', highlight.id);
+          mark.style.backgroundColor = highlight.color;
+          mark.style.padding = '2px 4px';
+          mark.style.borderRadius = '3px';
+          mark.style.transition = 'all 0.2s';
+          mark.className = 'highlight-mark cursor-pointer hover:shadow-sm';
+          mark.textContent = match;
 
-            const parent = textNode.parentElement;
-            const beforeNode = document.createTextNode(before);
-            const afterNode = document.createTextNode(after);
-
-            parent.insertBefore(beforeNode, textNode);
-            parent.insertBefore(span, textNode);
-            parent.insertBefore(afterNode, textNode);
-            parent.removeChild(textNode);
+          // Create document fragment for efficient DOM manipulation
+          const fragment = document.createDocumentFragment();
+          
+          if (before) {
+            fragment.appendChild(document.createTextNode(before));
           }
-        });
+          
+          fragment.appendChild(mark);
+          
+          if (after) {
+            fragment.appendChild(document.createTextNode(after));
+          }
+
+          // Replace the original text node
+          parent.replaceChild(fragment, textNode);
+        }
       });
-    };
-
-    // Small delay to ensure content is rendered
-    const timer = setTimeout(applyHighlights, 100);
-
-    return () => clearTimeout(timer);
+    });
   }, [highlights]);
+
+  useEffect(() => {
+    // Apply highlights after content is rendered
+    const timer = setTimeout(applyHighlights, 100);
+    return () => clearTimeout(timer);
+  }, [applyHighlights, children]);
 
   // Handle text selection
   useEffect(() => {

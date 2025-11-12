@@ -2,17 +2,17 @@ import { GuideMetadata, GuidesByCategory } from '../types';
 
 // Import all guide content
 const reactGuidesContext = import.meta.glob(
-  '/src/data/review/react/*/en-US.mdx',
+  '/src/data/review/guides/react/*/en-US.mdx',
   { eager: true, as: 'raw' }
 );
 
 const behavioralGuidesContext = import.meta.glob(
-  '/src/data/review/behavioral/*/en-US.mdx',
+  '/src/data/review/guides/behavioral/*/en-US.mdx',
   { eager: true, as: 'raw' }
 );
 
 const systemDesignGuidesContext = import.meta.glob(
-  '/src/data/review/system-design/*/en-US.mdx',
+  '/src/data/review/guides/system-design/*/en-US.mdx',
   { eager: true, as: 'raw' }
 );
 
@@ -119,7 +119,7 @@ export async function getGuideContent(
 ): Promise<string | null> {
   try {
     const module = await import(
-      `/src/data/review/${category}/${slug}/en-US.mdx?raw`
+      `/src/data/review/guides/${category}/${slug}/en-US.mdx?raw`
     );
     return module.default;
   } catch (error) {

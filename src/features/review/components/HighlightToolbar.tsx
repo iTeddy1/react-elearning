@@ -7,6 +7,7 @@ import {
   Palette,
   X,
   Check,
+  Maximize2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface HighlightToolbarProps {
   highlightCount: number;
@@ -82,7 +88,7 @@ export const HighlightToolbar: React.FC<HighlightToolbarProps> = ({
     <div className="fixed bottom-6 right-6 z-50">
       {/* Highlights List */}
       {showHighlightsList && highlights.length > 0 && (
-        <Card className="absolute bottom-20 right-0 w-96 shadow-xl mb-2">
+        <Card className="absolute bottom-20 right-0 w-[480px] shadow-xl mb-2">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -107,25 +113,80 @@ export const HighlightToolbar: React.FC<HighlightToolbarProps> = ({
                     <div
                       key={highlight.id}
                       className="p-3 rounded-lg border hover:border-gray-400 transition-colors group"
-                      style={{ backgroundColor: `${highlight.color}40` }}
+                      style={{ backgroundColor: `${highlight.color}30` }}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-900 line-clamp-3 mb-1">
-                            &ldquo;{highlight.text}&rdquo;
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(highlight.createdAt)}
-                          </p>
+                      <div className="flex items-start gap-2">
+                        <div className="flex-1 min-w-0">
+                          {/* Color indicator */}
+                          <div
+                            className="w-3 h-3 rounded-full mb-2 border border-gray-300"
+                            style={{ backgroundColor: highlight.color }}
+                          />
+                          
+                          {/* Full text display */}
+                          <div className="mb-2">
+                            <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap break-words">
+                              &ldquo;{highlight.text}&rdquo;
+                            </p>
+                          </div>
+
+                          {/* Metadata */}
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-xs text-gray-500">
+                              {formatDate(highlight.createdAt)}
+                            </p>
+                            <Badge variant="secondary" className="text-xs">
+                              {highlight.text.length} chars
+                            </Badge>
+                          </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onRemoveHighlight(highlight.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Trash2 className="w-3 h-3 text-red-500" />
-                        </Button>
+
+                        {/* Actions */}
+                        <div className="flex flex-col gap-1">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0"
+                              >
+                                <Maximize2 className="w-3 h-3 text-gray-500" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-96 p-4" side="left">
+                              <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-4 h-4 rounded-full border"
+                                    style={{ backgroundColor: highlight.color }}
+                                  />
+                                  <span className="text-sm font-semibold">
+                                    Full Highlight
+                                  </span>
+                                </div>
+                                <ScrollArea className="h-64">
+                                  <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">
+                                    {highlight.text}
+                                  </p>
+                                </ScrollArea>
+                                <div className="text-xs text-gray-500 pt-2 border-t">
+                                  <div>Created: {formatDate(highlight.createdAt)}</div>
+                                  <div>Length: {highlight.text.length} characters</div>
+                                  <div>Words: {highlight.text.split(/\s+/).length}</div>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onRemoveHighlight(highlight.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity h-7 w-7 p-0"
+                          >
+                            <Trash2 className="w-3 h-3 text-red-500" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}

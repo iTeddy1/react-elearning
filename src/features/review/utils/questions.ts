@@ -2,17 +2,17 @@ import { QuestionMetadata, QuestionsByCategory } from '../types';
 
 // Import all JavaScript questions
 const javascriptContext = import.meta.glob(
-  '/src/data/review/javascript/*/en-US.mdx',
+  '/src/data/review/questions/javascript/*/en-US.mdx',
   { eager: true, as: 'raw' }
 );
 
 // Import all CSS questions
-const cssContext = import.meta.glob('/src/data/review/css/*/en-US.mdx', {
+const cssContext = import.meta.glob('/src/data/review/questions/css/*/en-US.mdx', {
   eager: true,
   as: 'raw',
 });
 
-const reactContext = import.meta.glob('/src/data/review/react/*/en-US.mdx', {
+const reactContext = import.meta.glob('/src/data/review/questions/react/*/en-US.mdx', {
   eager: true,
   as: 'raw',
 });
@@ -44,7 +44,7 @@ function extractFrontmatter(content: string): { title: string } {
 
 /**
  * Convert file path to slug
- * Example: /src/data/review/javascript/describe-event-capturing/en-US.mdx
+ * Example: /src/data/review/questions/javascript/describe-event-capturing/en-US.mdx
  * -> describe-event-capturing
  */
 function pathToSlug(path: string): string {
@@ -56,7 +56,7 @@ function pathToSlug(path: string): string {
  * Get metadata for a specific question
  */
 function getMetadata(category: string, slug: string): any {
-  const metadataPath = `/src/data/review/${category}/${slug}/metadata.json`;
+  const metadataPath = `/src/data/review/questions/${category}/${slug}/metadata.json`;
   const metadata = metadataContext[metadataPath];
   return metadata ? (metadata as any).default : null;
 }
@@ -80,7 +80,7 @@ export function getAllQuestions(): QuestionsByCategory {
       slug,
       title: frontmatter.title,
       category: 'javascript',
-      path: `/review/javascript/${slug}`,
+      path: `/review/questions/javascript/${slug}`,
       metadata,
     });
   });
@@ -95,7 +95,7 @@ export function getAllQuestions(): QuestionsByCategory {
       slug,
       title: frontmatter.title,
       category: 'css',
-      path: `/review/css/${slug}`,
+      path: `/review/questions/css/${slug}`,
       metadata,
     });
   });
@@ -112,7 +112,7 @@ export function getAllQuestions(): QuestionsByCategory {
       slug,
       title: frontmatter.title,
       category: 'react',
-      path: `/review/react/${slug}`,
+      path: `/review/questions/react/${slug}`,
       metadata,
     });
   });
@@ -133,7 +133,7 @@ export async function getQuestionContent(
 ): Promise<string | null> {
   try {
     const module = await import(
-      `/src/data/review/${category}/${slug}/en-US.mdx?raw`
+      `/src/data/review/questions/${category}/${slug}/en-US.mdx?raw`
     );
     return module.default;
   } catch (error) {
