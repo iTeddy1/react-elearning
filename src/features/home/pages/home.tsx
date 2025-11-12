@@ -14,6 +14,7 @@ import Layout from '@/components/layout/layout';
 import {
   Brain,
   Mic,
+  BookOpen,
   ArrowRight,
   CheckCircle2,
   Sparkles,
@@ -43,7 +44,7 @@ export default function HomePage() {
 
         {/* Main Features */}
         <Tabs defaultValue="practice" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="practice" className="gap-2">
               <Brain className="w-4 h-4" />
               Practice
@@ -51,6 +52,10 @@ export default function HomePage() {
             <TabsTrigger value="interview" className="gap-2">
               <Mic className="w-4 h-4" />
               Interview
+            </TabsTrigger>
+            <TabsTrigger value="review" className="gap-2">
+              <BookOpen className="w-4 h-4" />
+              Review
             </TabsTrigger>
           </TabsList>
 
@@ -261,6 +266,150 @@ export default function HomePage() {
                   <AlertDescription className="text-amber-700">
                     You&apos;ll need to allow microphone access for this
                     feature. Practice as many times as you want!
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Review Tab */}
+          <TabsContent value="review" className="space-y-6 mt-6">
+            <Card className="border-2 border-blue-100">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <BookOpen className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl">
+                      Quiz Question Review
+                    </CardTitle>
+                    <CardDescription>
+                      Study interview questions at your own pace
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Link to="/review">
+                    <Button
+                      size="lg"
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Browse Questions
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* What You'll Get */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-blue-600" />
+                    What You&apos;ll Get
+                  </h3>
+                  <div className="grid gap-3">
+                    <div className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-medium">
+                          Comprehensive Question Bank
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          200+ JavaScript and CSS interview questions
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-medium">
+                          Detailed Explanations
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          Each question includes code examples and concepts
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-medium">
+                          Organized by Category
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          Browse JavaScript, CSS topics easily
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-medium">
+                          Keyboard Navigation
+                        </span>
+                        <p className="text-sm text-gray-600">
+                          Use arrow keys to navigate between questions
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* How It Works */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-blue-600" />
+                    How It Works
+                  </h3>
+                  <ol className="space-y-4">
+                    <li className="flex gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                        1
+                      </div>
+                      <div>
+                        <span className="font-medium">Choose a Category</span>
+                        <p className="text-sm text-gray-600">
+                          Select JavaScript or CSS from the main page
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                        2
+                      </div>
+                      <div>
+                        <span className="font-medium">Browse Questions</span>
+                        <p className="text-sm text-gray-600">
+                          Use the sidebar to navigate through questions
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex gap-3">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                        3
+                      </div>
+                      <div>
+                        <span className="font-medium">Learn & Practice</span>
+                        <p className="text-sm text-gray-600">
+                          Read explanations and understand concepts deeply
+                        </p>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+
+                <Alert className="bg-blue-50 border-blue-200">
+                  <BookOpen className="h-4 w-4 text-blue-600" />
+                  <AlertTitle className="text-blue-900">
+                    Perfect for Interview Prep
+                  </AlertTitle>
+                  <AlertDescription className="text-blue-700">
+                    Review these questions before your interviews. No AI credits
+                    required - completely free!
                   </AlertDescription>
                 </Alert>
               </CardContent>
