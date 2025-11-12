@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { QuestionMetadata, QuestionsByCategory } from '../types';
+import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { QuestionMetadata, QuestionsByCategory, FilterOptions } from '../types';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FilterPanel } from './FilterPanel';
+import { QuestionCard } from './QuestionCard';
 import {
   ChevronDown,
   ChevronRight,
   Search,
   Code2,
   Palette,
+  BookOpen,
 } from 'lucide-react';
 
 interface QuestionSidebarProps {
@@ -23,10 +26,17 @@ export const QuestionSidebar: React.FC<QuestionSidebarProps> = ({
   currentCategory,
   currentSlug,
 }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(['javascript', 'css', 'contents', 'behavior', 'system-design'])
+    new Set(['javascript', 'css', 'react'])
   );
+  const [filters, setFilters] = useState<FilterOptions>({
+    topics: [],
+    importance: [],
+    difficulty: [],
+    rankingRange: [0, 100],
+  });
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => {
@@ -40,14 +50,67 @@ export const QuestionSidebar: React.FC<QuestionSidebarProps> = ({
     });
   };
 
+  // Get all available topics from metadata
+  const availableTopics = useMemo(() => {
+    const topics = new Set<string>();
+    Object.values(questions).forEach((categoryQuestions) => {
+      categoryQuestions.forEach((q) => {
+        q.metadata?.topics?.forEach((topic) => topics.add(topic));
+      });
+    });
+    return Array.from(topics).sort();
+  }, [questions]);
+
+  // Apply filters and search
   const filterQuestions = (
     categoryQuestions: QuestionMetadata[]
   ): QuestionMetadata[] => {
-    if (!searchQuery.trim()) return categoryQuestions;
+    let filtered = categoryQuestions;
 
-    return categoryQuestions.filter((q) =>
-      q.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Search filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((q) =>
+        q.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Topics filter
+    if (filters.topics.length > 0) {
+      filtered = filtered.filter((q) =>
+        q.metadata?.topics?.some((topic) => filters.topics.includes(topic))
+      );
+    }
+
+    // Importance filter
+    if (filters.importance.length > 0) {
+      filtered = filtered.filter((q) =>
+        q.metadata?.importance
+          ? filters.importance.includes(q.metadata.importance)
+          : false
+      );
+    }
+
+    // Difficulty filter
+    if (filters.difficulty.length > 0) {
+      filtered = filtered.filter((q) =>
+        q.metadata?.difficulty
+          ? filters.difficulty.includes(q.metadata.difficulty)
+          : false
+      );
+    }
+
+    // Ranking filter
+    if (filters.rankingRange[0] !== 0 || filters.rankingRange[1] !== 100) {
+      filtered = filtered.filter((q) => {
+        const ranking = q.metadata?.ranking ?? 50;
+        return (
+          ranking >= filters.rankingRange[0] &&
+          ranking <= filters.rankingRange[1]
+        );
+      });
+    }
+
+    return filtered;
   };
 
   const getCategoryIcon = (category: string) => {
@@ -56,33 +119,21 @@ export const QuestionSidebar: React.FC<QuestionSidebarProps> = ({
         return <Code2 className="h-4 w-4" />;
       case 'css':
         return <Palette className="h-4 w-4" />;
-      case 'contents':
-        return <Code2 className="h-4 w-4" />;
-      case 'behavior':
-        return <Code2 className="h-4 w-4" />;
-      case 'system-design':
-        return <Code2 className="h-4 w-4" />;
+      case 'react':
+        return <BookOpen className="h-4 w-4" />;
       default:
         return <Code2 className="h-4 w-4" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'javascript':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      case 'css':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 border-r">
+    <div className="h-full flex flex-col bg-gray-50 border-r w-96">
       {/* Header */}
       <div className="p-4 border-b bg-white">
-        <h2 className="text-lg font-semibold mb-3">Quiz Questions</h2>
+        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          Quiz Questions
+        </h2>
 
         {/* Search */}
         <div className="relative">
@@ -96,6 +147,13 @@ export const QuestionSidebar: React.FC<QuestionSidebarProps> = ({
           />
         </div>
       </div>
+
+      {/* Filter Panel */}
+      <FilterPanel
+        filters={filters}
+        onFilterChange={setFilters}
+        availableTopics={availableTopics}
+      />
 
       {/* Question List */}
       <ScrollArea className="flex-1 p-4">
@@ -138,20 +196,12 @@ export const QuestionSidebar: React.FC<QuestionSidebarProps> = ({
                         currentSlug === question.slug;
 
                       return (
-                        <Link
+                        <QuestionCard
                           key={question.slug}
-                          to={question.path}
-                          className={`
-                            block p-3 rounded-lg text-sm transition-all
-                            ${
-                              isActive
-                                ? `${getCategoryColor(category)} font-medium shadow-sm`
-                                : 'hover:bg-white hover:shadow-sm text-gray-700'
-                            }
-                          `}
-                        >
-                          <div className="line-clamp-2">{question.title}</div>
-                        </Link>
+                          question={question}
+                          isActive={isActive}
+                          onClick={() => void navigate(question.path)}
+                        />
                       );
                     })}
                   </div>

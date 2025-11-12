@@ -3,10 +3,26 @@ export interface QuestionMetadata {
   title: string;
   category: string;
   path: string;
+  metadata?: {
+    topics?: string[];
+    importance?: 'low' | 'medium' | 'high';
+    ranking?: number;
+    difficulty?: 'easy' | 'medium' | 'hard';
+    duration?: number;
+    level?: string;
+    featured?: boolean;
+  };
 }
 
 export interface QuestionsByCategory {
   [category: string]: QuestionMetadata[];
+}
+
+export interface FilterOptions {
+  topics: string[];
+  importance: ('low' | 'medium' | 'high')[];
+  difficulty: ('easy' | 'medium' | 'hard')[];
+  rankingRange: [number, number];
 }
 
 export interface GuideMetadata {

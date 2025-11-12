@@ -17,6 +17,12 @@ const reactContext = import.meta.glob('/src/data/review/react/*/en-US.mdx', {
   as: 'raw',
 });
 
+// Import metadata files
+const metadataContext = import.meta.glob(
+  '/src/data/review/**/metadata.json',
+  { eager: true }
+);
+
 /**
  * Extract frontmatter from MDX content
  */
@@ -47,6 +53,15 @@ function pathToSlug(path: string): string {
 }
 
 /**
+ * Get metadata for a specific question
+ */
+function getMetadata(category: string, slug: string): any {
+  const metadataPath = `/src/data/review/${category}/${slug}/metadata.json`;
+  const metadata = metadataContext[metadataPath];
+  return metadata ? (metadata as any).default : null;
+}
+
+/**
  * Get all questions organized by category
  */
 export function getAllQuestions(): QuestionsByCategory {
@@ -59,12 +74,14 @@ export function getAllQuestions(): QuestionsByCategory {
   Object.entries(javascriptContext).forEach(([path, content]) => {
     const slug = pathToSlug(path);
     const frontmatter = extractFrontmatter(content);
+    const metadata = getMetadata('javascript', slug);
 
     questions.javascript.push({
       slug,
       title: frontmatter.title,
       category: 'javascript',
       path: `/review/javascript/${slug}`,
+      metadata,
     });
   });
 
@@ -72,12 +89,14 @@ export function getAllQuestions(): QuestionsByCategory {
   Object.entries(cssContext).forEach(([path, content]) => {
     const slug = pathToSlug(path);
     const frontmatter = extractFrontmatter(content);
+    const metadata = getMetadata('css', slug);
 
     questions.css.push({
       slug,
       title: frontmatter.title,
       category: 'css',
       path: `/review/css/${slug}`,
+      metadata,
     });
   });
 
@@ -85,6 +104,7 @@ export function getAllQuestions(): QuestionsByCategory {
   Object.entries(reactContext).forEach(([path, content]) => {
     const slug = pathToSlug(path);
     const frontmatter = extractFrontmatter(content);
+    const metadata = getMetadata('react', slug);
     if (!questions['react']) {
       questions['react'] = [];
     }
@@ -93,6 +113,7 @@ export function getAllQuestions(): QuestionsByCategory {
       title: frontmatter.title,
       category: 'react',
       path: `/review/react/${slug}`,
+      metadata,
     });
   });
 
