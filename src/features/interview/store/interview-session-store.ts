@@ -21,6 +21,7 @@ export interface InterviewSessionState {
     endTime?: Date;
     currentQuestionIndex: number;
     status: 'active' | 'completed' | 'paused' | 'reviewing';
+    testMode?: boolean; // Flag for test/mock mode
   } | null;
 
   // Audio state
@@ -43,6 +44,7 @@ export interface InterviewSessionActions {
     jobRole: string;
     difficulty: 'beginner' | 'intermediate' | 'advanced';
     questions: InterviewQuestion[];
+    testMode?: boolean;
   }) => void;
   endSession: () => void;
   pauseSession: () => void;
@@ -109,10 +111,11 @@ export const useInterviewSessionStore = create<
             startTime: new Date(),
             currentQuestionIndex: 0,
             status: 'active',
+            testMode: config.testMode || false,
           },
           error: null,
         });
-        console.log('🎯 Interview session started:', sessionId);
+        console.log('🎯 Interview session started:', sessionId, config.testMode ? '(TEST MODE)' : '');
       },
 
       endSession: () => {

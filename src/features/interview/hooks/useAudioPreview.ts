@@ -21,11 +21,24 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
 
   // Create audio preview when recording is available
   useEffect(() => {
-    if (currentRecording && !state.audioPreview) {
+    // Cleanup previous preview if exists
+    if (state.audioPreview) {
+      console.log('🧹 Cleaning up previous audio preview');
+      cleanupAudioPreview(state.audioPreview);
+    }
+
+    if (currentRecording) {
+      console.log('🎵 Creating audio preview for recording:', {
+        size: currentRecording.size,
+        type: currentRecording.type,
+      });
+
       const audioPreview = createAudioPreview(
         currentRecording,
-        (duration) =>
-          setState((prev) => ({ ...prev, previewDuration: duration })),
+        (duration) => {
+          console.log('📊 Audio duration loaded:', duration);
+          setState((prev) => ({ ...prev, previewDuration: duration }));
+        },
         (currentTime) =>
           setState((prev) => ({ ...prev, previewCurrentTime: currentTime })),
         () =>
@@ -36,14 +49,38 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
           }))
       );
 
-      setState((prev) => ({ ...prev, audioPreview }));
+      setState((prev) => ({ 
+        ...prev, 
+        audioPreview,
+        // Reset playback state
+        isPlayingPreview: false,
+        previewCurrentTime: 0,
+      }));
+    } else {
+      // Reset state when no recording
+      setState({
+        audioPreview: null,
+        isPlayingPreview: false,
+        previewCurrentTime: 0,
+        previewDuration: 0,
+      });
     }
-  }, [currentRecording, state.audioPreview]);
+    
+    // Cleanup function for this effect
+    return () => {
+      if (currentRecording && state.audioPreview) {
+        console.log('🧹 Effect cleanup - pausing audio');
+        state.audioPreview.audio.pause();
+      }
+    };
+  }, [currentRecording]); // Only depend on currentRecording, not state.audioPreview
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      cleanupAudioPreview(state.audioPreview);
+      if (state.audioPreview) {
+        cleanupAudioPreview(state.audioPreview);
+      }
     };
   }, [state.audioPreview]);
 

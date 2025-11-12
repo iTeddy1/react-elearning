@@ -21,6 +21,7 @@ import {
 import { useGenerateReviewMutation } from '../hooks/use-quiz-queries';
 import type { QuizReview } from '../types';
 import QuizReviewDisplay from '../components/quiz-review-display';
+import { Progress } from '@/components/ui/progress';
 
 // Type guard for quiz review validation
 function isValidQuizReview(obj: unknown): obj is QuizReview {
@@ -463,7 +464,7 @@ const QuizTaking = () => {
 
   const currentQ = quiz.questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
-  // console.log(selectedAnswers, currentQ, answers)
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
@@ -474,10 +475,7 @@ const QuizTaking = () => {
               Question {currentQuestionIndex + 1} of {quiz.questions.length}
             </span>
             <div className="w-48 h-2 bg-gray-200 rounded-full">
-              <div
-                className="h-2 bg-blue-600 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
+              <Progress value={progress} />
             </div>
           </div>
         </div>

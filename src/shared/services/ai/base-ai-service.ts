@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 
 export interface AIConfig {
   client: GoogleGenAI;
-  apiKey: string;
+  apiKey?: string;
   model?: string;
   temperature?: number;
   maxTokens?: number;

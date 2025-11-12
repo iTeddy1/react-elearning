@@ -53,6 +53,14 @@ export const AudioPreviewCard: React.FC<AudioPreviewCardProps> = ({
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
+            disabled={!previewDuration || previewDuration === 0}
+            title={
+              !previewDuration || previewDuration === 0
+                ? 'Loading audio...'
+                : isPlayingPreview
+                  ? 'Pause preview'
+                  : 'Play preview'
+            }
           >
             {isPlayingPreview ? (
               <>
@@ -70,7 +78,11 @@ export const AudioPreviewCard: React.FC<AudioPreviewCardProps> = ({
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Volume2 className="h-4 w-4" />
-              <span>Audio Preview</span>
+              <span>
+                {!previewDuration || previewDuration === 0
+                  ? 'Loading audio...'
+                  : 'Audio Preview'}
+              </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>{formatTime(previewCurrentTime)}</span>
@@ -80,7 +92,7 @@ export const AudioPreviewCard: React.FC<AudioPreviewCardProps> = ({
                   style={{
                     width:
                       previewDuration > 0
-                        ? `${(previewCurrentTime / previewDuration) * 100}%`
+                        ? `${Math.min(100, (previewCurrentTime / previewDuration) * 100)}%`
                         : '0%',
                   }}
                 />

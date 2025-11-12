@@ -6,6 +6,10 @@
  * Format time in MM:SS format
  */
 export const formatTime = (seconds: number): string => {
+  // Handle NaN, undefined, null, or negative values
+  if (!seconds || isNaN(seconds) || seconds < 0) {
+    return '0:00';
+  }
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -52,7 +56,25 @@ export const createAudioPreview = (
   const audio = new Audio(url);
 
   audio.addEventListener('loadedmetadata', () => {
-    onLoadedMetadata(audio.duration);
+    const duration = audio.duration;
+    
+    if (!isNaN(duration) && isFinite(duration) && duration > 0) {
+      onLoadedMetadata(duration);
+    } else {
+      setTimeout(() => {
+        const retryDuration = audio.duration;
+        console.log('🔄 Retry duration:', retryDuration);
+        if (
+          !isNaN(retryDuration) &&
+          isFinite(retryDuration) &&
+          retryDuration > 0
+        ) {
+          onLoadedMetadata(retryDuration);
+        } else {
+          onLoadedMetadata(1);
+        }
+      }, 100);
+    }
   });
 
   audio.addEventListener('timeupdate', () => {
@@ -60,6 +82,14 @@ export const createAudioPreview = (
   });
 
   audio.addEventListener('ended', onEnded);
+
+  audio.addEventListener('error', (e) => {
+    console.error('❌ Audio error:', e);
+  });
+
+  // Preload the audio
+  audio.preload = 'metadata';
+  audio.load();
 
   return { url, audio };
 };

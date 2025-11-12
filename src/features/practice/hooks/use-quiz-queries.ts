@@ -76,8 +76,6 @@ export const useGenerateQuizMutation = (callbacks?: {
         return cached;
       }
 
-      // Generate new quiz via AI
-      console.log('🤖 Generating new quiz via AI');
       const questions = await practiceAI.generateQuiz({
         topic: request.topic,
         technology: request.technology,
@@ -182,7 +180,6 @@ export const useGenerateReviewMutation = (callbacks?: {
       }
 
       // Generate new review via AI
-      console.log('🤖 Generating new review via AI');
       const review = await practiceAI.generateReview(
         request.payloadJSON,
         request.answers,

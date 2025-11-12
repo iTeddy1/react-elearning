@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useInterviewSessionStore } from '../store/interview-session-store';
 import { useGenerateInterviewQuestionsMutation } from '../hooks/use-interview-queries';
 import { GenerateQuestionsRequest } from '../types';
@@ -15,6 +16,10 @@ import {
   InterviewConfigForm,
   FormValues,
 } from '../components/setup/InterviewConfigForm';
+import {
+  getMockInterviewQuestions,
+  simulateDelay,
+} from '../mocks/interview-mock-data';
 
 const formSchema = z.object({
   jobRole: z.string().min(2, {
@@ -24,11 +29,12 @@ const formSchema = z.object({
   roundType: z.enum(['technical', 'behavioral', 'system-design']),
   questionCount: z.number().min(1).max(10),
   language: z.enum(['en', 'vi']),
+  testMode: z.boolean().optional(),
 });
 
 export const InterviewSetupPage: React.FC = () => {
   const navigate = useNavigate();
-  const { error, setError } = useInterviewSessionStore();
+  const { error, setError, startSession } = useInterviewSessionStore();
   const generateQuestionsMutation = useGenerateInterviewQuestionsMutation();
   const [micTestResult, setMicTestResult] =
     useState<MicrophoneTestResult | null>(null);
@@ -41,12 +47,45 @@ export const InterviewSetupPage: React.FC = () => {
       roundType: 'behavioral',
       questionCount: 5,
       language: 'en',
+      testMode: false,
     },
   });
 
   const onSubmit = async (data: FormValues) => {
     try {
       setError(null);
+
+      // Check if test mode is enabled
+      if (data.testMode) {
+        // Use mock data instead of AI
+        toast.info('Test Mode: Using mock questions (no AI calls)');
+        
+        // Simulate API delay
+        await simulateDelay(1500);
+
+        // Get mock questions
+        const mockQuestions = getMockInterviewQuestions(
+          data.jobRole,
+          data.difficulty,
+          data.questionCount
+        );
+
+        // Start the interview session with mock questions
+        startSession({
+          jobRole: data.jobRole,
+          difficulty: data.difficulty,
+          questions: mockQuestions,
+          testMode: true,
+        });
+
+        toast.success('Mock interview started successfully!');
+        
+        // Navigate to interview page
+        void navigate('/interview');
+        return;
+      }
+
+      // Normal flow: Generate questions via AI
       const request: GenerateQuestionsRequest = {
         jobRole: data.jobRole,
         difficulty: data.difficulty,
@@ -55,11 +94,21 @@ export const InterviewSetupPage: React.FC = () => {
         language: data.language,
       };
 
-      await generateQuestionsMutation.mutateAsync(request);
+      // Generate questions via AI
+      const questions = await generateQuestionsMutation.mutateAsync(request);
+
+      // Start the interview session with generated questions
+      startSession({
+        jobRole: data.jobRole,
+        difficulty: data.difficulty,
+        questions,
+      });
+
+      // Navigate to interview page
       void navigate('/interview');
     } catch (error) {
       console.error('Failed to start interview:', error);
-      // Error is handled by the store
+      // Error is handled by the mutation and displayed via toast
     }
   };
 

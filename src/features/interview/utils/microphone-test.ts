@@ -65,18 +65,11 @@ export class MicrophoneTestService {
     try {
       // Request microphone permission with device selection
       const constraints: MediaStreamConstraints = {
-        audio: this.selectedDeviceId
-          ? {
-              deviceId: { exact: this.selectedDeviceId },
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-            }
-          : {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-            },
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        },
       };
 
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);

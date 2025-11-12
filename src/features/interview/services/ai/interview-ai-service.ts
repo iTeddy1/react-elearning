@@ -3,7 +3,6 @@ import { Language } from '../../../../shared/types/ai';
 import { Difficulty } from '../../../../types/common';
 import { generateQuestionsPrompt } from './prompts/generate-questions';
 import { reviewInterviewPrompt } from './prompts/review-interview';
-import { interviewConfig } from '../../config';
 import {
   getMockQuestionsByRole,
   getMockInterviewReview,
@@ -110,8 +109,6 @@ export interface ReviewInterviewOptions {
 }
 
 export class InterviewAIService extends BaseAIService {
-  private readonly GEMINI_API_URL = interviewConfig.AI_INTERVIEW_API_BASE;
-
   async generateInterviewQuestions(
     options: GenerateQuestionsOptions
   ): Promise<InterviewQuestion[]> {

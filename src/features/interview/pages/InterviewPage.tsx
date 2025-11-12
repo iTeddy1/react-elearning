@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useInterviewSessionStore } from '../store/interview-session-store';
 import { useGenerateInterviewReviewMutation } from '../hooks/use-interview-queries';
 import { QuestionCard } from '../components/QuestionCard';
-import { InterviewResults } from '../components/InterviewResults';
+import { InterviewResults } from './InterviewResults';
 import { InterviewHeader } from '../components/InterviewHeader';
 import { AudioPreviewCard } from '../components/AudioPreviewCard';
 import { InterviewNavigation } from '../components/InterviewNavigation';
@@ -19,6 +19,10 @@ import {
   areAllQuestionsAnswered,
   hasQuestionRecording,
 } from '../utils/interview-helpers';
+import {
+  getMockInterviewReview,
+  simulateDelay,
+} from '../mocks/interview-mock-data';
 
 const audioService = new AudioRecordingService();
 
@@ -45,7 +49,6 @@ export const InterviewPage: React.FC = () => {
     setError,
   } = useInterviewSessionStore();
 
-  // React Query mutation for generating review
   const generateReviewMutation = useGenerateInterviewReviewMutation({
     onSuccess: (review) => {
       if (currentSession) {
@@ -130,7 +133,6 @@ export const InterviewPage: React.FC = () => {
 
       recordingState.setRecordingDuration(0);
       recordingState.setCurrentRecording(null);
-      console.log('Recording started successfully');
     } catch (error) {
       console.error('Failed to start recording:', error);
       setError(
@@ -147,19 +149,25 @@ export const InterviewPage: React.FC = () => {
       const audioBlob = await audioService.stopRecording();
 
       if (audioBlob && audioBlob.duration > 0) {
-        recordingState.setCurrentRecording(audioBlob.blob);
-        recordingState.setRecordingDuration(audioBlob.duration);
-        console.log('Recording captured:', {
+        console.log('✅ Recording captured successfully:', {
           size: audioBlob.blob.size,
           duration: audioBlob.duration,
           type: audioBlob.blob.type,
         });
+        recordingState.setCurrentRecording(audioBlob.blob);
+        recordingState.setRecordingDuration(audioBlob.duration);
+
+        // Log the state after setting
+        console.log(
+          '📦 Recording state updated, blob available:',
+          !!audioBlob.blob
+        );
       } else {
-        console.error('Failed to capture recording:', audioBlob);
+        console.error('❌ Failed to capture recording:', audioBlob);
         setError('Failed to capture audio recording. Please try again.');
       }
     } catch (error) {
-      console.error('Failed to stop recording:', error);
+      console.error('❌ Failed to stop recording:', error);
       setError('Failed to stop recording. Please try again.');
     }
   };
@@ -196,19 +204,9 @@ export const InterviewPage: React.FC = () => {
         `Audio recording (${recordingState.recordingDuration}s)`
       );
 
-      // Clean up states
+      // Clean up preview and recording states
       audioPreviewState.resetPreview();
       recordingState.resetRecording();
-
-      console.log('Answer submitted successfully:', audioRecording);
-
-      // Auto-advance to next question
-      if (
-        currentSession.currentQuestionIndex <
-        currentSession.questions.length - 1
-      ) {
-        nextQuestion();
-      }
     } catch (error) {
       console.error('Failed to submit answer:', error);
       setError('Failed to submit answer. Please try again.');
@@ -258,11 +256,79 @@ export const InterviewPage: React.FC = () => {
     }
 
     try {
-      // Mark interview as complete (UI state only)
       completeInterview();
       setGeneratingReview(true);
 
-      // Prepare data for AI review - format answers for the mutation
+      // Check if we're in test mode
+      if (currentSession.testMode) {
+        console.log('🧪 Test Mode: Using mock review');
+        toast.info('Test Mode: Generating mock review (no AI calls)');
+
+        // Simulate AI delay
+        await simulateDelay(2000);
+
+        // Get mock review
+        const mockReview = getMockInterviewReview(
+          currentSession.jobRole,
+          currentSession.difficulty,
+          'good'
+        );
+
+        // Transform mock review to InterviewResult format
+        const result = {
+          questions: currentSession.questions.map((q) => {
+            const recording = currentSession.recordings.find(
+              (r) => r.questionId === q.id
+            );
+            return {
+              questionId: q.id,
+              question: q.question,
+              response: recording ? 'Audio response recorded' : 'No response',
+              grammar: null,
+              contentRelevancy: {
+                score: mockReview.overallScore,
+                improvement: mockReview.overallFeedback.weaknesses,
+                reason: 'Mock feedback for testing',
+              },
+            };
+          }),
+          scores: {
+            grammarScore: mockReview.overallScore,
+            communicationScore: mockReview.scores.communication,
+            totalRelevancyScore: mockReview.overallScore,
+            overallInterviewScore: mockReview.overallScore,
+            professionalismScore: mockReview.scores.professionalism,
+            sociabilityScore: mockReview.scores.communication,
+            energyLevelScore: mockReview.scores.confidence,
+          },
+          communication_breakdown: [],
+          relevancy_score_breakdown: currentSession.questions.map((q) => ({
+            questionId: q.id,
+            question: q.question,
+            answer: 'Audio response',
+            relevancy_score: mockReview.overallScore,
+            relevancy_type: q.category,
+            reason: 'Mock feedback for testing',
+            improvements: mockReview.overallFeedback.weaknesses,
+            extracted_ideal_answer: q.expectedTopics.join(', '),
+            strengths: mockReview.overallFeedback.strengths,
+          })),
+          grammar_score_breakdown: [],
+          overallSummary: {
+            overall_summary: mockReview.overallFeedback.summary,
+            transcript_summary: 'Mock interview completed successfully',
+            strengths: mockReview.overallFeedback.strengths,
+            weaknesses: mockReview.overallFeedback.weaknesses,
+            key_insights: mockReview.overallFeedback.recommendations,
+            recommendation: `Score: ${mockReview.overallScore}%`,
+          },
+        };
+
+        setReviewResult(result);
+        toast.success('Mock review generated successfully!');
+        return;
+      }
+
       const answers = currentSession.recordings.map((recording, index) => {
         const question = currentSession.questions.find(
           (q) => q.id === recording.questionId
@@ -280,7 +346,7 @@ export const InterviewPage: React.FC = () => {
 
       // Call React Query mutation to generate review via AI service
       await generateReviewMutation.mutateAsync({
-        questions: currentSession.questions, // Already in correct format
+        questions: currentSession.questions,
         answers,
         role: currentSession.jobRole,
         language: 'en',
@@ -298,11 +364,7 @@ export const InterviewPage: React.FC = () => {
   if (currentSession && reviewResult) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <InterviewResults
-          result={reviewResult}
-          onRestart={handleRestart}
-          onBackToHome={handleBackToHome}
-        />
+        <InterviewResults />
       </div>
     );
   }
@@ -346,7 +408,6 @@ export const InterviewPage: React.FC = () => {
       </div>
     );
   }
-  console.log(audioPreviewState);
 
   // Show error state
   if (error) {

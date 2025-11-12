@@ -24,20 +24,19 @@ export class InterviewService {
   async generateQuestions(
     request: GenerateQuestionsRequest
   ): Promise<InterviewQuestion[]> {
-    console.log('🤖 Generating interview questions:', request.jobRole);
+    const { jobRole, difficulty, roundType, questionCount, language } = request;
 
     const options = {
-      role: request.jobRole,
-      experience: request.difficulty,
-      roundType: request.roundType,
+      role: jobRole,
+      experience: difficulty,
+      roundType: roundType,
       skills: [], // Could be derived from jobRole in the future
-      numberOfQuestions: request.questionCount,
-      difficulty: (request.difficulty.charAt(0).toUpperCase() +
-        request.difficulty.slice(1)) as
+      numberOfQuestions: questionCount,
+      difficulty: (difficulty.charAt(0).toUpperCase() + difficulty.slice(1)) as
         | 'Beginner'
         | 'Intermediate'
         | 'Advanced',
-      language: request.language,
+      language: language,
     };
 
     const aiQuestions =

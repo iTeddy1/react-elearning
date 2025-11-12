@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import { PracticeAIService } from '@/features/practice/services/ai/practice-ai-service';
 import { InterviewAIService } from '@/features/interview/services/ai/interview-ai-service';
 import { practiceConfig } from '@/features/practice/config';
+import { interviewConfig } from '@/features/interview/config';
 
 // ================================
 // SERVICE CONTEXT
@@ -38,34 +39,30 @@ export const AIServiceProvider: React.FC<AIServiceProviderProps> = ({
     }
 
     // Create shared Google GenAI client
-    const client = new GoogleGenAI({ apiKey: apiKey || '' });
+    const client = new GoogleGenAI({ apiKey: apiKey });
 
-    // Initialize Practice AI Service
     const practiceAI = new PracticeAIService({
       client,
-      apiKey: apiKey || '',
+      apiKey: apiKey,
       model: practiceConfig.AI_MODEL,
       temperature: 0.7,
       maxTokens: 4096,
     });
 
-    // Initialize Interview AI Service
     const interviewAI = new InterviewAIService({
       client,
-      apiKey: apiKey || '',
-      model: 'gemini-2.0-flash-exp',
+      apiKey: apiKey,
+      model: interviewConfig.AI_MODEL,
       temperature: 0.7,
       maxTokens: 4096,
     });
-
-    console.log('✅ AI Services initialized successfully');
 
     return {
       practiceAI,
       interviewAI,
       isInitialized: !!apiKey,
     };
-  }, []); // Empty deps - only create once
+  }, []);
 
   return (
     <AIServiceContext.Provider value={services}>

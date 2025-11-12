@@ -45,29 +45,3 @@ export const practiceConfig = {
     getUserProgress: '/api/practice/user-progress',
   },
 } as const;
-
-// Type exports for configuration
-export type SupportedLanguage = keyof typeof practiceConfig.LANGUAGES;
-export type DifficultyLevel = (typeof practiceConfig.DIFFICULTY_LEVELS)[number];
-
-// Validation helpers
-export const validateQuestionCount = (count: number): boolean => {
-  return (
-    count >= practiceConfig.MIN_QUESTION_COUNT &&
-    count <= practiceConfig.MAX_QUESTION_COUNT
-  );
-};
-
-export const validateDifficulty = (
-  difficulty: string
-): difficulty is DifficultyLevel => {
-  return practiceConfig.DIFFICULTY_LEVELS.includes(
-    difficulty as DifficultyLevel
-  );
-};
-
-export const validateLanguage = (
-  language: string
-): language is SupportedLanguage => {
-  return Object.keys(practiceConfig.LANGUAGES).includes(language);
-};

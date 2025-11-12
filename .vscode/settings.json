@@ -2,5 +2,9 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "conventionalCommits.scopes": [
     "practice"
+  ],
+  "cSpell.words": [
+    "ASSEMBLYAI",
+    "GENAI"
   ]
 }

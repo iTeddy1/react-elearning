@@ -576,3 +576,25 @@ export const INTERVIEW_MOCK_CONFIG = {
 export const simulateDelay = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+/**
+ * Get mock interview questions based on role and difficulty
+ */
+export const getMockInterviewQuestions = (
+  role: string,
+  difficulty: 'beginner' | 'intermediate' | 'advanced',
+  count: number = 5
+) => {
+  // Normalize role name
+  const normalizedRole = role.toLowerCase().includes('frontend')
+    ? 'Frontend Developer'
+    : role.toLowerCase().includes('backend')
+      ? 'Backend Developer'
+      : 'Frontend Developer'; // Default
+
+  const questions = mockInterviewQuestions[normalizedRole]?.[difficulty] || 
+                    mockInterviewQuestions['Frontend Developer'].beginner;
+
+  // Return requested number of questions
+  return questions.slice(0, Math.min(count, questions.length));
+};

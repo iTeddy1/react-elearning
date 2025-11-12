@@ -26,16 +26,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Loader2, TestTube2 } from 'lucide-react';
 import { MicrophoneTestResult } from '../../utils/microphone-test';
+import { Switch } from '@/components/ui/switch';
+import { Difficulty, Language } from '@/shared/types/ai';
+import { RoundType } from '../../config';
 
 // Form schema type
 export interface FormValues {
   jobRole: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  roundType: 'technical' | 'behavioral' | 'system-design';
+  difficulty: Difficulty;
+  roundType: RoundType;
   questionCount: number;
-  language: 'en' | 'vi';
+  language: Language;
+  testMode?: boolean;
 }
 
 interface InterviewConfigFormProps {
@@ -229,6 +233,32 @@ export const InterviewConfigForm: React.FC<InterviewConfigFormProps> = ({
                     experience).
                   </FormDescription>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Test Mode Switch */}
+            <FormField
+              control={form.control}
+              name="testMode"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-blue-50">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base flex items-center gap-2">
+                      <TestTube2 className="h-4 w-4" />
+                      Test Mode (No AI)
+                    </FormLabel>
+                    <FormDescription>
+                      Use pre-generated mock questions and reviews for testing.
+                      No AI calls will be made, and no credits will be consumed.
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
