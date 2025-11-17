@@ -7,21 +7,26 @@ const javascriptContext = import.meta.glob(
 );
 
 // Import all CSS questions
-const cssContext = import.meta.glob('/src/data/review/questions/css/*/en-US.mdx', {
-  eager: true,
-  as: 'raw',
-});
+const cssContext = import.meta.glob(
+  '/src/data/review/questions/css/*/en-US.mdx',
+  {
+    eager: true,
+    as: 'raw',
+  }
+);
 
-const reactContext = import.meta.glob('/src/data/review/questions/react/*/en-US.mdx', {
-  eager: true,
-  as: 'raw',
-});
+const reactContext = import.meta.glob(
+  '/src/data/review/questions/react/*/en-US.mdx',
+  {
+    eager: true,
+    as: 'raw',
+  }
+);
 
 // Import metadata files
-const metadataContext = import.meta.glob(
-  '/src/data/review/**/metadata.json',
-  { eager: true }
-);
+const metadataContext = import.meta.glob('/src/data/review/**/metadata.json', {
+  eager: true,
+});
 
 /**
  * Extract frontmatter from MDX content

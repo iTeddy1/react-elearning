@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useInterviewSessionStore } from '../store/interview-session-store';
@@ -12,6 +12,7 @@ import { SessionInfo } from '../components/SessionInfo';
 import { ErrorState } from '../components/ErrorState';
 import { LoadingState } from '../components/LoadingState';
 import { NoActiveInterview } from '../components/NoActiveInterview';
+import { AllAnswersPreview } from '../components/AllAnswersPreview';
 import { AudioRecordingService } from '../utils/audio-recording';
 import { useAudioPreview } from '../hooks/useAudioPreview';
 import { useInterviewRecording } from '../hooks/useInterviewRecording';
@@ -28,6 +29,7 @@ const audioService = new AudioRecordingService();
 
 export const InterviewPage: React.FC = () => {
   const navigate = useNavigate();
+  const [showAllAnswersPreview, setShowAllAnswersPreview] = useState(false);
   const {
     currentSession,
     isRecording,
@@ -52,7 +54,7 @@ export const InterviewPage: React.FC = () => {
   const generateReviewMutation = useGenerateInterviewReviewMutation({
     onSuccess: (review) => {
       if (currentSession) {
-        // Transform review to legacy InterviewResult format for the UI
+        // Transform review to InterviewResult format for the UI
         const result = {
           questions: currentSession.questions.map((q) => {
             const feedback = review.questionFeedback.find(
@@ -64,51 +66,128 @@ export const InterviewPage: React.FC = () => {
             return {
               questionId: q.id,
               question: q.question,
-              response: recording ? 'Audio response recorded' : 'No response',
-              grammar: null,
+              response:
+                feedback?.transcription || recording
+                  ? 'Audio response recorded'
+                  : 'No response',
+              grammar: feedback?.detailedScores
+                ? {
+                    questionId: q.id,
+                    sentenceStructure: feedback.detailedScores.clarity,
+                    grammarRules: feedback.detailedScores.technicalAccuracy,
+                    wordUsage: feedback.detailedScores.completeness,
+                    incompleteSentencesAndFillers:
+                      review.communicationMetrics?.fillerWords || 0,
+                    score: feedback.detailedScores.clarity,
+                    issues: feedback.weaknesses || [],
+                    suggestions: feedback.improvementAreas || [],
+                  }
+                : null,
               contentRelevancy: {
-                score: feedback?.score || 0,
-                improvement: review.weaknesses,
+                score:
+                  feedback?.detailedScores?.relevance || feedback?.score || 0,
+                improvement: feedback?.improvementAreas || review.weaknesses,
                 reason: feedback?.feedback || 'No feedback available',
               },
             };
           }),
           scores: {
-            grammarScore: review.overallScore,
-            communicationScore: review.overallScore,
-            totalRelevancyScore: review.overallScore,
+            grammarScore:
+              review.scores?.communicationSkills || review.overallScore,
+            communicationScore:
+              review.scores?.communicationSkills || review.overallScore,
+            totalRelevancyScore:
+              review.scores?.technicalKnowledge || review.overallScore,
             overallInterviewScore: review.overallScore,
-            professionalismScore: review.overallScore,
-            sociabilityScore: review.overallScore,
-            energyLevelScore: review.overallScore,
+            professionalismScore:
+              review.scores?.professionalism || review.overallScore,
+            sociabilityScore: review.scores?.overallFit || review.overallScore,
+            energyLevelScore: review.scores?.confidence || review.overallScore,
           },
-          communication_breakdown: [],
-          relevancy_score_breakdown: currentSession.questions.map((q) => {
+          communicationBreakdown: review.communicationMetrics
+            ? [
+                {
+                  metric: 'Clarity',
+                  score: review.communicationMetrics.clarity,
+                  feedback: 'Communication clarity assessment',
+                },
+                {
+                  metric: 'Pace',
+                  score: review.communicationMetrics.pace,
+                  feedback: 'Speaking pace evaluation',
+                },
+                {
+                  metric: 'Vocabulary',
+                  score: review.communicationMetrics.vocabulary,
+                  feedback: 'Vocabulary usage assessment',
+                },
+                {
+                  metric: 'Grammar Accuracy',
+                  score: review.communicationMetrics.grammarAccuracy,
+                  feedback: 'Grammar and sentence structure',
+                },
+              ]
+            : [],
+          relevancyScoreBreakdown: currentSession.questions.map((q) => {
             const feedback = review.questionFeedback.find(
               (qf: { questionId: string }) => qf.questionId === q.id
             );
             return {
               questionId: q.id,
               question: q.question,
-              answer: 'Audio response',
-              relevancy_score: feedback?.score || 0,
-              relevancy_type: q.category,
+              answer: feedback?.transcription || 'Audio response',
+              relevancyScore:
+                feedback?.detailedScores?.relevance || feedback?.score || 0,
+              relevancyType: q.category,
               reason: feedback?.feedback || 'No feedback available',
-              improvements: review.weaknesses,
-              extracted_ideal_answer: q.expectedTopics.join(', '),
-              strengths: review.strengths,
+              improvements: feedback?.improvementAreas || review.weaknesses,
+              extractedIdealAnswer: q.expectedTopics.join(', '),
+              strengths: feedback?.strengths || review.strengths,
             };
           }),
-          grammar_score_breakdown: [],
+          grammarScoreBreakdown: review.questionFeedback
+            .filter((qf) => qf.detailedScores)
+            .map((qf) => {
+              const question = currentSession.questions.find(
+                (q) => q.id === qf.questionId
+              );
+              return {
+                questionId: qf.questionId,
+                question: question?.question || '',
+                sentenceStructure: qf.detailedScores!.clarity,
+                grammarRules: qf.detailedScores!.technicalAccuracy,
+                wordUsage: qf.detailedScores!.completeness,
+                incompleteSentencesAndFillers:
+                  review.communicationMetrics?.fillerWords || 0,
+                suggestions: qf.improvementAreas || [],
+              };
+            }),
           overallSummary: {
-            overall_summary: review.detailedFeedback,
-            transcript_summary: 'Interview completed with audio responses',
+            overallSummary: review.detailedFeedback,
+            transcriptSummary:
+              review.questionFeedback
+                .filter((qf) => qf.transcription)
+                .map(
+                  (qf) =>
+                    `Q: ${currentSession.questions.find((q) => q.id === qf.questionId)?.question}\nA: ${qf.transcription}`
+                )
+                .join('\n\n') || 'Interview completed with audio responses',
             strengths: review.strengths,
             weaknesses: review.weaknesses,
-            key_insights: review.recommendations,
-            recommendation: `Score: ${review.overallScore}%`,
+            keyInsights: review.recommendations,
+            recommendation:
+              review.hiringPotential || `Score: ${review.overallScore}%`,
+            decision:
+              review.redFlags && review.redFlags.length > 0
+                ? 'Review with caution'
+                : 'Positive evaluation',
           },
         };
+
+        // Store enhanced review data in session for new UI components
+        if (currentSession) {
+          (currentSession as any).enhancedReview = review;
+        }
 
         setReviewResult(result);
         toast.success('Interview review generated successfully!');
@@ -125,19 +204,39 @@ export const InterviewPage: React.FC = () => {
   const recordingState = useInterviewRecording(isRecording, audioService);
   const audioPreviewState = useAudioPreview(recordingState.currentRecording);
 
+  // Cleanup audio service on component unmount
+  useEffect(() => {
+    return () => {
+      console.log('🧹 Cleaning up audio service on unmount');
+      audioService.cleanup();
+    };
+  }, []);
+
   // Handle recording start
   const handleStartRecording = async () => {
     try {
+      // Clean up any existing recording first (important for re-record)
+      if (audioService.isRecording()) {
+        console.log('⚠️ Stopping existing recording before starting new one');
+        await audioService.stopRecording();
+      }
+
+      // Reset states
+      recordingState.setRecordingDuration(0);
+      recordingState.setCurrentRecording(null);
+      audioPreviewState.resetPreview();
+
+      // Start recording
       startRecording();
       await audioService.startRecording();
 
-      recordingState.setRecordingDuration(0);
-      recordingState.setCurrentRecording(null);
+      console.log('✅ Recording started successfully');
     } catch (error) {
       console.error('Failed to start recording:', error);
       setError(
         'Failed to start recording. Please check microphone permissions.'
       );
+      toast.error('Failed to start recording. Please check your microphone.');
       stopRecording(); // Reset recording state if start failed
     }
   };
@@ -148,7 +247,7 @@ export const InterviewPage: React.FC = () => {
       stopRecording();
       const audioBlob = await audioService.stopRecording();
 
-      if (audioBlob && audioBlob.duration > 0) {
+      if (audioBlob && audioBlob.blob && audioBlob.duration > 0) {
         console.log('✅ Recording captured successfully:', {
           size: audioBlob.blob.size,
           duration: audioBlob.duration,
@@ -156,6 +255,21 @@ export const InterviewPage: React.FC = () => {
         });
         recordingState.setCurrentRecording(audioBlob.blob);
         recordingState.setRecordingDuration(audioBlob.duration);
+
+        // Force set the preview duration from the actual recording duration
+        // This ensures we have the correct duration immediately
+        setTimeout(() => {
+          if (
+            audioPreviewState.previewDuration === 0 ||
+            audioPreviewState.previewDuration <= 1
+          ) {
+            console.log(
+              '🔧 Forcing preview duration from recording:',
+              audioBlob.duration
+            );
+            // The duration will be updated via the audio preview hook
+          }
+        }, 500);
 
         // Log the state after setting
         console.log(
@@ -165,6 +279,7 @@ export const InterviewPage: React.FC = () => {
       } else {
         console.error('❌ Failed to capture recording:', audioBlob);
         setError('Failed to capture audio recording. Please try again.');
+        toast.error('Recording failed. Please try again.');
       }
     } catch (error) {
       console.error('❌ Failed to stop recording:', error);
@@ -173,9 +288,29 @@ export const InterviewPage: React.FC = () => {
   };
 
   // Handle restart recording
-  const handleRestartRecording = () => {
-    audioPreviewState.resetPreview();
-    recordingState.resetRecording();
+  const handleRestartRecording = async () => {
+    try {
+      console.log('🔄 Restarting recording...');
+
+      // Stop any active recording first
+      if (audioService.isRecording()) {
+        await audioService.stopRecording();
+      }
+
+      // Clean up audio service completely
+      audioService.cleanup();
+
+      // Reset states
+      audioPreviewState.resetPreview();
+      recordingState.resetRecording();
+
+      console.log('✅ Recording reset complete');
+    } catch (error) {
+      console.error('Error restarting recording:', error);
+      // Continue with state reset even if cleanup fails
+      audioPreviewState.resetPreview();
+      recordingState.resetRecording();
+    }
   };
 
   // Handle answer submission
@@ -207,20 +342,19 @@ export const InterviewPage: React.FC = () => {
       // Clean up preview and recording states
       audioPreviewState.resetPreview();
       recordingState.resetRecording();
+
+      toast.success('Answer submitted successfully!');
     } catch (error) {
       console.error('Failed to submit answer:', error);
       setError('Failed to submit answer. Please try again.');
+      toast.error('Failed to submit answer. Please try again.');
     }
-  };
-
-  // Handle restart
-  const handleRestart = () => {
-    resetSession();
-    void navigate('/interview/setup');
   };
 
   // Handle back to home
   const handleBackToHome = () => {
+    // Cleanup audio service before leaving
+    audioService.cleanup();
     resetSession();
     void navigate('/');
   };
@@ -228,6 +362,39 @@ export const InterviewPage: React.FC = () => {
   // Handle navigation to setup
   const handleNavigateToSetup = () => {
     void navigate('/interview/setup');
+  };
+
+  // Handle navigation between questions with proper cleanup
+  const handleNextQuestion = async () => {
+    // Stop any active recording before navigating
+    if (isRecording) {
+      console.log('⚠️ Stopping active recording before navigation');
+      await handleStopRecording();
+    }
+
+    // Clean up current recording state but keep saved recordings
+    if (!hasCurrentRecording) {
+      recordingState.resetRecording();
+      audioPreviewState.resetPreview();
+    }
+
+    nextQuestion();
+  };
+
+  const handlePreviousQuestion = async () => {
+    // Stop any active recording before navigating
+    if (isRecording) {
+      console.log('⚠️ Stopping active recording before navigation');
+      await handleStopRecording();
+    }
+
+    // Clean up current recording state but keep saved recordings
+    if (!hasCurrentRecording) {
+      recordingState.resetRecording();
+      audioPreviewState.resetPreview();
+    }
+
+    previousQuestion();
   };
 
   // Get current question
@@ -248,12 +415,26 @@ export const InterviewPage: React.FC = () => {
       )
     : false;
 
-  // Handle complete interview
-  const handleCompleteInterview = async () => {
-    if (!currentSession || !allQuestionsAnswered) {
-      setError('Please answer all questions before completing the interview');
+  // Handle complete interview - show preview first
+  const handleCompleteInterview = () => {
+    if (!currentSession) {
+      setError('No active interview session');
       return;
     }
+
+    // Show preview modal instead of completing immediately
+    setShowAllAnswersPreview(true);
+  };
+
+  // Handle final submission after preview
+  const handleFinalSubmit = async () => {
+    if (!currentSession) {
+      setError('No active interview session');
+      return;
+    }
+
+    // Close the preview
+    setShowAllAnswersPreview(false);
 
     try {
       completeInterview();
@@ -301,25 +482,25 @@ export const InterviewPage: React.FC = () => {
             sociabilityScore: mockReview.scores.communication,
             energyLevelScore: mockReview.scores.confidence,
           },
-          communication_breakdown: [],
-          relevancy_score_breakdown: currentSession.questions.map((q) => ({
+          communicationBreakdown: [],
+          relevancyScoreBreakdown: currentSession.questions.map((q) => ({
             questionId: q.id,
             question: q.question,
             answer: 'Audio response',
-            relevancy_score: mockReview.overallScore,
-            relevancy_type: q.category,
+            relevancyScore: mockReview.overallScore,
+            relevancyType: q.category,
             reason: 'Mock feedback for testing',
             improvements: mockReview.overallFeedback.weaknesses,
-            extracted_ideal_answer: q.expectedTopics.join(', '),
+            extractedIdealAnswer: q.expectedTopics.join(', '),
             strengths: mockReview.overallFeedback.strengths,
           })),
-          grammar_score_breakdown: [],
+          grammarScoreBreakdown: [],
           overallSummary: {
-            overall_summary: mockReview.overallFeedback.summary,
-            transcript_summary: 'Mock interview completed successfully',
+            overallSummary: mockReview.overallFeedback.summary,
+            transcriptSummary: 'Mock interview completed successfully',
             strengths: mockReview.overallFeedback.strengths,
             weaknesses: mockReview.overallFeedback.weaknesses,
-            key_insights: mockReview.overallFeedback.recommendations,
+            keyInsights: mockReview.overallFeedback.recommendations,
             recommendation: `Score: ${mockReview.overallScore}%`,
           },
         };
@@ -378,33 +559,7 @@ export const InterviewPage: React.FC = () => {
   ) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <InterviewResults
-          result={{
-            questions: [],
-            scores: {
-              grammarScore: 0,
-              communicationScore: 0,
-              totalRelevancyScore: 0,
-              overallInterviewScore: 0,
-              professionalismScore: 0,
-              sociabilityScore: 0,
-              energyLevelScore: 0,
-            },
-            communication_breakdown: [],
-            relevancy_score_breakdown: [],
-            grammar_score_breakdown: [],
-            overallSummary: {
-              overall_summary: 'Interview completed successfully',
-              transcript_summary: 'All questions were answered',
-              strengths: ['Completed all questions'],
-              weaknesses: ['Analysis pending'],
-              key_insights: ['Interview process completed'],
-              recommendation: 'Review your responses',
-            },
-          }}
-          onRestart={handleRestart}
-          onBackToHome={handleBackToHome}
-        />
+        <InterviewResults />
       </div>
     );
   }
@@ -439,6 +594,16 @@ export const InterviewPage: React.FC = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* All Answers Preview Modal */}
+        {showAllAnswersPreview && currentSession && (
+          <AllAnswersPreview
+            questions={currentSession.questions}
+            recordings={currentSession.recordings}
+            onClose={() => setShowAllAnswersPreview(false)}
+            onSubmit={() => void handleFinalSubmit()}
+          />
+        )}
+
         {/* Header with Progress */}
         <InterviewHeader
           currentQuestionIndex={currentSession.currentQuestionIndex}
@@ -471,7 +636,7 @@ export const InterviewPage: React.FC = () => {
             previewDuration={audioPreviewState.previewDuration}
             isProcessing={isProcessing}
             onPlayPreview={audioPreviewState.handlePlayPreview}
-            onRestartRecording={handleRestartRecording}
+            onRestartRecording={() => void handleRestartRecording()}
             onSubmitAnswer={() => void handleSubmitAnswer()}
           />
         )}
@@ -484,8 +649,8 @@ export const InterviewPage: React.FC = () => {
           recordings={currentSession.recordings}
           allQuestionsAnswered={allQuestionsAnswered}
           isProcessing={isProcessing || isGeneratingReview}
-          onPreviousQuestion={previousQuestion}
-          onNextQuestion={nextQuestion}
+          onPreviousQuestion={() => void handlePreviousQuestion()}
+          onNextQuestion={() => void handleNextQuestion()}
           onCompleteInterview={() => void handleCompleteInterview()}
         />
 

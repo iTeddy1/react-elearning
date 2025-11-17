@@ -592,8 +592,9 @@ export const getMockInterviewQuestions = (
       ? 'Backend Developer'
       : 'Frontend Developer'; // Default
 
-  const questions = mockInterviewQuestions[normalizedRole]?.[difficulty] || 
-                    mockInterviewQuestions['Frontend Developer'].beginner;
+  const questions =
+    mockInterviewQuestions[normalizedRole]?.[difficulty] ||
+    mockInterviewQuestions['Frontend Developer'].beginner;
 
   // Return requested number of questions
   return questions.slice(0, Math.min(count, questions.length));

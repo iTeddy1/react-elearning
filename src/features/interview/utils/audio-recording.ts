@@ -29,6 +29,12 @@ export class AudioRecordingService {
    * Start recording audio
    */
   async startRecording(): Promise<void> {
+    // Clean up any existing recording first
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      console.warn('⚠️ Existing recorder found, cleaning up...');
+      this.cleanup();
+    }
+
     if (!this.audioStream) {
       const hasPermission = await this.requestPermission();
       if (!hasPermission) {
@@ -59,6 +65,8 @@ export class AudioRecordingService {
     this.startTime = Date.now();
     this.mediaRecorder.start(1000); // Collect data every second
 
+    console.log('✅ Recording started, state:', this.mediaRecorder.state);
+
     // Auto-stop after max duration
     setTimeout(() => {
       if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
@@ -73,7 +81,19 @@ export class AudioRecordingService {
   async stopRecording(): Promise<{ blob: Blob; duration: number }> {
     return new Promise((resolve, reject) => {
       if (!this.mediaRecorder) {
+        console.error('❌ No media recorder to stop');
         reject(new Error('No active recording'));
+        return;
+      }
+
+      if (this.mediaRecorder.state === 'inactive') {
+        console.warn('⚠️ MediaRecorder already inactive');
+        // Return empty recording if already stopped
+        const duration = Math.round((Date.now() - this.startTime) / 1000);
+        const blob = new Blob(this.audioChunks, {
+          type: this.getSupportedMimeType(),
+        });
+        resolve({ blob, duration });
         return;
       }
 
@@ -82,15 +102,27 @@ export class AudioRecordingService {
         const blob = new Blob(this.audioChunks, {
           type: this.getSupportedMimeType(),
         });
+        console.log(
+          '✅ Recording stopped, blob size:',
+          blob.size,
+          'duration:',
+          duration
+        );
         resolve({ blob, duration });
       };
 
-      this.mediaRecorder.onerror = () => {
+      this.mediaRecorder.onerror = (event) => {
+        console.error('❌ Recording error:', event);
         reject(new Error('Recording error occurred'));
       };
 
-      if (this.mediaRecorder.state === 'recording') {
-        this.mediaRecorder.stop();
+      try {
+        if (this.mediaRecorder.state === 'recording') {
+          this.mediaRecorder.stop();
+        }
+      } catch (error) {
+        console.error('❌ Error stopping recorder:', error);
+        reject(error);
       }
     });
   }
@@ -114,18 +146,32 @@ export class AudioRecordingService {
    * Stop all audio streams and cleanup
    */
   cleanup(): void {
-    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-      this.mediaRecorder.stop();
+    console.log('🧹 Cleaning up audio service...');
+
+    // Stop recording if active
+    if (this.mediaRecorder) {
+      if (this.mediaRecorder.state === 'recording') {
+        console.log('⏹️ Stopping active recording...');
+        this.mediaRecorder.stop();
+      }
+      this.mediaRecorder = null;
     }
 
+    // Stop all audio stream tracks
     if (this.audioStream) {
-      this.audioStream.getTracks().forEach((track) => track.stop());
+      console.log('🔇 Stopping audio stream tracks...');
+      this.audioStream.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`  ✓ Track stopped: ${track.kind}`);
+      });
       this.audioStream = null;
     }
 
-    this.mediaRecorder = null;
+    // Reset state
     this.audioChunks = [];
     this.startTime = 0;
+
+    console.log('✅ Audio service cleanup complete');
   }
 
   /**

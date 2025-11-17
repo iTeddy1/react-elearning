@@ -58,7 +58,7 @@ COMPREHENSIVE EVALUATION CRITERIA:
 - Professionalism (0-100): Delivery tone, engagement, and composure
 - Overall Fit (0-100): Combined impression for ${data.role} readiness
 
-Return the complete evaluation in this JSON format:
+Return the complete evaluation in this COMPREHENSIVE JSON format:
 {
   "overallScore": 85,
   "scores": {
@@ -66,26 +66,50 @@ Return the complete evaluation in this JSON format:
     "communicationSkills": 82,
     "problemSolving": 90,
     "professionalism": 85,
-    "overallFit": 83
+    "overallFit": 83,
+    "confidence": 80,
+    "articulation": 78,
+    "responseDepth": 85
+  },
+  "communicationMetrics": {
+    "clarity": 85,
+    "pace": 80,
+    "vocabulary": 88,
+    "grammarAccuracy": 82,
+    "fillerWords": 70,
+    "structuredThinking": 85
   },
   "questionAnalysis": [
     {
       "questionIndex": 0,
       "questionId": "question_id_here",
       "score": 85,
-      "transcription": "Transcribed response for this question",
-      "strengths": ["Specific strength from this answer"],
-      "weaknesses": ["Specific weakness from this answer"],
-      "feedback": "Detailed feedback for this specific question"
+      "transcription": "Complete transcribed response for this question with all spoken words",
+      "detailedScores": {
+        "technicalAccuracy": 88,
+        "relevance": 85,
+        "completeness": 80,
+        "clarity": 82
+      },
+      "strengths": ["Specific strength with example from answer"],
+      "weaknesses": ["Specific weakness with example from answer"],
+      "feedback": "Detailed feedback for this specific question",
+      "criticalPoints": ["Key points that stood out positively or negatively"],
+      "improvementAreas": ["Specific areas to improve with actionable steps"]
     }
   ],
   "overallFeedback": {
-    "strengths": ["Overall interview strengths with examples"],
+    "strengths": ["Overall interview strengths with specific examples"],
     "weaknesses": ["Areas for improvement with specific references"],
-    "recommendations": ["Actionable recommendations for growth"],
-    "summary": "Comprehensive summary of interview performance",
-    "decision": "RECOMMEND"
+    "recommendations": ["Actionable recommendations for growth with specific steps"],
+    "summary": "Comprehensive summary of interview performance with key insights",
+    "decision": "RECOMMEND",
+    "hiringPotential": "Assessment of readiness for the role with justification",
+    "redFlags": ["Critical concerns that need immediate attention"],
+    "standoutMoments": ["Impressive moments that demonstrated strong competence"],
+    "criticalConcerns": ["Major issues that could prevent hiring recommendation"]
   }
+}
 
 ──────────────────────────
 GRADING STYLE GUIDELINES:
@@ -93,5 +117,8 @@ GRADING STYLE GUIDELINES:
 - Treat the candidate as a **mid-senior developer aiming to grow**, not a beginner.
 - Be **tough but fair** — emphasize technical reasoning, communication efficiency, and interview authenticity.
 - Prioritize *how the candidate thinks and speaks under pressure*, not just what they say.
+- **CRITICAL**: Include complete transcriptions for EVERY question
+- **CRITICAL**: Fill ALL fields with meaningful data - no empty arrays
+- **CRITICAL**: Provide specific examples from the actual audio responses
 ──────────────────────────
 }`;

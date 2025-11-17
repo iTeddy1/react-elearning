@@ -55,25 +55,50 @@ export const createAudioPreview = (
   const url = URL.createObjectURL(blob);
   const audio = new Audio(url);
 
-  audio.addEventListener('loadedmetadata', () => {
+  let metadataLoaded = false;
+
+  const tryLoadDuration = (attempt: number = 0) => {
     const duration = audio.duration;
-    
+    console.log(
+      `🔍 Duration check (attempt ${attempt}):`,
+      duration,
+      'readyState:',
+      audio.readyState
+    );
+
     if (!isNaN(duration) && isFinite(duration) && duration > 0) {
-      onLoadedMetadata(duration);
+      if (!metadataLoaded) {
+        metadataLoaded = true;
+        console.log('✅ Valid duration found:', duration);
+        onLoadedMetadata(duration);
+      }
+    } else if (attempt < 10) {
+      // Retry up to 10 times with increasing delays
+      setTimeout(() => tryLoadDuration(attempt + 1), 100 + attempt * 50);
     } else {
-      setTimeout(() => {
-        const retryDuration = audio.duration;
-        console.log('🔄 Retry duration:', retryDuration);
-        if (
-          !isNaN(retryDuration) &&
-          isFinite(retryDuration) &&
-          retryDuration > 0
-        ) {
-          onLoadedMetadata(retryDuration);
-        } else {
-          onLoadedMetadata(1);
-        }
-      }, 100);
+      console.warn('⚠️ Could not load valid duration after retries');
+      // Fallback: estimate from blob size (rough approximation)
+      const estimatedDuration = blob.size / 16000; // Assuming ~16KB/s bitrate
+      onLoadedMetadata(estimatedDuration);
+    }
+  };
+
+  audio.addEventListener('loadedmetadata', () => {
+    console.log('📡 loadedmetadata event fired, readyState:', audio.readyState);
+    tryLoadDuration(0);
+  });
+
+  audio.addEventListener('durationchange', () => {
+    console.log('📡 durationchange event fired, duration:', audio.duration);
+    if (!metadataLoaded) {
+      tryLoadDuration(0);
+    }
+  });
+
+  audio.addEventListener('canplay', () => {
+    console.log('📡 canplay event fired, duration:', audio.duration);
+    if (!metadataLoaded) {
+      tryLoadDuration(0);
     }
   });
 
@@ -87,9 +112,16 @@ export const createAudioPreview = (
     console.error('❌ Audio error:', e);
   });
 
-  // Preload the audio
+  // Preload the audio and force load
   audio.preload = 'metadata';
   audio.load();
+
+  // Also try to get duration after a short delay as fallback
+  setTimeout(() => {
+    if (!metadataLoaded) {
+      tryLoadDuration(0);
+    }
+  }, 100);
 
   return { url, audio };
 };

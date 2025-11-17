@@ -33,11 +33,45 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
         type: currentRecording.type,
       });
 
+      let retryCount = 0;
+      const maxRetries = 5;
+
       const audioPreview = createAudioPreview(
         currentRecording,
         (duration) => {
           console.log('📊 Audio duration loaded:', duration);
-          setState((prev) => ({ ...prev, previewDuration: duration }));
+
+          // If duration is invalid, retry with a delay
+          if ((!duration || duration <= 1) && retryCount < maxRetries) {
+            retryCount++;
+            console.log(
+              `🔄 Retrying duration load (attempt ${retryCount}/${maxRetries})`
+            );
+            setTimeout(() => {
+              if (audioPreview?.audio) {
+                const newDuration = audioPreview.audio.duration;
+                console.log('🔄 Retry result:', newDuration);
+                if (
+                  newDuration &&
+                  newDuration > 1 &&
+                  !isNaN(newDuration) &&
+                  isFinite(newDuration)
+                ) {
+                  setState((prev) => ({
+                    ...prev,
+                    previewDuration: newDuration,
+                  }));
+                }
+              }
+            }, 200 * retryCount); // Exponential backoff
+          } else if (
+            duration &&
+            duration > 0 &&
+            !isNaN(duration) &&
+            isFinite(duration)
+          ) {
+            setState((prev) => ({ ...prev, previewDuration: duration }));
+          }
         },
         (currentTime) =>
           setState((prev) => ({ ...prev, previewCurrentTime: currentTime })),
@@ -49,8 +83,8 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
           }))
       );
 
-      setState((prev) => ({ 
-        ...prev, 
+      setState((prev) => ({
+        ...prev,
         audioPreview,
         // Reset playback state
         isPlayingPreview: false,
@@ -65,7 +99,7 @@ export const useAudioPreview = (currentRecording: Blob | null) => {
         previewDuration: 0,
       });
     }
-    
+
     // Cleanup function for this effect
     return () => {
       if (currentRecording && state.audioPreview) {

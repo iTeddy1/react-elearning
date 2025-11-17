@@ -6,5 +6,6 @@
   "cSpell.words": [
     "ASSEMBLYAI",
     "GENAI"
-  ]
+  ],
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

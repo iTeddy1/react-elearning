@@ -115,7 +115,11 @@ export const useInterviewSessionStore = create<
           },
           error: null,
         });
-        console.log('🎯 Interview session started:', sessionId, config.testMode ? '(TEST MODE)' : '');
+        console.log(
+          '🎯 Interview session started:',
+          sessionId,
+          config.testMode ? '(TEST MODE)' : ''
+        );
       },
 
       endSession: () => {
@@ -265,10 +269,29 @@ export const useInterviewSessionStore = create<
       addRecording: (recording) => {
         const { currentSession } = get();
         if (currentSession) {
+          // Check if a recording already exists for this question
+          const existingRecordingIndex = currentSession.recordings.findIndex(
+            (r) => r.questionId === recording.questionId
+          );
+
+          let updatedRecordings;
+          if (existingRecordingIndex >= 0) {
+            // Replace existing recording (re-record case)
+            console.log(
+              '🔄 Replacing existing recording for question:',
+              recording.questionId
+            );
+            updatedRecordings = [...currentSession.recordings];
+            updatedRecordings[existingRecordingIndex] = recording;
+          } else {
+            // Add new recording
+            updatedRecordings = [...currentSession.recordings, recording];
+          }
+
           set({
             currentSession: {
               ...currentSession,
-              recordings: [...currentSession.recordings, recording],
+              recordings: updatedRecordings,
             },
           });
         }

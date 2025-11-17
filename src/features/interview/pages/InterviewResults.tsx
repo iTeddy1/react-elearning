@@ -1,24 +1,29 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { InterviewResult } from '../types';
-import QuestionAnalysis from '../components/review-result/QuestionAnalysis';
-import CommunicationAnalysis from '../components/review-result/CommunicationAnalysis';
-import OverallScore from '../components/review-result/OverallScore';
 import ResultsHeader from '../components/review-result/ResultsHeader';
+import OverallScore from '../components/review-result/OverallScore';
+import { ScoresBreakdown } from '../components/results/ScoresBreakdown';
+import { CommunicationMetrics } from '../components/results/CommunicationMetrics';
+import { CriticalFeedback } from '../components/results/CriticalFeedback';
+import { QuestionTranscripts } from '../components/results/QuestionTranscripts';
 import OverallSummary from '../components/review-result/OverallSummary';
 import { useInterviewSessionStore } from '../store/interview-session-store';
 
 export const InterviewResults: React.FC = () => {
   const navigate = useNavigate();
-  const { resetSession, reviewResult } = useInterviewSessionStore();
-  const {
-    scores,
-    communication_breakdown,
-    relevancy_score_breakdown,
-    overallSummary,
-  } = reviewResult;
-  // Handle restart
+  const { resetSession, reviewResult, currentSession } =
+    useInterviewSessionStore();
+
+  if (!reviewResult || !currentSession) {
+    return null;
+  }
+
+  const { scores, overallSummary } = reviewResult;
+
+  // Get enhanced review data from session store
+  const enhancedReview = (currentSession as any).enhancedReview;
+
   const handleRestart = () => {
     resetSession();
     void navigate('/interview/setup');
@@ -29,25 +34,56 @@ export const InterviewResults: React.FC = () => {
     resetSession();
     void navigate('/');
   };
+
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-6 pb-12">
       {/* Header */}
       <ResultsHeader />
 
-      {/* Overall Scores */}
+      {/* Overall Scores - Always show basic scores */}
       <OverallScore scores={scores} />
 
-      {/* Communication Breakdown */}
-      <CommunicationAnalysis communicationBreakdown={communication_breakdown} />
+      {/* Enhanced Scores Breakdown - Show if available */}
+      {enhancedReview?.scores && (
+        <ScoresBreakdown scores={enhancedReview.scores} />
+      )}
 
-      {/* Question-by-Question Analysis */}
-      <QuestionAnalysis relevancyScoreBreakdown={relevancy_score_breakdown} />
+      {/* Communication Metrics - Show if available */}
+      {enhancedReview?.communicationMetrics && (
+        <CommunicationMetrics metrics={enhancedReview.communicationMetrics} />
+      )}
+
+      {/* Critical Feedback - Show if available */}
+      {(enhancedReview?.hiringPotential ||
+        enhancedReview?.redFlags?.length > 0 ||
+        enhancedReview?.standoutMoments?.length > 0 ||
+        enhancedReview?.criticalConcerns?.length > 0) && (
+        <CriticalFeedback
+          hiringPotential={enhancedReview.hiringPotential}
+          redFlags={enhancedReview.redFlags}
+          standoutMoments={enhancedReview.standoutMoments}
+          criticalConcerns={enhancedReview.criticalConcerns}
+        />
+      )}
+
+      {/* Question Transcripts with Detailed Analysis - Show if available */}
+      {enhancedReview?.questionFeedback?.some(
+        (qf: any) => qf.transcription
+      ) && (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Detailed Question Analysis</h2>
+          <QuestionTranscripts
+            questionFeedback={enhancedReview.questionFeedback}
+            questions={currentSession.questions}
+          />
+        </div>
+      )}
 
       {/* Overall Summary */}
       <OverallSummary overall={overallSummary} />
 
       {/* Action Buttons */}
-      <div className="flex gap-4 justify-center">
+      <div className="flex gap-4 justify-center pt-6">
         <Button onClick={handleRestart} size="lg">
           Take Another Interview
         </Button>

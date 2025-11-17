@@ -17,9 +17,15 @@ const Router = () => (
     <Route path="/interview/setup" element={<InterviewSetupPage />} />
     <Route path="/interview" element={<InterviewPage />} />
     <Route path="/review" element={<ReviewLandingPage />} />
-    <Route path="/review/:category/:slug" element={<QuestionViewerPage />} />
+    <Route
+      path="/review/questions/:category/:slug"
+      element={<QuestionViewerPage />}
+    />
     <Route path="/review/guides" element={<GuidesLandingPage />} />
-    <Route path="/review/guides/:category/:slug" element={<GuideViewerPage />} />
+    <Route
+      path="/review/guides/:category/:slug"
+      element={<GuideViewerPage />}
+    />
   </Routes>
 );
 

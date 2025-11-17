@@ -59,7 +59,7 @@ export const InterviewSetupPage: React.FC = () => {
       if (data.testMode) {
         // Use mock data instead of AI
         toast.info('Test Mode: Using mock questions (no AI calls)');
-        
+
         // Simulate API delay
         await simulateDelay(1500);
 
@@ -79,7 +79,7 @@ export const InterviewSetupPage: React.FC = () => {
         });
 
         toast.success('Mock interview started successfully!');
-        
+
         // Navigate to interview page
         void navigate('/interview');
         return;

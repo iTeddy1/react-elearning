@@ -11,12 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Popover,
@@ -122,7 +117,7 @@ export const HighlightToolbar: React.FC<HighlightToolbarProps> = ({
                             className="w-3 h-3 rounded-full mb-2 border border-gray-300"
                             style={{ backgroundColor: highlight.color }}
                           />
-                          
+
                           {/* Full text display */}
                           <div className="mb-2">
                             <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap break-words">
@@ -170,9 +165,15 @@ export const HighlightToolbar: React.FC<HighlightToolbarProps> = ({
                                   </p>
                                 </ScrollArea>
                                 <div className="text-xs text-gray-500 pt-2 border-t">
-                                  <div>Created: {formatDate(highlight.createdAt)}</div>
-                                  <div>Length: {highlight.text.length} characters</div>
-                                  <div>Words: {highlight.text.split(/\s+/).length}</div>
+                                  <div>
+                                    Created: {formatDate(highlight.createdAt)}
+                                  </div>
+                                  <div>
+                                    Length: {highlight.text.length} characters
+                                  </div>
+                                  <div>
+                                    Words: {highlight.text.split(/\s+/).length}
+                                  </div>
                                 </div>
                               </div>
                             </PopoverContent>

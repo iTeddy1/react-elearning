@@ -27,13 +27,34 @@ export interface InterviewFeedback {
     problemSolving: number;
     professionalism: number;
     overallFit: number;
+    confidence: number;
+    articulation: number;
+    responseDepth: number;
+  };
+  communicationMetrics: {
+    clarity: number;
+    pace: number;
+    vocabulary: number;
+    grammarAccuracy: number;
+    fillerWords: number;
+    structuredThinking: number;
   };
   questionAnalysis: Array<{
     questionIndex: number;
+    questionId: string;
     score: number;
+    transcription: string;
+    detailedScores: {
+      technicalAccuracy: number;
+      relevance: number;
+      completeness: number;
+      clarity: number;
+    };
     strengths: string[];
     weaknesses: string[];
     feedback: string;
+    criticalPoints: string[];
+    improvementAreas: string[];
   }>;
   overallFeedback: {
     strengths: string[];
@@ -41,6 +62,10 @@ export interface InterviewFeedback {
     recommendations: string[];
     summary: string;
     decision: 'RECOMMEND' | 'MAYBE' | 'NOT_RECOMMEND';
+    hiringPotential: string;
+    redFlags: string[];
+    standoutMoments: string[];
+    criticalConcerns: string[];
   };
 }
 
@@ -306,15 +331,5 @@ export class InterviewAIService extends BaseAIService {
     if (normalized.includes('advanced') || normalized.includes('hard'))
       return 'Advanced';
     return 'Intermediate';
-  }
-
-  private get apiKey(): string {
-    const key = import.meta.env.VITE_GOOGLE_GENAI_API_KEY;
-    if (!key) {
-      throw new Error(
-        'Google Generative AI API key not found. Please set VITE_GOOGLE_GENAI_API_KEY in your environment variables.'
-      );
-    }
-    return key;
   }
 }

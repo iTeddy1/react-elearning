@@ -84,7 +84,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                 )}
 
                 {question.metadata?.featured && (
-                  <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
+                  <Badge
+                    variant="secondary"
+                    className="text-xs bg-yellow-100 text-yellow-700"
+                  >
                     <Award className="w-3 h-3 mr-1" />
                     Featured
                   </Badge>
@@ -95,11 +98,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         </button>
       </HoverCardTrigger>
 
-      <HoverCardContent
-        side="right"
-        align="start"
-        className="w-80 p-4"
-      >
+      <HoverCardContent side="right" align="start" className="w-80 p-4">
         <div className="space-y-3">
           {/* Title */}
           <h4 className="font-semibold text-gray-900 leading-snug">
@@ -129,8 +128,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     question.metadata.importance === 'high'
                       ? 'bg-red-100 text-red-700 border-red-200'
                       : question.metadata.importance === 'medium'
-                      ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                      : 'bg-gray-100 text-gray-700 border-gray-200'
+                        ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                        : 'bg-gray-100 text-gray-700 border-gray-200'
                   }
                 >
                   {question.metadata.importance}
@@ -178,7 +177,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           {/* Level */}
           {question.metadata?.level && (
             <div className="text-xs text-gray-500">
-              Level: <span className="text-gray-700 capitalize">{question.metadata.level}</span>
+              Level:{' '}
+              <span className="text-gray-700 capitalize">
+                {question.metadata.level}
+              </span>
             </div>
           )}
         </div>

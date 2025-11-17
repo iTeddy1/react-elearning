@@ -27,8 +27,7 @@ export const GuidesLandingPage: React.FC = () => {
       },
       behavioral: {
         title: 'Behavioral',
-        description:
-          'Interview preparation and behavioral question strategies',
+        description: 'Interview preparation and behavioral question strategies',
         color: 'bg-green-500',
       },
       'system-design': {
@@ -207,9 +206,7 @@ export const GuidesLandingPage: React.FC = () => {
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
               No guides found
             </h3>
-            <p className="text-gray-500">
-              Try adjusting your search query
-            </p>
+            <p className="text-gray-500">Try adjusting your search query</p>
           </div>
         )}
       </div>

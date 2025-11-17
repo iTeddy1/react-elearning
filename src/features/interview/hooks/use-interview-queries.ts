@@ -244,10 +244,12 @@ export const useGenerateInterviewReviewMutation = (callbacks?: {
         language: request.language,
       });
 
-      // Transform AI feedback to InterviewReview format
+      // Transform AI feedback to InterviewReview format - PRESERVE ALL FIELDS
       const review: InterviewReview = {
         sessionId: request.sessionId || Date.now().toString(),
         overallScore: feedback.overallScore,
+        scores: feedback.scores,
+        communicationMetrics: feedback.communicationMetrics,
         strengths: feedback.overallFeedback.strengths,
         weaknesses: feedback.overallFeedback.weaknesses,
         recommendations: feedback.overallFeedback.recommendations,
@@ -256,9 +258,19 @@ export const useGenerateInterviewReviewMutation = (callbacks?: {
           questionId: request.questions[qa.questionIndex]?.id || '',
           score: qa.score,
           feedback: qa.feedback,
+          transcription: qa.transcription,
+          detailedScores: qa.detailedScores,
+          strengths: qa.strengths,
+          weaknesses: qa.weaknesses,
+          criticalPoints: qa.criticalPoints,
+          improvementAreas: qa.improvementAreas,
         })),
         suggestedImprovements: feedback.overallFeedback.recommendations,
         nextSteps: feedback.overallFeedback.recommendations,
+        hiringPotential: feedback.overallFeedback.hiringPotential,
+        redFlags: feedback.overallFeedback.redFlags,
+        standoutMoments: feedback.overallFeedback.standoutMoments,
+        criticalConcerns: feedback.overallFeedback.criticalConcerns,
       };
 
       // Save attempt to progress store

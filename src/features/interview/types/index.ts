@@ -50,38 +50,46 @@ export interface QuestionEvaluation {
   questionId: string;
   question: string;
   answer: string;
-  relevancy_score: number;
-  relevancy_type: string;
+  relevancyScore: number;
+  relevancyType: string;
   reason: string;
   improvements: string[];
-  extracted_ideal_answer: string;
+  extractedIdealAnswer: string;
   strengths: string[];
 }
 
 export interface GrammarBreakdown {
-  questionid: string;
-  sentence_structure: number;
-  grammar_rules: number;
-  word_usage: number;
-  incomplete_sentences_and_fillers: number;
-  improvements: string[];
-  overallQuestionGrammarScore: number;
+  questionId: string;
+  question?: string;
+  sentenceStructure: number;
+  grammarRules: number;
+  wordUsage: number;
+  incompleteSentencesAndFillers: number;
+  improvements?: string[];
+  suggestions?: string[];
+  overallQuestionGrammarScore?: number;
+  // For inline grammar in questions array
+  score?: number;
+  issues?: string[];
 }
 
 export interface CommunicationBreakdown {
-  name: string;
-  definition: string;
+  metric?: string; // For new format
+  name?: string; // For legacy format
+  definition?: string;
   score: number;
-  reasoning: string;
+  feedback?: string; // For new format
+  reasoning?: string; // For legacy format
 }
 
 export interface OverallSummary {
-  overall_summary: string;
-  transcript_summary: string;
+  overallSummary: string;
+  transcriptSummary: string;
   strengths: string[];
   weaknesses: string[];
-  key_insights: string[];
+  keyInsights: string[];
   recommendation: string;
+  decision?: string;
 }
 
 // Complete Interview Result
@@ -98,9 +106,9 @@ export interface InterviewResult {
     };
   }>;
   scores: ScoreBreakdown;
-  communication_breakdown: CommunicationBreakdown[];
-  relevancy_score_breakdown: QuestionEvaluation[];
-  grammar_score_breakdown: GrammarBreakdown[];
+  communicationBreakdown: CommunicationBreakdown[];
+  relevancyScoreBreakdown: QuestionEvaluation[];
+  grammarScoreBreakdown: GrammarBreakdown[];
   overallSummary: OverallSummary;
 }
 
@@ -178,6 +186,24 @@ export interface InterviewState {
 export interface InterviewReview {
   sessionId: string;
   overallScore: number;
+  scores?: {
+    technicalKnowledge: number;
+    communicationSkills: number;
+    problemSolving: number;
+    professionalism: number;
+    overallFit: number;
+    confidence?: number;
+    articulation?: number;
+    responseDepth?: number;
+  };
+  communicationMetrics?: {
+    clarity: number;
+    pace: number;
+    vocabulary: number;
+    grammarAccuracy: number;
+    fillerWords: number;
+    structuredThinking: number;
+  };
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
@@ -186,9 +212,24 @@ export interface InterviewReview {
     questionId: string;
     score: number;
     feedback: string;
+    transcription?: string;
+    detailedScores?: {
+      technicalAccuracy: number;
+      relevance: number;
+      completeness: number;
+      clarity: number;
+    };
+    strengths?: string[];
+    weaknesses?: string[];
+    criticalPoints?: string[];
+    improvementAreas?: string[];
   }>;
   suggestedImprovements: string[];
   nextSteps: string[];
+  hiringPotential?: string;
+  redFlags?: string[];
+  standoutMoments?: string[];
+  criticalConcerns?: string[];
 }
 
 export interface InterviewActions {

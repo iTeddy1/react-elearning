@@ -56,7 +56,6 @@ export class InterviewService {
       followUpQuestions: q.followUpQuestions,
     }));
 
-    console.log('✅ Interview questions generated:', questions.length);
     return questions;
   }
 
@@ -78,12 +77,6 @@ export class InterviewService {
     role: string,
     language?: 'en' | 'vi'
   ): Promise<InterviewReview> {
-    console.log(
-      '📋 Generating interview review for',
-      questions.length,
-      'questions'
-    );
-
     const feedback = await this.aiService.reviewInterview({
       questions: questions.map((q) => ({
         id: q.id,
@@ -115,8 +108,6 @@ export class InterviewService {
       suggestedImprovements: feedback.overallFeedback.recommendations,
       nextSteps: feedback.overallFeedback.recommendations,
     };
-
-    console.log('✅ Interview review generated successfully');
     return review;
   }
 }

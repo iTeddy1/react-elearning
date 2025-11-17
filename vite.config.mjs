@@ -16,10 +16,13 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
-  resolve: {
-    alias: {
-      '@': path.resolve(path.dirname(fileURLToPath(import.meta.url)), './src'),
+    resolve: {
+      alias: {
+        '@': path.resolve(
+          path.dirname(fileURLToPath(import.meta.url)),
+          './src'
+        ),
+      },
     },
-  },
   },
 });

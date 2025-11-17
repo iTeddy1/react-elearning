@@ -120,19 +120,22 @@ export const useHighlights = (contentPath: string) => {
   }, [getAllHighlights]);
 
   // Import highlights
-  const importHighlights = useCallback((file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data: HighlightData = JSON.parse(e.target?.result as string);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        setHighlights(data[contentPath] || []);
-      } catch (error) {
-        console.error('Failed to import highlights:', error);
-      }
-    };
-    reader.readAsText(file);
-  }, [contentPath]);
+  const importHighlights = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data: HighlightData = JSON.parse(e.target?.result as string);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          setHighlights(data[contentPath] || []);
+        } catch (error) {
+          console.error('Failed to import highlights:', error);
+        }
+      };
+      reader.readAsText(file);
+    },
+    [contentPath]
+  );
 
   return {
     highlights,

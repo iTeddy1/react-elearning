@@ -71,9 +71,8 @@ export const GuideViewerPage: React.FC = () => {
     void navigate(`/review/guides/${navCategory}/${navSlug}`);
   };
 
-  const currentGuide = category && slug
-    ? guides[category]?.find((g) => g.slug === slug)
-    : null;
+  const currentGuide =
+    category && slug ? guides[category]?.find((g) => g.slug === slug) : null;
 
   return (
     <div className="flex h-screen bg-white">
@@ -114,7 +113,10 @@ export const GuideViewerPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => adjacentGuides.previous && void navigate(adjacentGuides.previous.path)}
+              onClick={() =>
+                adjacentGuides.previous &&
+                void navigate(adjacentGuides.previous.path)
+              }
               disabled={!adjacentGuides.previous}
               className="gap-2"
             >
@@ -124,7 +126,9 @@ export const GuideViewerPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => adjacentGuides.next && void navigate(adjacentGuides.next.path)}
+              onClick={() =>
+                adjacentGuides.next && void navigate(adjacentGuides.next.path)
+              }
               disabled={!adjacentGuides.next}
               className="gap-2"
             >

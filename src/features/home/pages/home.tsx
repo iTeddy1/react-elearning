@@ -291,10 +291,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex gap-2 mt-4">
                   <Link to="/review">
-                    <Button
-                      size="lg"
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
+                    <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                       <Play className="w-4 h-4 mr-2" />
                       Browse Questions
                       <ArrowRight className="w-4 h-4 ml-2" />
@@ -346,9 +343,7 @@ export default function HomePage() {
                     <div className="flex gap-3">
                       <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <span className="font-medium">
-                          Keyboard Navigation
-                        </span>
+                        <span className="font-medium">Keyboard Navigation</span>
                         <p className="text-sm text-gray-600">
                           Use arrow keys to navigate between questions
                         </p>

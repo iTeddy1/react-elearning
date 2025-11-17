@@ -32,7 +32,7 @@ export default function OverallSummary({
         <div>
           <h4 className="font-medium mb-2">Overall Assessment:</h4>
           <p className="text-sm text-muted-foreground">
-            {overall.overall_summary}
+            {overall.overallSummary}
           </p>
         </div>
 
@@ -67,7 +67,7 @@ export default function OverallSummary({
         <div>
           <h4 className="font-medium mb-2">Key Insights:</h4>
           <ul className="text-sm space-y-1">
-            {overall.key_insights.map((insight, index) => (
+            {overall.keyInsights.map((insight, index) => (
               <li key={index} className="flex items-start gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <span>{insight}</span>

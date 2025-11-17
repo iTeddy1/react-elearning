@@ -21,7 +21,9 @@ export const HighlightableContent: React.FC<HighlightableContentProps> = ({
     if (!contentRef.current) return;
 
     // Remove all existing highlights
-    const existingMarks = contentRef.current.querySelectorAll('mark[data-highlight-id]');
+    const existingMarks = contentRef.current.querySelectorAll(
+      'mark[data-highlight-id]'
+    );
     existingMarks.forEach((mark) => {
       const parent = mark.parentNode;
       if (parent) {
@@ -67,7 +69,7 @@ export const HighlightableContent: React.FC<HighlightableContentProps> = ({
 
         if (index !== -1 && textNode.parentElement) {
           const parent = textNode.parentElement;
-          
+
           // Split the text node into three parts
           const before = text.substring(0, index);
           const match = highlight.text;
@@ -85,13 +87,13 @@ export const HighlightableContent: React.FC<HighlightableContentProps> = ({
 
           // Create document fragment for efficient DOM manipulation
           const fragment = document.createDocumentFragment();
-          
+
           if (before) {
             fragment.appendChild(document.createTextNode(before));
           }
-          
+
           fragment.appendChild(mark);
-          
+
           if (after) {
             fragment.appendChild(document.createTextNode(after));
           }

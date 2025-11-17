@@ -22,8 +22,8 @@ export default function QuestionAnalysis({
             >
               <div className="flex items-start justify-between">
                 <h4 className="font-medium text-sm">{item.question}</h4>
-                <Badge className={getReviewScoreColor(item.relevancy_score)}>
-                  {item.relevancy_score}%
+                <Badge className={getReviewScoreColor(item.relevancyScore)}>
+                  {item.relevancyScore}%
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">{item.reason}</p>

@@ -67,5 +67,6 @@ export const PWAConfig: Partial<VitePWAOptions> = {
   },
   workbox: {
     sourcemap: true,
+    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
   },
 };

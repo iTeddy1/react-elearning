@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { QuestionStatusIndicators } from './QuestionStatusIndicators';
+import { hasQuestionRecording } from '../utils/interview-helpers';
 
 interface InterviewNavigationProps {
   currentQuestionIndex: number;
@@ -27,13 +28,25 @@ export const InterviewNavigation: React.FC<InterviewNavigationProps> = ({
   onNextQuestion,
   onCompleteInterview,
 }) => {
+  // Check if current question is answered
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestionAnswered = currentQuestion
+    ? hasQuestionRecording(currentQuestion.id, recordings)
+    : false;
+
+  // Can navigate next if: not at last question OR (at last question but not answered - allows going back)
+  const canNavigateNext = currentQuestionIndex < totalQuestions - 1;
+
+  // Can navigate previous if: not at first question
+  const canNavigatePrevious = currentQuestionIndex > 0;
+
   return (
     <Card>
       <CardContent className="py-4">
         <div className="flex items-center justify-between">
           <Button
             onClick={onPreviousQuestion}
-            disabled={currentQuestionIndex === 0}
+            disabled={!canNavigatePrevious}
             variant="outline"
             className="flex items-center gap-2"
           >
@@ -49,12 +62,14 @@ export const InterviewNavigation: React.FC<InterviewNavigationProps> = ({
               currentQuestionIndex={currentQuestionIndex}
             />
 
-            {/* Complete Interview Button */}
+            {/* Complete Interview Button - show when all answered */}
             {allQuestionsAnswered && (
               <Button
                 onClick={() => void onCompleteInterview()}
                 disabled={isProcessing}
                 className="flex items-center gap-2"
+                variant="default"
+                size="lg"
               >
                 {isProcessing ? (
                   <>
@@ -66,11 +81,24 @@ export const InterviewNavigation: React.FC<InterviewNavigationProps> = ({
                 )}
               </Button>
             )}
+
+            {/* Hint when not all questions answered */}
+            {!allQuestionsAnswered && (
+              <div className="text-sm text-muted-foreground text-center">
+                {currentQuestionAnswered ? (
+                  <span className="text-green-600">✓ Question answered</span>
+                ) : (
+                  <span className="text-orange-600">
+                    ⚠ Answer this question to continue
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <Button
             onClick={onNextQuestion}
-            disabled={currentQuestionIndex === totalQuestions - 1}
+            disabled={!canNavigateNext}
             variant="outline"
             className="flex items-center gap-2"
           >
