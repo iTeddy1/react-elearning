@@ -1,8 +1,4 @@
-node_modules
-.DS_Store
-dist
-dist-ssr
-dev-dist
-*.local
 .env
-src/styles.css
+.vscode/
+.agents
+skills-lock.json
