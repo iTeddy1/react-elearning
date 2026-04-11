@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+motor
+faster-whisper
+librosa
+soundfile
+openai
+python-multipart
+pydantic
+pydantic-settings
+starlette
+python-dotenv
